@@ -9,7 +9,6 @@ import output.taxonomy.bean.TaxonomyScope;
 import output.taxonomy.bean.TaxonomyDescription;
 import output.taxonomy.bean.TaxonomyMeta;
 import output.taxonomy.bean.TaxonomyKeywords;
-import output.taxonomy.bean.TaxonomyOtherInfo;
 import output.taxonomy.bean.TaxonomyGenericElement;
 import output.taxonomy.bean.TaxonomySynonym;
 import output.taxonomy.bean.TaxonomyNomenclature;
@@ -32,7 +31,7 @@ import org.w3c.dom.Element;
 public class Taxonomy {
     private TaxonomyMeta meta;
     private TaxonomyNomenclature nomenclature;
-    private TaxonomySynonym synonym;
+    private List<TaxonomySynonym> synonyms;
     private TaxonomyScope scope;
     private TaxonomyKeywords keywords;
     private List<TaxonomyDescription> descriptions;
@@ -40,6 +39,7 @@ public class Taxonomy {
     private List<TaxonomyGenericElement> innerElements;
     
     public Taxonomy() {
+        this.synonyms = new ArrayList<TaxonomySynonym>();
         this.descriptions = new ArrayList<TaxonomyDescription>();
         this.innerElements = new ArrayList<TaxonomyGenericElement>();
     }
@@ -60,12 +60,12 @@ public class Taxonomy {
         return this.nomenclature;
     }
     
-    public void setSynonym(TaxonomySynonym synonym) {
-        this.synonym = synonym;
+    public void addSynonym(TaxonomySynonym synonym) {
+        this.synonyms.add(synonym);
     }
     
-    public TaxonomySynonym getSynonym() {
-        return this.synonym;
+    public List<TaxonomySynonym> getSynonyms() {
+        return this.synonyms;
     }
     
     public void setScope(TaxonomyScope scope) {
@@ -137,8 +137,10 @@ public class Taxonomy {
             this.nomenclature.toXML(doc, treatment);
         }
         
-        if(this.synonym != null) {
-            this.synonym.toXML(doc, treatment);
+        if(this.synonyms != null) {
+            for(TaxonomySynonym synonym : this.synonyms) {
+                synonym.toXML(doc, treatment);
+            }
         }
         
         if(this.scope != null) {

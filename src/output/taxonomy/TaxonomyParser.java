@@ -153,16 +153,10 @@ public class TaxonomyParser {
     }
     
     private void processTaxonomySynonym(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
-        TaxonomySynonym old = taxonomy.getSynonym();
-        if(old != null) {
-            String oldParagraph = old.getSynonym();
-            old.setSynonym(oldParagraph + "\n" + line);
-        } else {
-            TaxonomySynonym synonym = new TaxonomySynonym();
-            synonym.setSynonym(line);
+        TaxonomySynonym synonym = new TaxonomySynonym();
+        synonym.setSynonym(line);
 
-            taxonomy.setSynonym(synonym);
-        }
+        taxonomy.addSynonym(synonym);
     }
     
     private void processTaxonomyDiagnosis(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {

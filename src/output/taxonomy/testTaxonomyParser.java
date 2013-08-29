@@ -35,9 +35,6 @@ public class testTaxonomyParser {
             if(nomenclature != null) {
                 System.out.println("taxonomy name : " + nomenclature.getNameInfo());
                 taxonomy.toXML(new File(parentDir, StringUtil.getSafeFileName(nomenclature.getName()) + ".xml"));
-                if(taxonomy.getSynonym() != null) {
-                    System.out.println("synonym : " + taxonomy.getSynonym().getSynonym());
-                }
             }
         }
     }
