@@ -130,7 +130,7 @@ public class TaxonomyParser {
         String taxonName = RegExUtil.removeTrailNumber(line);
         
         nomenclature.setName(taxonName);
-        nomenclature.setRank(Rank.getRankFromNameInfo(taxonName));
+        nomenclature.setRank(Rank.getRankFromNameInfo(taxonName, conf));
         nomenclature.setNameInfo(indexRemoved);
         
         taxonomy.setNomenclture(nomenclature);

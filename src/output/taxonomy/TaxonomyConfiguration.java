@@ -10,6 +10,7 @@ package output.taxonomy;
  */
 public class TaxonomyConfiguration {
     private int taxonomyNameWordLen = 10;
+    private String rankDefault = "Genus";
     
     public TaxonomyConfiguration() {
         
@@ -21,5 +22,13 @@ public class TaxonomyConfiguration {
     
     public int getTaxonomyNameWordLen() {
         return this.taxonomyNameWordLen;
+    }
+
+    public void setRankDefault(String rank) {
+        this.rankDefault = rank;
+    }
+    
+    public String getRankDefault() {
+        return this.rankDefault;
     }
 }

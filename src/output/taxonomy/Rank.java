@@ -15,14 +15,13 @@ import java.util.List;
 public class Rank {
 
     private static List<String> rankPredefined = new ArrayList<String>();
-    private static final String RANK_DEFAULT = "genus";
     
     static {
         initializeRankPredefined();
     }
     
-    public static String getRankFromNameInfo(String name) {
-        return findRank(name);
+    public static String getRankFromNameInfo(String name, TaxonomyConfiguration conf) {
+        return findRank(name, conf);
     }
 
     private static void initializeRankPredefined() {
@@ -51,11 +50,11 @@ public class Rank {
         return arr;
     }
     
-    private static String findRank(String name) {
+    private static String findRank(String name, TaxonomyConfiguration conf) {
         String rankString = RegExUtil.getFirstWord(name);
         
         if(rankString == null) {
-            return RANK_DEFAULT;
+            return conf.getRankDefault();
         }
 
         for (String rankDefined : rankPredefined) {
@@ -65,6 +64,6 @@ public class Rank {
         }
 
         // default
-        return RANK_DEFAULT;
+        return conf.getRankDefault();
     }
 }
