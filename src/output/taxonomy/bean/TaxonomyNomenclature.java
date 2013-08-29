@@ -17,6 +17,7 @@ public class TaxonomyNomenclature extends XMLWritable {
     private String name;
     private String rank;
     private String name_info;
+    private TaxonomyOtherInfo other_info;
     
     public TaxonomyNomenclature() {
         
@@ -52,6 +53,14 @@ public class TaxonomyNomenclature extends XMLWritable {
         this.name_info = name_info;
     }
     
+    public void setOtherInfo(TaxonomyOtherInfo otherInfo) {
+        this.other_info = otherInfo;
+    }
+    
+    public TaxonomyOtherInfo getOtherInfo() {
+        return this.other_info;
+    }
+    
     @Override
     public void toXML(Document doc, Element parent) {
         Element nomenclature = doc.createElement("nomenclature");
@@ -74,5 +83,9 @@ public class TaxonomyNomenclature extends XMLWritable {
         
         String escapedNameInfo = StringEscapeUtils.escapeXml(this.name_info);
         name_info.setTextContent(escapedNameInfo);
+        
+        if(this.other_info != null) {
+            this.other_info.toXML(doc, nomenclature);
+        }
     }
 }

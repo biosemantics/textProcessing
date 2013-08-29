@@ -34,7 +34,6 @@ public class Taxonomy {
     private TaxonomyNomenclature nomenclature;
     private TaxonomySynonym synonym;
     private TaxonomyScope scope;
-    private TaxonomyOtherInfo otherInfo;
     private TaxonomyKeywords keywords;
     private List<TaxonomyDescription> descriptions;
     private TaxonomyDiscussion discussion;
@@ -75,14 +74,6 @@ public class Taxonomy {
     
     public TaxonomyScope getScope() {
         return this.scope;
-    }
-    
-    public void setOtherInfo(TaxonomyOtherInfo otherInfo) {
-        this.otherInfo = otherInfo;
-    }
-    
-    public TaxonomyOtherInfo getOtherInfo() {
-        return this.otherInfo;
     }
     
     public void setKeywords(TaxonomyKeywords keywords) {
@@ -152,10 +143,6 @@ public class Taxonomy {
         
         if(this.scope != null) {
             this.scope.toXML(doc, treatment);
-        }
-        
-        if(this.otherInfo != null) {
-            this.otherInfo.toXML(doc, treatment);
         }
         
         if(this.keywords != null) {
