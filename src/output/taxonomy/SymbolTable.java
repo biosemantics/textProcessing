@@ -49,8 +49,8 @@ public class SymbolTable {
         if (this.symbols.isEmpty()) {
             this.symbols.add(new SymbolLineType_Pair("^Taxonomy$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_NAME));
             this.symbols.add(new SymbolLineType_Pair("^Diagnosis[\\.]?$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_DIAGNOSIS));
-            this.symbols.add(new SymbolLineType_Pair("^Description[\\.]?$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_DESCRIPTION));
-            this.symbols.add(new SymbolLineType_Pair("^Description of (fe)?male[\\.]?$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_DESCRIPTION));
+            this.symbols.add(new SymbolLineType_Pair("^Description[\\.]?$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_DEFINITION));
+            this.symbols.add(new SymbolLineType_Pair("^Description of (fe)?male[\\.]?$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_DEFINITION_CUSTOM));
             this.symbols.add(new SymbolLineType_Pair("^Distribution[\\.]?$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_GENERIC));
             this.symbols.add(new SymbolLineType_Pair("^Variation[\\.]?$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_GENERIC));
             this.symbols.add(new SymbolLineType_Pair("^Material examined[\\.]?$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_GENERIC));

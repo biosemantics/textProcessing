@@ -15,6 +15,7 @@ import org.w3c.dom.Element;
  * @author iychoi
  */
 public class TaxonomyDescription extends XMLWritable {
+    private String title;
     private String description;
 
     public enum TaxonomyDescriptionType {
@@ -35,8 +36,9 @@ public class TaxonomyDescription extends XMLWritable {
     
     private TaxonomyDescriptionType type;
     
-    public TaxonomyDescription(TaxonomyDescriptionType type, String description) {
+    public TaxonomyDescription(TaxonomyDescriptionType type, String title, String description) {
         this.type = type;
+        this.title = title;
         this.description = description;
     }
     
@@ -50,6 +52,14 @@ public class TaxonomyDescription extends XMLWritable {
     
     public void setType(TaxonomyDescriptionType type) {
         this.type = type;
+    }
+    
+    public String getTitle() {
+        return this.title;
+    }
+    
+    public void setTitle(String title) {
+        this.title = title;
     }
     
     public String getDescription() {
@@ -66,7 +76,13 @@ public class TaxonomyDescription extends XMLWritable {
         parent.appendChild(description);
         
         Attr attr = doc.createAttribute("type");
-        attr.setValue(this.type.toString());
+        if(this.type.equals(TaxonomyDescriptionType.DESCRIPTION_DEFINITION) &&
+                this.title != null && !this.title.trim().equals("")) {
+            attr.setValue(this.title.trim());
+        } else {
+            attr.setValue(this.type.toString());
+        }
+        
         description.setAttributeNode(attr);
         
         String escapedText = StringEscapeUtils.escapeXml(this.description);

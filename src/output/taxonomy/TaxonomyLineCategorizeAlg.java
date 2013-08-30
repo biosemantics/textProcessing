@@ -20,8 +20,10 @@ public class TaxonomyLineCategorizeAlg {
         LINE_TAXONOMY_SYNONYM,
         LINE_DIRECTION_TAXONOMY_DIAGNOSIS,
         LINE_TAXONOMY_DIAGNOSIS,
-        LINE_DIRECTION_TAXONOMY_DESCRIPTION,
-        LINE_TAXONOMY_DESCRIPTION,
+        LINE_DIRECTION_TAXONOMY_DEFINITION,
+        LINE_TAXONOMY_DEFINITION,
+        LINE_DIRECTION_TAXONOMY_DEFINITION_CUSTOM,
+        LINE_TAXONOMY_DEFINITION_CUSTOM,
         //
         LINE_DIRECTION_TAXONOMY_GENERIC,
         LINE_TAXONOMY_GENERIC,
@@ -95,10 +97,17 @@ public class TaxonomyLineCategorizeAlg {
             }
         }
         
-        // description - by direction
+        // definition - by direction
         if(this.previousLineType != null) {
-            if(this.previousLineType.equals(TaxonomyLineType.LINE_DIRECTION_TAXONOMY_DESCRIPTION)) {
-                return TaxonomyLineType.LINE_TAXONOMY_DESCRIPTION;
+            if(this.previousLineType.equals(TaxonomyLineType.LINE_DIRECTION_TAXONOMY_DEFINITION)) {
+                return TaxonomyLineType.LINE_TAXONOMY_DEFINITION;
+            }
+        }
+        
+        // definition_custom - by direction
+        if(this.previousLineType != null) {
+            if(this.previousLineType.equals(TaxonomyLineType.LINE_DIRECTION_TAXONOMY_DEFINITION_CUSTOM)) {
+                return TaxonomyLineType.LINE_TAXONOMY_DEFINITION_CUSTOM;
             }
         }
         

@@ -25,7 +25,7 @@ public class Parse_5_Hirashima_Tadauchi_2002 {
         
         TaxonomyConfiguration conf = new TaxonomyConfiguration();
         conf.setTaxonomyNameWordLen(3);
-        conf.setRankDefault("Species");
+        conf.setRankDefault("Subgenus");
         
         File file = new File(args[0]);
         TaxonomyParser parser = new TaxonomyParser(file);
@@ -43,7 +43,7 @@ public class Parse_5_Hirashima_Tadauchi_2002 {
                     if(nameSplit.length != 3) {
                         System.err.println("Error! size is not 3");
                     }
-                    String hierarchy = "Genus Nomada; " + name;
+                    String hierarchy = "Genus Nomada Scopoli; " + name;
                     
                     nomenclature.setHierarchy(hierarchy.trim());
                 }

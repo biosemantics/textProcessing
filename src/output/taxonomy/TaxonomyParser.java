@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import static output.taxonomy.TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_DEFINITION;
+import static output.taxonomy.TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_TAXONOMY_DEFINITION;
 import static output.taxonomy.TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_TAXONOMY_GENERIC;
 import output.taxonomy.bean.TaxonomyDescription;
 import output.taxonomy.bean.TaxonomyDiscussion;
@@ -97,11 +99,17 @@ public class TaxonomyParser {
             case LINE_TAXONOMY_DIAGNOSIS:
                 processTaxonomyDiagnosis(taxonomy, line, conf);
                 break;
-            case LINE_DIRECTION_TAXONOMY_DESCRIPTION:
+            case LINE_DIRECTION_TAXONOMY_DEFINITION:
                 this.currentTitle = line;
                 break;
-            case LINE_TAXONOMY_DESCRIPTION:
-                processTaxonomyDescription(taxonomy, line, conf);
+            case LINE_TAXONOMY_DEFINITION:
+                processTaxonomyDefinition(taxonomy, line, conf);
+                break;
+            case LINE_DIRECTION_TAXONOMY_DEFINITION_CUSTOM:
+                this.currentTitle = line;
+                break;
+            case LINE_TAXONOMY_DEFINITION_CUSTOM:
+                processTaxonomyDefinitionCustom(taxonomy, line, conf);
                 break;
             case LINE_DIRECTION_TAXONOMY_GENERIC:
                 this.currentTitle = line;
@@ -165,9 +173,18 @@ public class TaxonomyParser {
         taxonomy.addDescription(description);
     }
     
-    private void processTaxonomyDescription(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
+    private void processTaxonomyDefinition(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
         TaxonomyDescription description = new TaxonomyDescription();
         description.setType(TaxonomyDescription.TaxonomyDescriptionType.DESCRIPTION_DEFINITION);
+        description.setDescription(line);
+
+        taxonomy.addDescription(description);
+    }
+    
+    private void processTaxonomyDefinitionCustom(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
+        TaxonomyDescription description = new TaxonomyDescription();
+        description.setType(TaxonomyDescription.TaxonomyDescriptionType.DESCRIPTION_DEFINITION);
+        description.setTitle(this.currentTitle);
         description.setDescription(line);
 
         taxonomy.addDescription(description);
