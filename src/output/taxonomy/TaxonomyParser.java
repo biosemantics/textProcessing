@@ -74,9 +74,7 @@ public class TaxonomyParser {
     
     private String getSource(File inputFile) {
         String filename = inputFile.getName();
-        // remove trail extension part
-        String source = filename.replaceAll("\\..+$", "");
-        return source;
+        return filename;
     }
     
     private void processTaxonomy(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {

@@ -30,12 +30,24 @@ public class Parse_4_Droege_2010 {
         File file = new File(args[0]);
         TaxonomyParser parser = new TaxonomyParser(file);
         List<Taxonomy> taxonomies = parser.parseTaxonomy(conf);
-
+        
         File parentDir = file.getParentFile();
         
         for(Taxonomy taxonomy : taxonomies) {
             TaxonomyNomenclature nomenclature = taxonomy.getNomenclature();
             if(nomenclature != null) {
+                /// add missing taxon hierarchy
+                if(nomenclature.getHierarchy() == null || nomenclature.getHierarchy().trim().equals("")) {
+                    String name = nomenclature.getName();
+                    String[] nameSplit = name.split("\\s");
+                    if(nameSplit.length != 3) {
+                        System.err.println("Error! size is not 3");
+                    }
+                    String hierarchy = "Genus Nomada; " + name;
+                    
+                    nomenclature.setHierarchy(hierarchy.trim());
+                }
+                
                 System.out.println("taxonomy name : " + nomenclature.getNameInfo());
                 taxonomy.toXML(new File(parentDir, StringUtil.getSafeFileName(nomenclature.getName()) + ".xml"));
             }

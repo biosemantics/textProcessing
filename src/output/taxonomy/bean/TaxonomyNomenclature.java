@@ -16,6 +16,7 @@ import org.w3c.dom.Element;
 public class TaxonomyNomenclature extends XMLWritable {
     private String name;
     private String rank;
+    private String hierarchy;
     private String name_info;
     private TaxonomyOtherInfo other_info;
     
@@ -23,10 +24,11 @@ public class TaxonomyNomenclature extends XMLWritable {
         
     }
     
-    public TaxonomyNomenclature(String name, String rank, String name_info) {
+    public TaxonomyNomenclature(String name, String rank, String name_info, String hierarchy) {
         this.name = name;
         this.rank = rank;
         this.name_info = name_info;
+        this.hierarchy = hierarchy;
     }
     
     public String getName() {
@@ -53,6 +55,14 @@ public class TaxonomyNomenclature extends XMLWritable {
         this.name_info = name_info;
     }
     
+    public void setHierarchy(String hierarchy) {
+        this.hierarchy = hierarchy;
+    }
+    
+    public String getHierarchy() {
+        return this.hierarchy;
+    }
+    
     public void setOtherInfo(TaxonomyOtherInfo otherInfo) {
         this.other_info = otherInfo;
     }
@@ -77,6 +87,12 @@ public class TaxonomyNomenclature extends XMLWritable {
         
         String escapedRank = StringEscapeUtils.escapeXml(this.rank);
         rank.setTextContent(escapedRank);
+        
+        Element hierarchy = doc.createElement("taxon_hierarchy");
+        nomenclature.appendChild(hierarchy);
+        
+        String escapedHierarchy = StringEscapeUtils.escapeXml(this.hierarchy);
+        hierarchy.setTextContent(escapedHierarchy);
         
         Element name_info = doc.createElement("name_info");
         nomenclature.appendChild(name_info);
