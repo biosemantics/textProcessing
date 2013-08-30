@@ -37,7 +37,7 @@ public class DjvuView extends java.awt.Frame implements AppletStub, Runnable {
         classApplet = xclassApplet;
         Method xisValidDjVuMethod = null;
         try {
-            xisValidDjVuMethod = classApplet.getMethod("isValidDjVu", (Class) null);
+            xisValidDjVuMethod = classApplet.getMethod("isValidDjVu", (Class[]) null);
         } catch (final Throwable exp) {
             exp.printStackTrace(DjVuOptions.err);
             System.exit(1);
@@ -307,7 +307,7 @@ public class DjvuView extends java.awt.Frame implements AppletStub, Runnable {
                     s.init();
                     component = s;
                     djvuApplet = (com.lizardtech.djview.Applet)s;
-                    isDjVu = ((Boolean) isValidDjVuMethod.invoke(s, (Object) null)).booleanValue();
+                    isDjVu = ((Boolean) isValidDjVuMethod.invoke(s, (Object[]) null)).booleanValue();
                 } catch (final Throwable exp) {
                     exp.printStackTrace(DjVuOptions.err);
                     component = null;
