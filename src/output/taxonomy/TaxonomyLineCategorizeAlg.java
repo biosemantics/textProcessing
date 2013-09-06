@@ -142,7 +142,9 @@ public class TaxonomyLineCategorizeAlg {
         // key to family - by direction
         if(this.previousLineType != null) {
             if(this.previousLineType.equals(TaxonomyLineType.LINE_DIRECTION_TAXONOMY_KEY_TO_FAMILY)) {
-                return TaxonomyLineType.LINE_TAXONOMY_KEY_TO_FAMILY;
+                if(RegExUtil.isKeyToStatement(line)) {
+                    return TaxonomyLineType.LINE_TAXONOMY_KEY_TO_FAMILY;
+                }
             }
         }
         

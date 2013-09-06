@@ -4,6 +4,8 @@
  */
 package output.taxonomy.bean;
 
+import java.util.ArrayList;
+import java.util.List;
 import output.xml.XMLWritable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -17,10 +19,10 @@ public class TaxonomyNomenclature extends XMLWritable {
     private String rank;
     private String hierarchy;
     private String name_info;
-    private TaxonomyOtherInfo other_info;
+    private List<TaxonomyOtherInfo> other_infos;
     
     public TaxonomyNomenclature() {
-        
+        this.other_infos = new ArrayList<TaxonomyOtherInfo>();
     }
     
     public TaxonomyNomenclature(String name, String rank, String name_info, String hierarchy) {
@@ -28,6 +30,8 @@ public class TaxonomyNomenclature extends XMLWritable {
         this.rank = rank;
         this.name_info = name_info;
         this.hierarchy = hierarchy;
+        
+        this.other_infos = new ArrayList<TaxonomyOtherInfo>();
     }
     
     public String getName() {
@@ -62,12 +66,12 @@ public class TaxonomyNomenclature extends XMLWritable {
         return this.hierarchy;
     }
     
-    public void setOtherInfo(TaxonomyOtherInfo otherInfo) {
-        this.other_info = otherInfo;
+    public void addOtherInfo(TaxonomyOtherInfo otherInfo) {
+        this.other_infos.add(otherInfo);
     }
     
-    public TaxonomyOtherInfo getOtherInfo() {
-        return this.other_info;
+    public List<TaxonomyOtherInfo> getOtherInfos() {
+        return this.other_infos;
     }
     
     @Override
@@ -95,8 +99,10 @@ public class TaxonomyNomenclature extends XMLWritable {
         
         name_info.setTextContent(this.name_info);
         
-        if(this.other_info != null) {
-            this.other_info.toXML(doc, nomenclature);
+        if(this.other_infos != null) {
+            for(TaxonomyOtherInfo other_info : this.other_infos) {
+                other_info.toXML(doc, nomenclature);
+            }
         }
     }
 }

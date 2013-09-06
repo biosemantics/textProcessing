@@ -84,10 +84,12 @@ public class StringUtil {
     }
     
     public static String removeExtensions(String filename) {
-        String namepart;
+        String filenameTmp;
+        String namepart = filename;
         do {
-            namepart = removeExtension(filename);
-        } while(namepart.length() < filename.length());
+            filenameTmp = namepart;
+            namepart = removeExtension(filenameTmp);
+        } while(namepart.length() < filenameTmp.length());
         
         return namepart;
     }

@@ -36,6 +36,7 @@ public class SymbolTable {
             this.symbols.add(new SymbolLineType_Pair("^Description[\\.]?$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_DESCRIPTION));
             this.symbols.add(new SymbolLineType_Pair("^Description (\\(.+\\))?[\\.]?$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_DESCRIPTION));
             this.symbols.add(new SymbolLineType_Pair("^Description of (fe)?male[\\.]?$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_DESCRIPTION));
+            this.symbols.add(new SymbolLineType_Pair("^Supplementary (D|d)escription[\\.]?$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_DESCRIPTION));
             
             // and data pattern
             // type species
@@ -49,6 +50,7 @@ public class SymbolTable {
             this.symbols.add(new SymbolLineType_Pair("^Etymology\\s?:\\s?(.+)", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_GENERIC_AND_DATA));
             this.symbols.add(new SymbolLineType_Pair("^Gender\\s?:\\s?(.+)", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_GENERIC_AND_DATA));
             this.symbols.add(new SymbolLineType_Pair("^Distribution\\s?:\\s?(.+)", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_GENERIC_AND_DATA));
+            this.symbols.add(new SymbolLineType_Pair("^Distribution.\\s?(.+)", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_GENERIC_AND_DATA));
             this.symbols.add(new SymbolLineType_Pair("^Specimens (E|e)xamined\\s?:\\s?(.+)", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_GENERIC_AND_DATA));
             // GENERIC
             this.symbols.add(new SymbolLineType_Pair("^Distribution[\\.]?$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_GENERIC));
@@ -65,9 +67,11 @@ public class SymbolTable {
             this.symbols.add(new SymbolLineType_Pair("^Ecology$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_GENERIC));
             this.symbols.add(new SymbolLineType_Pair("^Morphology$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_GENERIC));
             this.symbols.add(new SymbolLineType_Pair("^Classification$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_GENERIC));
-            
+            this.symbols.add(new SymbolLineType_Pair("^Specimens (E|e)xamined[\\.]?$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_GENERIC));
+            this.symbols.add(new SymbolLineType_Pair("^Floral association[\\.]?$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_GENERIC));
             // DISCUSSION GENERIC
             this.symbols.add(new SymbolLineType_Pair("^Comments[\\.]?$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_DISCUSSION_GENERIC));
+            this.symbols.add(new SymbolLineType_Pair("^Remarks[\\.]?$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_DISCUSSION_GENERIC));
             
             // ACK
             this.symbols.add(new SymbolLineType_Pair("^Acknowledgements[\\.]?$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_ACKNOWLEDGEMENT));

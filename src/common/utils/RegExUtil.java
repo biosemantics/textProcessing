@@ -142,7 +142,7 @@ public class RegExUtil {
     }
     
     public static boolean isKeyToStatement(String text) {
-        Pattern p1 = Pattern.compile("^(-|(\\d+))\\s?\\.?.+\\.{3,}\\s?\\w+$");
+        Pattern p1 = Pattern.compile("^(-|(\\d+))\\s?\\.?.+\\.{3,}\\s?\\w+(\\s+\\w+)*$");
         Matcher mt1 = p1.matcher(text);
         if(mt1.find()) {
             return true;
@@ -151,7 +151,7 @@ public class RegExUtil {
     }
     
     public static String[] splitKeyToStatement(String text) {
-        Pattern p1 = Pattern.compile("^(-|\\d+)\\s?\\.?(.+)\\.{3,}\\s?(\\w+)$");
+        Pattern p1 = Pattern.compile("^(-|\\d+)\\s?\\.?(.+)\\.{3,}\\s?((\\w+)(\\s+\\w+)*)$");
         Matcher mt1 = p1.matcher(text);
         if(mt1.find()) {
             String[] split = new String[3];

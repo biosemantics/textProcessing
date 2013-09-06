@@ -173,16 +173,10 @@ public class TaxonomyParser {
     private void processTaxonomyOtherInfo(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
         TaxonomyNomenclature nomenclature = taxonomy.getNomenclature();
         if(nomenclature != null) {
-            TaxonomyOtherInfo old = nomenclature.getOtherInfo();
-            if (old != null) {
-                String oldParagraph = old.getOtherInfo();
-                old.setOtherInfo(oldParagraph + "\n" + line);
-            } else {
-                TaxonomyOtherInfo otherinfo = new TaxonomyOtherInfo();
-                otherinfo.setOtherInfo(line);
+            TaxonomyOtherInfo otherinfo = new TaxonomyOtherInfo();
+            otherinfo.setOtherInfo(line);
 
-                nomenclature.setOtherInfo(otherinfo);
-            }
+            nomenclature.addOtherInfo(otherinfo);
         }
     }
     
