@@ -4,7 +4,6 @@
  */
 package output.taxonomy.bean;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import output.xml.XMLWritable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -37,7 +36,6 @@ public class TaxonomyOtherInfo extends XMLWritable {
         Element otherInfo = doc.createElement("other_info");
         parent.appendChild(otherInfo);
         
-        String escapedText = StringEscapeUtils.escapeXml(this.otherInfo);
-        otherInfo.setTextContent(escapedText);
+        otherInfo.setTextContent(this.otherInfo);
     }
 }

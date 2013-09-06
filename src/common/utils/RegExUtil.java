@@ -16,9 +16,6 @@ public class RegExUtil {
     
     private static final String FIGURE_TABLE_CAPTION  = "^(Figure|Fig|Table|Tbl|Pic|Image|Picture)\\s+\\d+(-\\d+)?\\.?\\s.*?";
     
-    private static final String KEY_STATEMENT_INDEX = "(—\\s|\\d+\\(\\d+\\)|\\d+)(\\s\\[triplet\\])?\\.\\s";//
-    private static final String KEY_STATEMENT = "^" + KEY_STATEMENT_INDEX + ".+";
-            
     public static boolean isOneCharOrNum(String text) {
         return text.matches("^\\d+|\\w$");
     }
@@ -38,19 +35,6 @@ public class RegExUtil {
     public static boolean isFigTblCaption(String text) {
 	if (text.matches(FIGURE_TABLE_CAPTION)) {
             return true;
-        }
-        return false;
-    }
-    
-    public static boolean isKeyStatement(String text) {
-	try {
-            Pattern p = Pattern.compile(KEY_STATEMENT);
-            Matcher mt = p.matcher(text);
-            if (mt.matches()) {
-                return true;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return false;
     }
@@ -103,6 +87,12 @@ public class RegExUtil {
             if(mt5.matches()) {
                 return true;
             }
+            // type 6
+            Pattern p6 = Pattern.compile("([A-Z][a-z]+)\\s+\\(.+\\)\\s+[a-z]+\\s+[A-Z][a-z]+(,\\s+\\d+)?");
+            Matcher mt6 = p6.matcher(text);
+            if(mt6.matches()) {
+                return true;
+            }
         }
         
         return false;
@@ -120,8 +110,57 @@ public class RegExUtil {
             }
             return false;
         }
-        
+        // type 2
+        Pattern p2 = Pattern.compile("([\\w\\s]+),\\s?\\d+,\\s?\\w+,\\s*:\\s?\\d+\\s*\\.?$");
+        Matcher mt2 = p2.matcher(braceRemoved);
+        if(mt2.find()) {
+            String text = mt2.group(1);
+            if(isTaxonomyName(text, maxWordLen)) {
+                return true;
+            }
+            return false;
+        }
         return false;
+    }
+    
+    public static boolean isDescriptionSubTitle(String line, int maxWordLen) {
+        if(getWordCount(line) <= maxWordLen) {
+            return true;
+        }
+        return false;
+    }
+    
+    public static boolean isSubTitleWithData(String line, int maxWordLen) {
+        String[] strs = splitSubTitleAndBody(line);
+        if(strs != null && strs.length >= 2) {
+            if(getWordCount(strs[0]) <= maxWordLen) {
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+    
+    public static boolean isKeyToStatement(String text) {
+        Pattern p1 = Pattern.compile("^(-|(\\d+))\\s?\\.?.+\\.{3,}\\s?\\w+$");
+        Matcher mt1 = p1.matcher(text);
+        if(mt1.find()) {
+            return true;
+        }
+        return false;
+    }
+    
+    public static String[] splitKeyToStatement(String text) {
+        Pattern p1 = Pattern.compile("^(-|\\d+)\\s?\\.?(.+)\\.{3,}\\s?(\\w+)$");
+        Matcher mt1 = p1.matcher(text);
+        if(mt1.find()) {
+            String[] split = new String[3];
+            split[0] = mt1.group(1).trim();
+            split[1] = removeTrailDot(mt1.group(2).trim()).trim();
+            split[2] = mt1.group(3).trim();
+            return split;
+        }
+        return null;
     }
     
     public static String fixMissedSpace(String text) {
@@ -158,12 +197,54 @@ public class RegExUtil {
     }
 
     public static String removeTrailNumber(String text) {
-        String EXPRESSION = "^([\\w\\s]+)(,\\s?\\d+)$";
+        String EXPRESSION = "^(.+?)(,\\s?\\d+\\s*)$";
         Pattern p = Pattern.compile(EXPRESSION);
         Matcher mt = p.matcher(text);
         if(mt.matches()) {
             return mt.group(1);
         }
         return text;
+    }
+
+    public static String removeSubTitle(String text) {
+        String EXPRESSION = "^(.+?)\\s?:\\s?(.+)$";
+        Pattern p = Pattern.compile(EXPRESSION);
+        Matcher mt = p.matcher(text);
+        if(mt.matches()) {
+            return mt.group(2).trim();
+        }
+        return text;
+    }
+    
+    public static String[] splitSubTitleAndBody(String text) {
+        String EXPRESSION = "^(.+?)\\s?:\\s?(.+)$";
+        Pattern p = Pattern.compile(EXPRESSION);
+        Matcher mt = p.matcher(text);
+        if(mt.matches()) {
+            String[] arr = new String[2];
+            arr[0] = mt.group(1).trim();
+            arr[1] = mt.group(2).trim();
+            return arr;
+        }
+        return null;
+    }
+
+    public static String removeTrailDot(String text) {
+        String EXPRESSION = "^(.+?)(\\.*)$";
+        Pattern p = Pattern.compile(EXPRESSION);
+        Matcher mt = p.matcher(text);
+        if(mt.matches()) {
+            return mt.group(1);
+        }
+        return text;
+    }
+
+    public static boolean isSiblingKeyToID(String text) {
+        Pattern p1 = Pattern.compile("^(-|')+$");
+        Matcher mt1 = p1.matcher(text);
+        if(mt1.find()) {
+            return true;
+        }
+        return false;
     }
 }

@@ -23,6 +23,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import output.taxonomy.bean.TaxonomyKeyFile;
+import output.taxonomy.bean.TaxonomyTypeSpecies;
 
 /**
  *
@@ -34,14 +36,20 @@ public class Taxonomy {
     private List<TaxonomySynonym> synonyms;
     private TaxonomyScope scope;
     private TaxonomyKeywords keywords;
+    private List<TaxonomyTypeSpecies> typeSpecies;
     private List<TaxonomyDescription> descriptions;
     private TaxonomyDiscussion discussion;
+    private List<TaxonomyDiscussion> discussionNonTitled;
     private List<TaxonomyGenericElement> innerElements;
+    private List<TaxonomyKeyFile> keyFiles;
     
     public Taxonomy() {
         this.synonyms = new ArrayList<TaxonomySynonym>();
+        this.typeSpecies = new ArrayList<TaxonomyTypeSpecies>();
         this.descriptions = new ArrayList<TaxonomyDescription>();
+        this.discussionNonTitled = new ArrayList<TaxonomyDiscussion>();
         this.innerElements = new ArrayList<TaxonomyGenericElement>();
+        this.keyFiles = new ArrayList<TaxonomyKeyFile>();
     }
     
     public void setMeta(TaxonomyMeta meta) {
@@ -88,8 +96,16 @@ public class Taxonomy {
         this.descriptions.add(description);
     }
     
-    public List<TaxonomyDescription> getTaxonomyDescriptions() {
+    public List<TaxonomyDescription> getDescriptions() {
         return this.descriptions;
+    }
+    
+    public void addTypeSpecies(TaxonomyTypeSpecies typeSpecies) {
+        this.typeSpecies.add(typeSpecies);
+    }
+    
+    public List<TaxonomyTypeSpecies> getTypeSpecies() {
+        return this.typeSpecies;
     }
     
     public void setDiscussion(TaxonomyDiscussion discussion) {
@@ -100,12 +116,28 @@ public class Taxonomy {
         return this.discussion;
     }
     
+    public void addDiscussionNonTitled(TaxonomyDiscussion discussion) {
+        this.discussionNonTitled.add(discussion);
+    }
+    
+    public List<TaxonomyDiscussion> getDiscussionNonTitled() {
+        return this.discussionNonTitled;
+    }
+    
     public void addElement(TaxonomyGenericElement elem) {
         this.innerElements.add(elem);
     }
     
     public List<TaxonomyGenericElement> getInnerElements() {
         return this.innerElements;
+    }
+    
+    public void addKeyFile(TaxonomyKeyFile keyFile) {
+        this.keyFiles.add(keyFile);
+    }
+    
+    public List<TaxonomyKeyFile> getKeyFiles() {
+        return this.keyFiles;
     }
     
     public void toXML(File file) throws Exception {
@@ -143,6 +175,12 @@ public class Taxonomy {
             }
         }
         
+        if(this.typeSpecies != null) {
+            for(TaxonomyTypeSpecies typeSpecies : this.typeSpecies) {
+                typeSpecies.toXML(doc, treatment);
+            }
+        }
+        
         if(this.scope != null) {
             this.scope.toXML(doc, treatment);
         }
@@ -163,8 +201,20 @@ public class Taxonomy {
             }
         }
         
+        if(this.discussionNonTitled != null) {
+            for(TaxonomyDiscussion discussion : this.discussionNonTitled) {
+                discussion.toXML(doc, treatment);
+            }
+        }
+        
         if(this.discussion != null) {
             this.discussion.toXML(doc, treatment);
+        }
+        
+        if(this.keyFiles != null) {
+            for(TaxonomyKeyFile keyfile : this.keyFiles) {
+                keyfile.toXML(doc, treatment);
+            }
         }
     }
 }

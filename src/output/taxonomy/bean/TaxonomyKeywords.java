@@ -4,7 +4,6 @@
  */
 package output.taxonomy.bean;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import output.xml.XMLWritable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -37,7 +36,6 @@ public class TaxonomyKeywords extends XMLWritable {
         Element keywords = doc.createElement("keywords");
         parent.appendChild(keywords);
         
-        String escapedText = StringEscapeUtils.escapeXml(this.keywords);
-        keywords.setTextContent(escapedText);
+        keywords.setTextContent(this.keywords);
     }
 }

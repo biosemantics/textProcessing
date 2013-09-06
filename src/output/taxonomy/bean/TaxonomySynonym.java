@@ -4,7 +4,6 @@
  */
 package output.taxonomy.bean;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import output.xml.XMLWritable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -38,7 +37,6 @@ public class TaxonomySynonym extends XMLWritable {
         Element synonym = doc.createElement("synonym");
         parent.appendChild(synonym);
         
-        String escapedText = StringEscapeUtils.escapeXml(this.synonym);
-        synonym.setTextContent(escapedText);
+        synonym.setTextContent(this.synonym);
     }
 }

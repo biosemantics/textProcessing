@@ -4,7 +4,6 @@
  */
 package output.taxonomy.bean;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import output.xml.XMLWritable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -79,26 +78,22 @@ public class TaxonomyNomenclature extends XMLWritable {
         Element name = doc.createElement("name");
         nomenclature.appendChild(name);
         
-        String escapedName = StringEscapeUtils.escapeXml(this.name);
-        name.setTextContent(escapedName);
+        name.setTextContent(this.name);
         
         Element rank = doc.createElement("rank");
         nomenclature.appendChild(rank);
         
-        String escapedRank = StringEscapeUtils.escapeXml(this.rank);
-        rank.setTextContent(escapedRank);
+        rank.setTextContent(this.rank);
         
         Element hierarchy = doc.createElement("taxon_hierarchy");
         nomenclature.appendChild(hierarchy);
         
-        String escapedHierarchy = StringEscapeUtils.escapeXml(this.hierarchy);
-        hierarchy.setTextContent(escapedHierarchy);
+        hierarchy.setTextContent(this.hierarchy);
         
         Element name_info = doc.createElement("name_info");
         nomenclature.appendChild(name_info);
         
-        String escapedNameInfo = StringEscapeUtils.escapeXml(this.name_info);
-        name_info.setTextContent(escapedNameInfo);
+        name_info.setTextContent(this.name_info);
         
         if(this.other_info != null) {
             this.other_info.toXML(doc, nomenclature);

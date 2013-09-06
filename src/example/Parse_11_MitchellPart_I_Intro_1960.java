@@ -7,8 +7,10 @@ package example;
 import common.utils.StringUtil;
 import java.io.File;
 import java.util.List;
+import output.taxonomy.DocumentSpecificSymbolTable;
 import output.taxonomy.Taxonomy;
 import output.taxonomy.TaxonomyConfiguration;
+import output.taxonomy.TaxonomyLineCategorizeAlg;
 import output.taxonomy.TaxonomyParser;
 import output.taxonomy.bean.TaxonomyNomenclature;
 
@@ -16,7 +18,7 @@ import output.taxonomy.bean.TaxonomyNomenclature;
  *
  * @author iychoi
  */
-public class Parse_4_Droege_2010 {
+public class Parse_11_MitchellPart_I_Intro_1960 {
     public static void main(String[] args) throws Exception {
         if(args.length != 1) {
             System.err.println("specify text file path");
@@ -29,11 +31,13 @@ public class Parse_4_Droege_2010 {
         
         File file = new File(args[0]);
         TaxonomyParser parser = new TaxonomyParser(file);
-        List<Taxonomy> taxonomies = parser.parseTaxonomy(conf);
+        DocumentSpecificSymbolTable dsSymbols = new DocumentSpecificSymbolTable();
+        dsSymbols.addSymbols("BEES OF THE EASTERN UNITED STATES, I", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_TAXONOMY_NAME);
+        
+        List<Taxonomy> taxonomies = parser.parseTaxonomy(dsSymbols, conf);
         
         File parentDir = file.getParentFile();
         
-        int fileIndex = 1;
         for(Taxonomy taxonomy : taxonomies) {
             TaxonomyNomenclature nomenclature = taxonomy.getNomenclature();
             if(nomenclature != null) {
@@ -50,8 +54,7 @@ public class Parse_4_Droege_2010 {
                 }
                 
                 System.out.println("taxonomy name : " + nomenclature.getNameInfo());
-                taxonomy.toXML(new File(parentDir, StringUtil.getSafeFileName(fileIndex + ". " + nomenclature.getName()) + ".xml"));
-                fileIndex++;
+                taxonomy.toXML(new File(parentDir, StringUtil.getSafeFileName(nomenclature.getName()) + ".xml"));
             }
         }
     }

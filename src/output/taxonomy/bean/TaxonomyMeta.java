@@ -7,7 +7,6 @@ package output.taxonomy.bean;
 import output.xml.XMLWritable;
 import common.utils.StringUtil;
 import java.io.File;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -35,7 +34,7 @@ public class TaxonomyMeta extends XMLWritable {
     }
     
     public void setSource(File file) {
-        this.source = StringUtil.removeExtensions(file.getName());
+        this.source = file.getName();
     }
     
     public String getSource() {
@@ -50,7 +49,6 @@ public class TaxonomyMeta extends XMLWritable {
         Element source = doc.createElement("source");
         meta.appendChild(source);
         
-        String escapedText = StringEscapeUtils.escapeXml(this.source);
-        source.setTextContent(escapedText);
+        source.setTextContent(this.source);
     }
 }

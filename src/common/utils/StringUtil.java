@@ -65,12 +65,31 @@ public class StringUtil {
         }
     }
     
-    public static String removeExtensions(String filename) {
-        int dotIndex = filename.indexOf(".");
+    public static boolean isExtension(String ext) {
+        if(ext.length() >= 3 && ext.length() <= 4) {
+            return true;
+        }
+        return false;
+    }
+    
+    public static String removeExtension(String filename) {
+        int dotIndex = filename.lastIndexOf(".");
         if(dotIndex > 0 && dotIndex < filename.length()) {
-            return filename.substring(0, dotIndex);
+            if(isExtension(filename.substring(dotIndex+1))) {
+                return filename.substring(0, dotIndex);
+            }
+            return filename;
         }
         return filename;
+    }
+    
+    public static String removeExtensions(String filename) {
+        String namepart;
+        do {
+            namepart = removeExtension(filename);
+        } while(namepart.length() < filename.length());
+        
+        return namepart;
     }
     
     public static String getSafeTagName(String name) {
@@ -80,7 +99,22 @@ public class StringUtil {
     }
     
     public static String getSafeFileName(String name) {
-        return name.trim().replaceAll("\\s", "_").toLowerCase();
+        //return name.trim().replaceAll("\\s", "_").toLowerCase();
+        return name;
+    }
+    
+    private static char matchCloseBrace(char brace) {
+        switch(brace) {
+            case '{':
+                return '}';
+            case '[':
+                return ']';
+            case '(':
+                return ')';
+            case '<':
+                return '>';
+        }
+        return 0;
     }
     
     public static String removeBraceComments(String name) {
@@ -107,7 +141,7 @@ public class StringUtil {
                 continue;
             } else if(ch == '}' || ch == ']' || ch == ')' || ch == '>') {
                 if(inComment) {
-                    if(ch == brace) {
+                    if(ch == matchCloseBrace(brace)) {
                         depth--;
                         if(depth <= 0) {
                             inComment = false;

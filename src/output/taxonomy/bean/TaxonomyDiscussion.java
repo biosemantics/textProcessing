@@ -16,9 +16,18 @@ import org.w3c.dom.Element;
  */
 public class TaxonomyDiscussion extends XMLWritable {
     private List<TaxonomyGenericElement> innerElements;
+    private String text;
     
     public TaxonomyDiscussion() {
         this.innerElements = new ArrayList<TaxonomyGenericElement>();
+    }
+    
+    public void setText(String text) {
+        this.text = text;
+    }
+    
+    public String getText() {
+        return this.text;
     }
     
     public void addElement(TaxonomyGenericElement elem) {
@@ -33,6 +42,10 @@ public class TaxonomyDiscussion extends XMLWritable {
     public void toXML(Document doc, Element parent) {
         Element discussion = doc.createElement("discussion");
         parent.appendChild(discussion);
+        
+        if(this.text != null && !this.text.trim().equals("")) {
+            discussion.setTextContent(this.text);
+        }
         
         if(this.innerElements != null) {
             for(TaxonomyGenericElement elem : this.innerElements) {

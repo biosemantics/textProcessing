@@ -18,12 +18,20 @@ public class TaxonomyLineCategorizeAlg {
         LINE_TAXONOMY_NAME,
         LINE_TAXONOMY_OTHERINFO,
         LINE_TAXONOMY_SYNONYM,
+        LINE_DIRECTION_TAXONOMY_TYPESPECIES_AND_DATA,
+        LINE_DIRECTION_TAXONOMY_TYPESPECIES,
+        LINE_TAXONOMY_TYPESPECIES,
         LINE_DIRECTION_TAXONOMY_DIAGNOSIS,
         LINE_TAXONOMY_DIAGNOSIS,
         LINE_DIRECTION_TAXONOMY_DEFINITION,
         LINE_TAXONOMY_DEFINITION,
-        LINE_DIRECTION_TAXONOMY_DEFINITION_CUSTOM,
-        LINE_TAXONOMY_DEFINITION_CUSTOM,
+        LINE_DIRECTION_TAXONOMY_DESCRIPTION,
+        LINE_TAXONOMY_DESCRIPTION,
+        LINE_DIRECTION_TAXONOMY_DESCRIPTION_SUBTITLE,
+        LINE_DIRECTION_TAXONOMY_KEY_TO_FAMILY,
+        LINE_TAXONOMY_KEY_TO_FAMILY,
+        //
+        LINE_DIRECTION_TAXONOMY_GENERIC_AND_DATA,
         //
         LINE_DIRECTION_TAXONOMY_GENERIC,
         LINE_TAXONOMY_GENERIC,
@@ -34,14 +42,16 @@ public class TaxonomyLineCategorizeAlg {
     }
     
     private SymbolTable symbols;
+    private DocumentSpecificSymbolTable ds_symbols;
     private TaxonomyConfiguration conf;
     private String currentLine;
     private TaxonomyLineType previousImportantLineType;
     private TaxonomyLineType previousLineType;
     private TaxonomyLineType currentLineType;
     
-    public TaxonomyLineCategorizeAlg(TaxonomyConfiguration conf) {
-        this.symbols = new SymbolTable();
+    public TaxonomyLineCategorizeAlg(DocumentSpecificSymbolTable symbolTable, TaxonomyConfiguration conf) {
+        this.symbols = new SymbolTable(conf);
+        this.ds_symbols = symbolTable;
         this.conf = conf;
     }
     
@@ -60,10 +70,16 @@ public class TaxonomyLineCategorizeAlg {
     }
     
     private TaxonomyLineType identifyLineType(String line) {
+        // check document specific table
+        TaxonomyLineType lineType1 = this.ds_symbols.findLineType(line, this.conf);
+        if(lineType1 != null && !lineType1.equals(TaxonomyLineType.LINE_UNKNOWN)) {
+            return lineType1;
+        }
+        
         // check symbol table
-        TaxonomyLineType lineType = this.symbols.findLineType(line, this.conf);
-        if(lineType != null && !lineType.equals(TaxonomyLineType.LINE_UNKNOWN)) {
-            return lineType;
+        TaxonomyLineType lineType2 = this.symbols.findLineType(line, this.conf);
+        if(lineType2 != null && !lineType2.equals(TaxonomyLineType.LINE_UNKNOWN)) {
+            return lineType2;
         }
         
         // name - by direction
@@ -104,10 +120,36 @@ public class TaxonomyLineCategorizeAlg {
             }
         }
         
-        // definition_custom - by direction
+        // description - by direction
         if(this.previousLineType != null) {
-            if(this.previousLineType.equals(TaxonomyLineType.LINE_DIRECTION_TAXONOMY_DEFINITION_CUSTOM)) {
-                return TaxonomyLineType.LINE_TAXONOMY_DEFINITION_CUSTOM;
+            if(this.previousLineType.equals(TaxonomyLineType.LINE_DIRECTION_TAXONOMY_DESCRIPTION_SUBTITLE)) {
+                return TaxonomyLineType.LINE_TAXONOMY_DESCRIPTION;
+            }
+        }
+        
+        // description - by direction
+        if(this.previousLineType != null) {
+            if(this.previousLineType.equals(TaxonomyLineType.LINE_DIRECTION_TAXONOMY_DESCRIPTION)) {
+                // description subtitle - by auto
+                if(RegExUtil.isDescriptionSubTitle(line, this.conf.getTaxonomyDescriptionSubTitleWordLen())) {
+                    return TaxonomyLineType.LINE_DIRECTION_TAXONOMY_DESCRIPTION_SUBTITLE;
+                } else {
+                    return TaxonomyLineType.LINE_TAXONOMY_DESCRIPTION;
+                }
+            }
+        }
+        
+        // key to family - by direction
+        if(this.previousLineType != null) {
+            if(this.previousLineType.equals(TaxonomyLineType.LINE_DIRECTION_TAXONOMY_KEY_TO_FAMILY)) {
+                return TaxonomyLineType.LINE_TAXONOMY_KEY_TO_FAMILY;
+            }
+        }
+        
+        // type species - by direction
+        if(this.previousLineType != null) {
+            if(this.previousLineType.equals(TaxonomyLineType.LINE_DIRECTION_TAXONOMY_TYPESPECIES)) {
+                return TaxonomyLineType.LINE_TAXONOMY_TYPESPECIES;
             }
         }
         
@@ -134,7 +176,16 @@ public class TaxonomyLineCategorizeAlg {
         
         // separated paragraph?
         if(this.previousImportantLineType != null) {
-            return this.previousImportantLineType;
+            if(this.previousImportantLineType.equals(TaxonomyLineType.LINE_DIRECTION_TAXONOMY_GENERIC_AND_DATA)) {
+                // check sub - by auto
+                if(RegExUtil.isSubTitleWithData(line, this.conf.getTaxonomySubTitleWordLen())) {
+                    return TaxonomyLineType.LINE_DIRECTION_TAXONOMY_GENERIC_AND_DATA;
+                }
+            } else if(this.previousImportantLineType.equals(TaxonomyLineType.LINE_TAXONOMY_SYNONYM)) {
+                return TaxonomyLineType.LINE_UNKNOWN;
+            } else {
+                return this.previousImportantLineType;
+            }
         }
         
         return TaxonomyLineType.LINE_UNKNOWN;
@@ -145,6 +196,14 @@ public class TaxonomyLineCategorizeAlg {
             return true;
         }
         if(currentLineType.equals(TaxonomyLineType.LINE_TAXONOMY_NAME)) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    public boolean isNewKeyTo() {
+        if(currentLineType.equals(TaxonomyLineType.LINE_DIRECTION_TAXONOMY_KEY_TO_FAMILY)) {
             return true;
         }
         

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import static output.taxonomy.TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_DEFINITION;
+import static output.taxonomy.TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_GENERIC;
 import static output.taxonomy.TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_TAXONOMY_DEFINITION;
 import static output.taxonomy.TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_TAXONOMY_GENERIC;
 import output.taxonomy.bean.TaxonomyDescription;
@@ -20,6 +21,7 @@ import output.taxonomy.bean.TaxonomyMeta;
 import output.taxonomy.bean.TaxonomyNomenclature;
 import output.taxonomy.bean.TaxonomyOtherInfo;
 import output.taxonomy.bean.TaxonomySynonym;
+import output.taxonomy.bean.TaxonomyTypeSpecies;
 
 /**
  *
@@ -30,6 +32,7 @@ public class TaxonomyParser {
     private TaxonomyLineCategorizeAlg lineAlg;
     
     private String currentTitle;
+    private String currentSubTitle;
     
     public TaxonomyParser(File file) {
         if(file == null || !file.exists() || !file.isFile())
@@ -39,7 +42,11 @@ public class TaxonomyParser {
     }
     
     public List<Taxonomy> parseTaxonomy(TaxonomyConfiguration conf) throws IOException {
-        this.lineAlg = new TaxonomyLineCategorizeAlg(conf);
+        return parseTaxonomy(new DocumentSpecificSymbolTable(), conf);
+    }
+    
+    public List<Taxonomy> parseTaxonomy(DocumentSpecificSymbolTable dsSymbolTable, TaxonomyConfiguration conf) throws IOException {
+        this.lineAlg = new TaxonomyLineCategorizeAlg(dsSymbolTable, conf);
         
         List<Taxonomy> taxonomies = new ArrayList<Taxonomy>();
         
@@ -105,14 +112,29 @@ public class TaxonomyParser {
             case LINE_TAXONOMY_DEFINITION:
                 processTaxonomyDefinition(taxonomy, line, conf);
                 break;
-            case LINE_DIRECTION_TAXONOMY_DEFINITION_CUSTOM:
+            case LINE_DIRECTION_TAXONOMY_DESCRIPTION:
                 this.currentTitle = line;
                 break;
-            case LINE_TAXONOMY_DEFINITION_CUSTOM:
-                processTaxonomyDefinitionCustom(taxonomy, line, conf);
+            case LINE_DIRECTION_TAXONOMY_DESCRIPTION_SUBTITLE:
+                this.currentSubTitle = line;
+                break;
+            case LINE_TAXONOMY_DESCRIPTION:
+                processTaxonomyDescription(taxonomy, line, conf);
                 break;
             case LINE_DIRECTION_TAXONOMY_GENERIC:
                 this.currentTitle = line;
+                break;
+            case LINE_DIRECTION_TAXONOMY_TYPESPECIES:
+                this.currentTitle = line;
+                break;
+            case LINE_DIRECTION_TAXONOMY_TYPESPECIES_AND_DATA:
+                processTaxonomyTypeSpeciesWithData(taxonomy, line, conf);
+                break;
+            case LINE_TAXONOMY_TYPESPECIES:
+                processTaxonomyTypeSpecies(taxonomy, line, conf);
+                break;
+            case LINE_DIRECTION_TAXONOMY_GENERIC_AND_DATA:
+                processTaxonomyGenericWithData(taxonomy, line, conf);
                 break;
             case LINE_TAXONOMY_GENERIC:
                 processTaxonomyGeneric(taxonomy, line, conf);
@@ -126,14 +148,20 @@ public class TaxonomyParser {
             case LINE_TAXONOMY_ACKNOWLEDGEMENT:
                 // do nothing
                 break;
-                
+            case LINE_UNKNOWN:
+                processUnknown(taxonomy, line, conf);
+                break;
+            case LINE_DIRECTION_TAXONOMY_KEY_TO_FAMILY:
+                break;
+            case LINE_TAXONOMY_KEY_TO_FAMILY:
+                break;
         }
     }
     
     private void processTaxonomyName(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
         TaxonomyNomenclature nomenclature = new TaxonomyNomenclature();
         String indexRemoved = RegExUtil.removeIndexNumber(line);
-        String taxonName = RegExUtil.removeTrailNumber(line);
+        String taxonName = RegExUtil.removeTrailNumber(indexRemoved);
         
         nomenclature.setName(taxonName);
         nomenclature.setRank(Rank.getRankFromNameInfo(taxonName, conf));
@@ -181,10 +209,21 @@ public class TaxonomyParser {
         taxonomy.addDescription(description);
     }
     
-    private void processTaxonomyDefinitionCustom(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
+    private void processTaxonomyDescription(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
         TaxonomyDescription description = new TaxonomyDescription();
-        description.setType(TaxonomyDescription.TaxonomyDescriptionType.DESCRIPTION_DEFINITION);
-        description.setTitle(this.currentTitle);
+        description.setType(TaxonomyDescription.TaxonomyDescriptionType.DESCRIPTION_GENERIC);
+        if(this.currentTitle.trim().equalsIgnoreCase("description") || this.currentTitle.trim().equalsIgnoreCase("description.")) {
+            // skip
+        } else {
+            description.setTitle(this.currentTitle);
+        }
+        
+        // overwrite
+        if(this.currentSubTitle != null && !this.currentSubTitle.trim().equals("")) {
+            String text = RegExUtil.removeTrailDot(this.currentSubTitle);
+            description.setTitle(text);
+        }
+        
         description.setDescription(line);
 
         taxonomy.addDescription(description);
@@ -210,5 +249,53 @@ public class TaxonomyParser {
         }
         
         discussion.addElement(generic);
+    }
+    
+    private void processTaxonomyDiscussion(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
+        TaxonomyDiscussion discussion = new TaxonomyDiscussion();        
+        discussion.setText(line);
+        
+        taxonomy.addDiscussionNonTitled(discussion);
+    }
+    
+    private void processTaxonomyTypeSpecies(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
+        TaxonomyTypeSpecies typeSpecies = new TaxonomyTypeSpecies();
+        typeSpecies.setTypeSpecies(line);
+
+        taxonomy.addTypeSpecies(typeSpecies);
+    }
+    
+    private void processTaxonomyTypeSpeciesWithData(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
+        TaxonomyTypeSpecies typeSpecies = new TaxonomyTypeSpecies();
+        String titleRemoved = RegExUtil.removeSubTitle(line);
+        typeSpecies.setTypeSpecies(titleRemoved);
+
+        taxonomy.addTypeSpecies(typeSpecies);
+    }
+
+    private void processTaxonomyGenericWithData(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
+        TaxonomyGenericElement generic = new TaxonomyGenericElement();
+        String[] strs = RegExUtil.splitSubTitleAndBody(line);
+        if(strs != null && strs.length >= 2) {
+            generic.setName(strs[0]);
+            generic.setText(strs[1]);
+            taxonomy.addElement(generic);
+        }
+    }
+
+    private void processUnknown(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
+        if(conf.getUnknownAsDiscussion()) {
+            processTaxonomyDiscussion(taxonomy, line, conf);
+        } else {
+            TaxonomyGenericElement generic = new TaxonomyGenericElement();
+            generic.setName("UNKNOWN");
+            generic.setText(line);
+
+            taxonomy.addElement(generic);
+        }
+    }
+
+    private void processKeyTo(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
+        
     }
 }

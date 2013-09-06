@@ -8,7 +8,6 @@ import common.utils.StringUtil;
 import output.xml.XMLWritable;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -63,8 +62,7 @@ public class TaxonomyGenericElement extends XMLWritable {
         parent.appendChild(elem);
         
         if(this.text != null && !this.text.trim().equals("")) {
-            String escapedText = StringEscapeUtils.escapeXml(this.text);
-            elem.setTextContent(escapedText);
+            elem.setTextContent(this.text);
         }
         
         if(this.innerElements != null) {

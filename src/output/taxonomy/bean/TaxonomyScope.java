@@ -4,7 +4,6 @@
  */
 package output.taxonomy.bean;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import output.xml.XMLWritable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -37,7 +36,6 @@ public class TaxonomyScope extends XMLWritable {
         Element scope = doc.createElement("scope");
         parent.appendChild(scope);
         
-        String escapedText = StringEscapeUtils.escapeXml(this.scope);
-        scope.setTextContent(escapedText);
+        scope.setTextContent(this.scope);
     }
 }
