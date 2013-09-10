@@ -60,6 +60,7 @@ public class TaxonomyParser {
         String[] paragraphs = filedata.split("\\n[\\r\\t ]*\\n[\\r\\t ]*\\n*");
         
         Taxonomy taxonomy = null;
+        boolean bDescription = false;
         for(String paragraph : paragraphs) {
             this.lineAlg.feedLine(paragraph.trim());
             
@@ -106,6 +107,9 @@ public class TaxonomyParser {
             case LINE_TAXONOMY_DIAGNOSIS:
                 processTaxonomyDiagnosis(taxonomy, line, conf);
                 break;
+            case LINE_DIRECTION_TAXONOMY_DIAGNOSIS_AND_DATA:
+                processTaxnomyDiagnosisWithData(taxonomy, line, conf);
+                break;
             case LINE_DIRECTION_TAXONOMY_DEFINITION:
                 this.currentTitle = line;
                 break;
@@ -120,6 +124,9 @@ public class TaxonomyParser {
                 break;
             case LINE_TAXONOMY_DESCRIPTION:
                 processTaxonomyDescription(taxonomy, line, conf);
+                break;
+            case LINE_DIRECTION_TAXONOMY_DESCRIPTION_AND_DATA:
+                processTaxonomyDescriptionWithData(taxonomy, line, conf);
                 break;
             case LINE_DIRECTION_TAXONOMY_GENERIC:
                 this.currentTitle = line;
@@ -149,11 +156,21 @@ public class TaxonomyParser {
                 // do nothing
                 break;
             case LINE_UNKNOWN:
-                processUnknown(taxonomy, line, conf);
+                processTaxonomyUnknown(taxonomy, line, conf);
                 break;
             case LINE_DIRECTION_TAXONOMY_KEY_TO_FAMILY:
+                taxonomy.increaseKeyToTable();
                 break;
             case LINE_TAXONOMY_KEY_TO_FAMILY:
+                break;
+            case LINE_TAXONOMY_DISTRIBUTION:
+                processTaxonomyDistribution(taxonomy, line, conf);
+                break;
+            case LINE_TAXONOMY_DISCUSSION:
+                processTaxonomyDiscussion(taxonomy, line, conf);
+                break;
+            case LINE_TAXONOMY_IY1:
+                processTaxonomyIy1(taxonomy, line, conf);
                 break;
         }
     }
@@ -161,7 +178,8 @@ public class TaxonomyParser {
     private void processTaxonomyName(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
         TaxonomyNomenclature nomenclature = new TaxonomyNomenclature();
         String indexRemoved = RegExUtil.removeIndexNumber(line);
-        String taxonName = RegExUtil.removeTrailNumber(indexRemoved);
+        String taxonName = RegExUtil.removeTrailNumberAndBrace(indexRemoved);
+        
         
         nomenclature.setName(taxonName);
         nomenclature.setRank(Rank.getRankFromNameInfo(taxonName, conf));
@@ -195,6 +213,15 @@ public class TaxonomyParser {
         taxonomy.addDescription(description);
     }
     
+    private void processTaxnomyDiagnosisWithData(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
+        TaxonomyDescription description = new TaxonomyDescription();
+        String titleRemoved = RegExUtil.removeSubTitle(line);
+        description.setType(TaxonomyDescription.TaxonomyDescriptionType.DESCRIPTION_DIAGNOSIS);
+        description.setDescription(titleRemoved);
+
+        taxonomy.addDescription(description);
+    }
+    
     private void processTaxonomyDefinition(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
         TaxonomyDescription description = new TaxonomyDescription();
         description.setType(TaxonomyDescription.TaxonomyDescriptionType.DESCRIPTION_DEFINITION);
@@ -219,6 +246,15 @@ public class TaxonomyParser {
         }
         
         description.setDescription(line);
+
+        taxonomy.addDescription(description);
+    }
+    
+    private void processTaxonomyDescriptionWithData(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
+        TaxonomyDescription description = new TaxonomyDescription();
+        String titleRemoved = RegExUtil.removeSubTitle(line);
+        description.setType(TaxonomyDescription.TaxonomyDescriptionType.DESCRIPTION_GENERIC);
+        description.setDescription(titleRemoved);
 
         taxonomy.addDescription(description);
     }
@@ -277,7 +313,7 @@ public class TaxonomyParser {
         }
     }
 
-    private void processUnknown(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
+    private void processTaxonomyUnknown(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
         if(conf.getUnknownAsDiscussion()) {
             processTaxonomyDiscussion(taxonomy, line, conf);
         } else {
@@ -289,7 +325,23 @@ public class TaxonomyParser {
         }
     }
 
-    private void processKeyTo(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
+    private void processTaxonomyKeyTo(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
         
+    }
+    
+    private void processTaxonomyDistribution(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
+        TaxonomyGenericElement generic = new TaxonomyGenericElement();
+        generic.setName("distribution");
+        generic.setText(line);
+
+        taxonomy.addElement(generic);
+    }
+
+    private void processTaxonomyIy1(Taxonomy taxonomy, String line, TaxonomyConfiguration conf) {
+        TaxonomyGenericElement generic = new TaxonomyGenericElement();
+        generic.setName("description");
+        generic.setText(line);
+
+        taxonomy.addElement(generic);
     }
 }

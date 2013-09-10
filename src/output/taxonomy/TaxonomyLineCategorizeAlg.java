@@ -21,6 +21,7 @@ public class TaxonomyLineCategorizeAlg {
         LINE_DIRECTION_TAXONOMY_TYPESPECIES_AND_DATA,
         LINE_DIRECTION_TAXONOMY_TYPESPECIES,
         LINE_TAXONOMY_TYPESPECIES,
+        LINE_DIRECTION_TAXONOMY_DIAGNOSIS_AND_DATA,
         LINE_DIRECTION_TAXONOMY_DIAGNOSIS,
         LINE_TAXONOMY_DIAGNOSIS,
         LINE_DIRECTION_TAXONOMY_DEFINITION,
@@ -28,8 +29,14 @@ public class TaxonomyLineCategorizeAlg {
         LINE_DIRECTION_TAXONOMY_DESCRIPTION,
         LINE_TAXONOMY_DESCRIPTION,
         LINE_DIRECTION_TAXONOMY_DESCRIPTION_SUBTITLE,
+        LINE_DIRECTION_TAXONOMY_DESCRIPTION_AND_DATA,
         LINE_DIRECTION_TAXONOMY_KEY_TO_FAMILY,
+        LINE_TAXONOMY_KEY_TO_FAMILY_DISCUSSION,
         LINE_TAXONOMY_KEY_TO_FAMILY,
+        LINE_TAXONOMY_DISTRIBUTION,
+        LINE_TAXONOMY_DISCUSSION,
+        LINE_DIRECTION_TAXONOMY_IY1,
+        LINE_TAXONOMY_IY1,
         //
         LINE_DIRECTION_TAXONOMY_GENERIC_AND_DATA,
         //
@@ -144,6 +151,18 @@ public class TaxonomyLineCategorizeAlg {
             if(this.previousLineType.equals(TaxonomyLineType.LINE_DIRECTION_TAXONOMY_KEY_TO_FAMILY)) {
                 if(RegExUtil.isKeyToStatement(line)) {
                     return TaxonomyLineType.LINE_TAXONOMY_KEY_TO_FAMILY;
+                } else {
+                    return TaxonomyLineType.LINE_TAXONOMY_KEY_TO_FAMILY_DISCUSSION;
+                }
+            }
+        }
+        
+        if(this.previousLineType != null) {
+            if(this.previousLineType.equals(TaxonomyLineType.LINE_TAXONOMY_KEY_TO_FAMILY_DISCUSSION)) {
+                if(RegExUtil.isKeyToStatement(line)) {
+                    return TaxonomyLineType.LINE_TAXONOMY_KEY_TO_FAMILY;
+                } else {
+                    return TaxonomyLineType.LINE_TAXONOMY_KEY_TO_FAMILY_DISCUSSION;
                 }
             }
         }
@@ -173,6 +192,12 @@ public class TaxonomyLineCategorizeAlg {
         if(this.previousLineType != null) {
             if(this.previousLineType.equals(TaxonomyLineType.LINE_DIRECTION_TAXONOMY_ACKNOWLEDGEMENT)) {
                 return TaxonomyLineType.LINE_TAXONOMY_ACKNOWLEDGEMENT;
+            }
+        }
+        
+        if(this.previousLineType != null) {
+            if(this.previousLineType.equals(TaxonomyLineType.LINE_DIRECTION_TAXONOMY_IY1)) {
+                return TaxonomyLineType.LINE_TAXONOMY_IY1;
             }
         }
         

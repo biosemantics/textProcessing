@@ -17,15 +17,17 @@ public class KeyStatement extends XMLWritable {
     private String id;
     private String statement;
     private String determination;
+    private String nextStatementId;
     
     public KeyStatement() {
         
     }
     
-    public KeyStatement(String id, String statement, String determination) {
+    public KeyStatement(String id, String statement, String determination, String nextStatementId) {
         this.id = id;
         this.statement = statement;
         this.determination = determination;
+        this.nextStatementId = nextStatementId;
     }
     
     public void setId(String id) {
@@ -52,6 +54,14 @@ public class KeyStatement extends XMLWritable {
         return this.determination;
     }
     
+    public void setNextStatementId(String nextStatementId) {
+        this.nextStatementId = nextStatementId;
+    }
+    
+    public String getNextStatementId() {
+        return this.nextStatementId;
+    }
+    
     @Override
     public void toXML(Document doc, Element parent) {
         Element key_statement = doc.createElement("key_statement");
@@ -67,10 +77,19 @@ public class KeyStatement extends XMLWritable {
         
         statement.setTextContent(this.statement);
         
-        Element determination = doc.createElement("determination");
-        key_statement.appendChild(determination);
+        if(this.nextStatementId != null && !this.nextStatementId.trim().equals("")) {
+            Element nextStatementId = doc.createElement("next_statement_id");
+            key_statement.appendChild(nextStatementId);
+            
+            nextStatementId.setTextContent(this.nextStatementId);
+        }
         
-        determination.setTextContent(this.determination);
+        if(this.determination != null && !this.determination.trim().equals("")) {
+            Element determination = doc.createElement("determination");
+            key_statement.appendChild(determination);
+
+            determination.setTextContent(this.determination);
+        }
     }
     
 }

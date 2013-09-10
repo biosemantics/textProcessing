@@ -93,6 +93,12 @@ public class RegExUtil {
             if(mt6.matches()) {
                 return true;
             }
+            // type 7
+            Pattern p7 = Pattern.compile("(" + taxonRankExp + ")\\s+([A-Za-z]+)\\s+.+,\\s+\\d+.+");
+            Matcher mt7 = p7.matcher(text);
+            if(mt7.matches()) {
+                return true;
+            }
         }
         
         return false;
@@ -207,12 +213,20 @@ public class RegExUtil {
     }
 
     public static String removeSubTitle(String text) {
-        String EXPRESSION = "^(.+?)\\s?:\\s?(.+)$";
-        Pattern p = Pattern.compile(EXPRESSION);
-        Matcher mt = p.matcher(text);
-        if(mt.matches()) {
-            return mt.group(2).trim();
+        String EXPRESSION2 = "^(.+?)\\.\\s(.+)$";
+        Pattern p2 = Pattern.compile(EXPRESSION2);
+        Matcher mt2 = p2.matcher(text);
+        if(mt2.matches()) {
+            return mt2.group(2).trim();
         }
+        
+        String EXPRESSION1 = "^(.+?)\\s?:\\s?(.+)$";
+        Pattern p1 = Pattern.compile(EXPRESSION1);
+        Matcher mt1 = p1.matcher(text);
+        if(mt1.matches()) {
+            return mt1.group(2).trim();
+        }
+        
         return text;
     }
     
@@ -246,5 +260,15 @@ public class RegExUtil {
             return true;
         }
         return false;
+    }
+
+    public static String removeTrailNumberAndBrace(String text) {
+        String EXPRESSION = "^(.+?)(,\\s?\\d+\\s*(\\(.+\\))?)$";
+        Pattern p = Pattern.compile(EXPRESSION);
+        Matcher mt = p.matcher(text);
+        if(mt.matches()) {
+            return mt.group(1);
+        }
+        return text;
     }
 }

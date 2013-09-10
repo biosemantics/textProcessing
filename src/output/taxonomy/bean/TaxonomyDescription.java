@@ -82,6 +82,14 @@ public class TaxonomyDescription extends XMLWritable {
             description.setAttributeNode(attr);
         }
         
+        if(this.type.equals(TaxonomyDescriptionType.DESCRIPTION_DIAGNOSIS) ||
+                this.type.equals(TaxonomyDescriptionType.DESCRIPTION_DEFINITION) ||
+                this.type.equals(TaxonomyDescriptionType.DESCRIPTION_TYPESPECIES)) {
+            Attr attr = doc.createAttribute("type");
+            attr.setValue(this.type.toString());
+            description.setAttributeNode(attr);
+        }
+        
         description.setTextContent(this.description);
     }
 }

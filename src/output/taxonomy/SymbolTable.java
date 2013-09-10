@@ -46,6 +46,7 @@ public class SymbolTable {
             this.symbols.add(new SymbolLineType_Pair("^(KEY|Key) (TO|To|to) .+[\\.]?$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_KEY_TO_FAMILY));
             
             // generic
+            this.symbols.add(new SymbolLineType_Pair("^Diagnosis\\.\\s(.+)", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_DIAGNOSIS_AND_DATA));
             this.symbols.add(new SymbolLineType_Pair("^Included (S|s)pecies\\s?:\\s?(.+)", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_GENERIC_AND_DATA));
             this.symbols.add(new SymbolLineType_Pair("^Etymology\\s?:\\s?(.+)", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_GENERIC_AND_DATA));
             this.symbols.add(new SymbolLineType_Pair("^Gender\\s?:\\s?(.+)", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_DIRECTION_TAXONOMY_GENERIC_AND_DATA));

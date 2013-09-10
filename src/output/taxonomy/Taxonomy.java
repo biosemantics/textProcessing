@@ -31,6 +31,7 @@ import output.taxonomy.bean.TaxonomyTypeSpecies;
  * @author iychoi
  */
 public class Taxonomy {
+    // bean
     private TaxonomyMeta meta;
     private TaxonomyNomenclature nomenclature;
     private List<TaxonomySynonym> synonyms;
@@ -42,6 +43,9 @@ public class Taxonomy {
     private List<TaxonomyDiscussion> discussionNonTitled;
     private List<TaxonomyGenericElement> innerElements;
     private List<TaxonomyKeyFile> keyFiles;
+    
+    // has Key To part?
+    private int keyToNumber = 0;
     
     public Taxonomy() {
         this.synonyms = new ArrayList<TaxonomySynonym>();
@@ -138,6 +142,14 @@ public class Taxonomy {
     
     public List<TaxonomyKeyFile> getKeyFiles() {
         return this.keyFiles;
+    }
+    
+    public void increaseKeyToTable() {
+        this.keyToNumber++;
+    }
+    
+    public int getKeyToTableNumber() {
+        return this.keyToNumber;
     }
     
     public void toXML(File file) throws Exception {

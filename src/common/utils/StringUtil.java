@@ -96,7 +96,8 @@ public class StringUtil {
     
     public static String getSafeTagName(String name) {
         String safe = name.trim().replaceAll("(\\s|\\.|\\,)", "_").toLowerCase();
-        safe = safe.replaceAll("_+$", "");        
+        safe = safe.replaceAll("_+$", "");
+        safe = safe.replaceAll(":+$", "");
         return safe;
     }
     

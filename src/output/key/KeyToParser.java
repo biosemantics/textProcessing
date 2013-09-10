@@ -100,7 +100,18 @@ public class KeyToParser {
                 statement.setId(state[0]);
             }
             statement.setStatement(state[1]);
-            statement.setDetermination(state[2]);
+            
+            try {
+                int index = Integer.parseInt(state[2]); 
+                if(index > 0) {
+                    statement.setNextStatementId(state[2]);
+                } else {
+                    statement.setDetermination(state[2]);
+                }
+            } catch(Exception ex) {
+                statement.setDetermination(state[2]);
+            }
+            
             keyto.addStatement(statement);
         }
     }
