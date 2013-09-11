@@ -7,12 +7,12 @@ package example;
 import common.utils.StringUtil;
 import java.io.File;
 import java.util.List;
-import output.taxonomy.DocumentSpecificSymbolTable;
-import output.taxonomy.Taxonomy;
-import output.taxonomy.TaxonomyConfiguration;
-import output.taxonomy.TaxonomyLineCategorizeAlg;
-import output.taxonomy.TaxonomyParser;
-import output.taxonomy.bean.TaxonomyNomenclature;
+import taxonomy.DocumentSpecificSymbolTable;
+import taxonomy.Taxonomy;
+import taxonomy.TaxonomyConfiguration;
+import taxonomy.TaxonomyLineCategorizeAlg;
+import taxonomy.TaxonomyParser;
+import taxonomy.bean.TaxonomyNomenclature;
 
 /**
  *

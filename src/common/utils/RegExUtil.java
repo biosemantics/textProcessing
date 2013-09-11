@@ -6,7 +6,7 @@ package common.utils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import output.taxonomy.Rank;
+import taxonomy.Rank;
 
 /**
  *
