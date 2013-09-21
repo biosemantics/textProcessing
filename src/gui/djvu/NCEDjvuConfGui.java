@@ -12,20 +12,20 @@ import java.awt.event.WindowEvent;
  *
  * @author iychoi
  */
-public class NCEConfGui extends javax.swing.JFrame {
+public class NCEDjvuConfGui extends javax.swing.JFrame {
 
     private DjvuConfiguration conf;
     /**
      * Creates new form NCEConfGui
      */
-    public NCEConfGui() {
+    public NCEDjvuConfGui() {
         initComponents();
         this.conf = new DjvuConfiguration();
         
         loadValues();
     }
     
-    public NCEConfGui(DjvuConfiguration conf) {
+    public NCEDjvuConfGui(DjvuConfiguration conf) {
         initComponents();
         this.conf = conf;
         
@@ -202,20 +202,20 @@ public class NCEConfGui extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(NCEConfGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(NCEDjvuConfGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(NCEConfGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(NCEDjvuConfGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(NCEConfGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(NCEDjvuConfGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(NCEConfGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(NCEDjvuConfGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new NCEConfGui().setVisible(true);
+                new NCEDjvuConfGui().setVisible(true);
             }
         });
     }

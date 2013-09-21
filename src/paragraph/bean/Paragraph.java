@@ -13,7 +13,8 @@ public class Paragraph {
     private int documentID;
     private int pageNumber;
     private String content;
-    private String type;
+    private ParagraphType type;
+    private int modManual;
     
     public Paragraph() {
         
@@ -52,10 +53,26 @@ public class Paragraph {
     }
     
     public void setType(String type) {
+        this.type = ParagraphType.valueOf(type);
+    }
+    
+    public void setType(ParagraphType type) {
         this.type = type;
     }
     
-    public String getType() {
+    public String getTypeString() {
+        return this.type.name();
+    }
+    
+    public ParagraphType getType() {
         return this.type;
+    }
+
+    public int getModManual() {
+        return this.modManual;
+    }
+
+    public void setModManual(int modManual) {
+        this.modManual = modManual;
     }
 }

@@ -17,6 +17,9 @@ import paragraph.db.RegExTable;
  */
 public class DBUtil {
     
+    public static Connection getConnection() throws IOException {
+        return getConnection("nce", "nce");
+    }
     
     public static Connection getConnection(String id, String pwd) throws IOException {
         try {
@@ -24,14 +27,6 @@ public class DBUtil {
         } catch (Exception ex) {
             throw new IOException(ex.getMessage());
         }
-    }
-    
-    public static void createTables(Connection conn) throws IOException {
-        setCharacterSet(conn);
-        
-        RegExTable.createRegExTable(conn, false);
-        DocumentTable.createDocumentTable(conn, false);
-        ParagraphTable.createParagraphTable(conn, false);
     }
     
     public static void setCharacterSet(Connection conn) throws IOException {

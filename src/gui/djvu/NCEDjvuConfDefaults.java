@@ -8,7 +8,7 @@ package gui.djvu;
  *
  * @author iychoi
  */
-public class NCEConfDefaults {
+public class NCEDjvuConfDefaults {
     public static final int DEFAULT_START_PAGE = 0;
     public static final int DEFAULT_END_PAGE = Integer.MAX_VALUE;
     public static final int DEFAULT_TOP_MARGIN = 200;

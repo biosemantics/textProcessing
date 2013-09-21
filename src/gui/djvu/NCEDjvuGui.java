@@ -4,6 +4,7 @@
  */
 package gui.djvu;
 
+import gui.common.DjvuView;
 import common.utils.RegExUtil;
 import common.utils.StreamUtil;
 import common.utils.StringUtil;
@@ -38,7 +39,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  *
  * @author iychoi
  */
-public class NCEGui extends javax.swing.JFrame {
+public class NCEDjvuGui extends javax.swing.JFrame {
 
     private DjvuView djvuView;
     private int currentPage;
@@ -53,7 +54,7 @@ public class NCEGui extends javax.swing.JFrame {
     /**
      * Creates new form NCEGui
      */
-    public NCEGui() {
+    public NCEDjvuGui() {
         initComponents();
         
         init();
@@ -61,11 +62,11 @@ public class NCEGui extends javax.swing.JFrame {
     
     private void init() {
         this.djvuConf = new DjvuConfiguration();
-        this.djvuConf.setPageRegion(NCEConfDefaults.DEFAULT_START_PAGE, NCEConfDefaults.DEFAULT_END_PAGE);
-        this.djvuConf.setMarginLeft(NCEConfDefaults.DEFAULT_SIDE_MARGIN);
-        this.djvuConf.setMarginRight(NCEConfDefaults.DEFAULT_SIDE_MARGIN);
-        this.djvuConf.setMarginTop(NCEConfDefaults.DEFAULT_TOP_MARGIN);
-        this.djvuConf.setMarginBottom(NCEConfDefaults.DEFAULT_BOTTOM_MARGIN);
+        this.djvuConf.setPageRegion(NCEDjvuConfDefaults.DEFAULT_START_PAGE, NCEDjvuConfDefaults.DEFAULT_END_PAGE);
+        this.djvuConf.setMarginLeft(NCEDjvuConfDefaults.DEFAULT_SIDE_MARGIN);
+        this.djvuConf.setMarginRight(NCEDjvuConfDefaults.DEFAULT_SIDE_MARGIN);
+        this.djvuConf.setMarginTop(NCEDjvuConfDefaults.DEFAULT_TOP_MARGIN);
+        this.djvuConf.setMarginBottom(NCEDjvuConfDefaults.DEFAULT_BOTTOM_MARGIN);
     }
     
     private void loadView(File djvuFile) {
@@ -105,7 +106,7 @@ public class NCEGui extends javax.swing.JFrame {
     }
     
     private void openConfiguration() {
-        NCEConfGui confGui = new NCEConfGui(this.djvuConf);
+        NCEDjvuConfGui confGui = new NCEDjvuConfGui(this.djvuConf);
         final JFrame currentWindow = this;
         confGui.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -236,11 +237,36 @@ public class NCEGui extends javax.swing.JFrame {
                 File file = fc.getSelectedFile();
                 writer = new FileWriter(file, false);
 
+                boolean bNewParagraph = true;
                 for(DjvuPage page : this.parsedPages) {
                     int pageNum = page.getPagenum();
                     File pageFile = getPageFile(pageNum);
-                    String pageString = StreamUtil.readFileString(pageFile);
-                    writer.write(pageString);
+                    if(pageFile.exists() && pageFile.isFile() && pageFile.length() > 0) {
+                        String pageString = StreamUtil.readFileString(pageFile);
+                        String[] paragraphs = RegExUtil.splitWithNewLines(pageString);
+                        boolean endWithNewLine = RegExUtil.isEndWithNewLines(pageString);
+                        
+                        for(int i=0;i<paragraphs.length;i++) {
+                            String para = paragraphs[i];
+                            if(i == 0) {
+                                if(bNewParagraph) {
+                                    writer.write("[page : " + pageNum + "]" + para + "\n\n");
+                                } else {
+                                    writer.write(para + "\n\n");
+                                }
+                            } else if(i == paragraphs.length - 1) {
+                                if(endWithNewLine) {
+                                    writer.write("[page : " + pageNum + "]" + para + "\n\n");
+                                    bNewParagraph = true;
+                                } else {
+                                    writer.write("[page : " + pageNum + "]" + para);
+                                    bNewParagraph = false;
+                                }
+                            } else {
+                                writer.write("[page : " + pageNum + "]" + para + "\n\n");
+                            }
+                        }
+                    }
                 }
                 
                 writer.close();
@@ -424,6 +450,8 @@ public class NCEGui extends javax.swing.JFrame {
         btnConf = new javax.swing.JButton();
         lblPage = new javax.swing.JLabel();
         btnFinish = new javax.swing.JButton();
+        btnSpecialMale = new javax.swing.JButton();
+        btnSpecialFemale = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -501,6 +529,20 @@ public class NCEGui extends javax.swing.JFrame {
             }
         });
 
+        btnSpecialMale.setText("♂");
+        btnSpecialMale.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSpecialMaleActionPerformed(evt);
+            }
+        });
+
+        btnSpecialFemale.setText("♀");
+        btnSpecialFemale.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSpecialFemaleActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -509,14 +551,14 @@ public class NCEGui extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
-                    .addGroup(layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(lblPage)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnNextPage)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnFinish))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnLoadDjvu)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lblDjvu)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 155, Short.MAX_VALUE)
-                                .addComponent(btnConf))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(btnLoadDjvuXML)
@@ -524,20 +566,25 @@ public class NCEGui extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(lblCopiedText)
-                                    .addComponent(lblDjvuXML))))
+                                    .addComponent(lblDjvuXML)))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(btnLoadDjvu)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblDjvu)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 155, Short.MAX_VALUE)
+                                .addComponent(btnConf)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(lblPage)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnNextPage)
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnSpecialFemale)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnFinish)))
+                        .addComponent(btnSpecialMale)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnStart, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -555,7 +602,11 @@ public class NCEGui extends javax.swing.JFrame {
                             .addComponent(btnLoadCopyText)
                             .addComponent(lblCopiedText))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnSpecialMale)
+                    .addComponent(btnSpecialFemale))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnNextPage)
@@ -682,6 +733,14 @@ public class NCEGui extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnFinishActionPerformed
 
+    private void btnSpecialFemaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSpecialFemaleActionPerformed
+        this.txtPara.insert("♀", this.txtPara.getCaretPosition());
+    }//GEN-LAST:event_btnSpecialFemaleActionPerformed
+
+    private void btnSpecialMaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSpecialMaleActionPerformed
+        this.txtPara.insert("♂", this.txtPara.getCaretPosition());
+    }//GEN-LAST:event_btnSpecialMaleActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -699,20 +758,20 @@ public class NCEGui extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(NCEGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(NCEDjvuGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(NCEGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(NCEDjvuGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(NCEGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(NCEDjvuGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(NCEGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(NCEDjvuGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new NCEGui().setVisible(true);
+                new NCEDjvuGui().setVisible(true);
             }
         });
     }
@@ -723,6 +782,8 @@ public class NCEGui extends javax.swing.JFrame {
     private javax.swing.JButton btnLoadDjvu;
     private javax.swing.JButton btnLoadDjvuXML;
     private javax.swing.JButton btnNextPage;
+    private javax.swing.JButton btnSpecialFemale;
+    private javax.swing.JButton btnSpecialMale;
     private javax.swing.JButton btnStart;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblCopiedText;

@@ -11,7 +11,6 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import paragraph.bean.ParagraphType;
 import paragraph.bean.RegEx;
 
 /**
@@ -31,10 +30,10 @@ public class RegExTable {
             stmt.execute("create table if not exists " + REGEX_TABLE_NAME
                     + " (regexID bigint not null primary key auto_increment, "
                     + "documentID bigint not null, "
-                    + "regex text(1000) not null default '', "
+                    + "regex text(1000) not null, "
                     + "description text(1000) not null, "
-                    + "paragraphType text(1000) not null default '" + ParagraphType.PARAGRAPH_UNKNOWN.name() + "', "
-                    + "priority bigint not null default 0)");
+                    + "paragraphType text(1000) not null, "
+                    + "priority bigint default 0)");
             
             stmt.close();
         } catch (Exception e) {
@@ -45,7 +44,7 @@ public class RegExTable {
     public static void insertRegEx(Connection conn, RegEx regex) throws IOException {
         try {
             PreparedStatement pstmt = conn.prepareStatement("insert into " + REGEX_TABLE_NAME 
-                    + " (documentID, regex, description, paragraphType, priority) values (?, ?, ?, ?, ?)");
+                    + " (documentID, regex, description, paragraphType, priority) values (?, ?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS);
             pstmt.setInt(1, regex.getDocumentID());
             pstmt.setString(2, regex.getRegex());
             pstmt.setString(3, regex.getDescription());
@@ -87,6 +86,53 @@ public class RegExTable {
             rs.close();
             pstmt.close();
             return regex;
+        } catch (Exception e) {
+            throw new IOException(e.getMessage());
+        }
+    }
+    
+    public static int getMaxRegExPriority(Connection conn, int documentID) throws IOException {
+        try {
+            PreparedStatement pstmt = conn.prepareStatement("select max(priority) as priority_max from " + REGEX_TABLE_NAME 
+                    + " where documentID = ?");
+            pstmt.setInt(1, documentID);
+            ResultSet rs = pstmt.executeQuery();
+            int max = 0;
+            if (rs.next()) {
+                max = rs.getInt("priority_max");
+            }
+            
+            rs.close();
+            pstmt.close();
+            return max;
+        } catch (Exception e) {
+            throw new IOException(e.getMessage());
+        }
+    }
+    
+    public static List<RegEx> getRegExs(Connection conn) throws IOException {
+        try {
+            PreparedStatement pstmt = conn.prepareStatement("select * from " + REGEX_TABLE_NAME 
+                    + " order by documentID asc, priority asc");
+            ResultSet rs = pstmt.executeQuery();
+            
+            List<RegEx> regexs = new ArrayList<RegEx>();
+            
+            while (rs.next()) {
+                RegEx regex = new RegEx();
+                regex.setRegexID(rs.getInt("regexID"));
+                regex.setDocumentID(rs.getInt("documentID"));
+                regex.setRegex(rs.getString("regex"));
+                regex.setDescription(rs.getString("description"));
+                regex.setParagraphType(rs.getString("paragraphType"));
+                regex.setPriority(rs.getInt("priority"));
+                
+                regexs.add(regex);
+            }
+            
+            rs.close();
+            pstmt.close();
+            return regexs;
         } catch (Exception e) {
             throw new IOException(e.getMessage());
         }
@@ -155,9 +201,9 @@ public class RegExTable {
                     + " where regexID = ?");
             pstmt.setString(1, regex.getRegex());
             pstmt.setString(2, regex.getDescription());
-            pstmt.setInt(3, regex.getRegexID());
-            pstmt.setString(4, regex.getParagraphTypeString());
-            pstmt.setInt(5, regex.getPriority());
+            pstmt.setString(3, regex.getParagraphTypeString());
+            pstmt.setInt(4, regex.getPriority());
+            pstmt.setInt(5, regex.getRegexID());
             pstmt.executeUpdate();
             
             pstmt.close();

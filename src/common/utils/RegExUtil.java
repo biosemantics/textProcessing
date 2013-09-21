@@ -271,4 +271,41 @@ public class RegExUtil {
         }
         return text;
     }
+    
+    public static String[] splitWithNewLines(String text) {
+        return text.split("\\n[\\r\\t ]*\\n[\\r\\t ]*\\n*");
+    }
+    
+    public static boolean isEndWithNewLines(String text) {
+        String EXPRESSION = "\\n[\\r\\t ]*\\n[\\r\\t ]*\\n*$";
+        Pattern p = Pattern.compile(EXPRESSION);
+        Matcher mt = p.matcher(text);
+        if(mt.matches()) {
+            return true;
+        }
+        return false;
+    }
+    
+    public static String getParagraph(String text) {
+        //[page : 5]
+        String EXPRESSION = "^\\[page : (\\d+)\\](.+)";
+        Pattern p = Pattern.compile(EXPRESSION);
+        Matcher mt = p.matcher(text);
+        if(mt.matches()) {
+            return mt.group(2);
+        }
+        return "";
+    }
+    
+    public static int getPageOfParagraph(String text) {
+        //[page : 5]
+        String EXPRESSION = "^\\[page : (\\d+)\\](.+)";
+        Pattern p = Pattern.compile(EXPRESSION);
+        Matcher mt = p.matcher(text);
+        if(mt.matches()) {
+            String page = mt.group(1);
+            return Integer.parseInt(page);
+        }
+        return 0;
+    }
 }

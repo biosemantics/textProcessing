@@ -10,6 +10,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import paragraph.bean.Document;
 
 /**
@@ -27,7 +29,7 @@ public class DocumentTable {
             }
             stmt.execute("create table if not exists " + DOCUMENT_TABLE_NAME
                     + " (documentID bigint not null primary key auto_increment, "
-                    + "filename text(1000) not null default '')");
+                    + "filename text(1000) not null)");
             
             stmt.close();
         } catch (Exception e) {
@@ -38,7 +40,7 @@ public class DocumentTable {
     public static void insertDocument(Connection conn, Document document) throws IOException {
         try {
             PreparedStatement pstmt = conn.prepareStatement("insert into " + DOCUMENT_TABLE_NAME 
-                    + " (filename) values (?)");
+                    + " (filename) values (?)", PreparedStatement.RETURN_GENERATED_KEYS);
             pstmt.setString(1, document.getFilename());
             pstmt.executeUpdate();
             
@@ -77,26 +79,30 @@ public class DocumentTable {
         }
     }
     
-    public static Document getDocument(Connection conn, File file) throws IOException {
-        return getDocument(conn, file.getName());
+    public static List<Document> getDocuments(Connection conn, File file) throws IOException {
+        return getDocuments(conn, file.getName());
     }
     
-    public static Document getDocument(Connection conn, String filename) throws IOException {
+    public static List<Document> getDocuments(Connection conn, String filename) throws IOException {
         try {
             PreparedStatement pstmt = conn.prepareStatement("select * from " + DOCUMENT_TABLE_NAME 
                     + " where filename = ?");
             pstmt.setString(1, filename);
             ResultSet rs = pstmt.executeQuery();
-            Document document = null;
-            if (rs.next()) {
-                document = new Document();
+            
+            List<Document> documents = new ArrayList<Document>();
+            
+            while (rs.next()) {
+                Document document = new Document();
                 document.setDocumentID(rs.getInt("documentID"));
                 document.setFilename(rs.getString("filename"));
+                
+                documents.add(document);
             }
             
             rs.close();
             pstmt.close();
-            return document;
+            return documents;
         } catch (Exception e) {
             throw new IOException(e.getMessage());
         }
