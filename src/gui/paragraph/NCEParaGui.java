@@ -16,6 +16,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import paragraph.RegExPriorityComparator;
@@ -151,7 +153,7 @@ public class NCEParaGui extends javax.swing.JFrame {
             rowData[1] = paragraph.getPageNumber();
             rowData[2] = paragraph.getContent();
             rowData[3] = paragraph.getTypeString();
-            rowData[4] = paragraph.getModManual();
+            rowData[4] = paragraph.getConfirmed();
 
             model.addRow(rowData);
         }
@@ -168,7 +170,7 @@ public class NCEParaGui extends javax.swing.JFrame {
                 rowData[1] = paragraph.getPageNumber();
                 rowData[2] = paragraph.getContent();
                 rowData[3] = paragraph.getTypeString();
-                rowData[4] = paragraph.getModManual();
+                rowData[4] = paragraph.getConfirmed();
 
                 model.addRow(rowData);
             }
@@ -296,7 +298,7 @@ public class NCEParaGui extends javax.swing.JFrame {
         } else {
             paragraph_update.setContent(content);
             paragraph_update.setType(type);
-            paragraph_update.setModManual(1);
+            paragraph_update.setConfirmed(1);
             ParagraphTable.updateParagraph(conn, paragraph_update);
 
             if (this.tableModeShowAll) {
@@ -351,7 +353,7 @@ public class NCEParaGui extends javax.swing.JFrame {
         Connection conn = DBUtil.getConnection();
         
         for (Paragraph paragraph : this.paragraphs) {
-            if(paragraph.getModManual() == 0) {
+            if(paragraph.getConfirmed() == 0) {
                 boolean matched = false;
                 for (RegEx regex : this.regexs) {
                     String paragraphString = paragraph.getContent();
@@ -538,6 +540,8 @@ public class NCEParaGui extends javax.swing.JFrame {
         btnRemoveRegEx = new javax.swing.JButton();
         jSplitPane1 = new javax.swing.JSplitPane();
         jScrollPane1 = new javax.swing.JScrollPane();
+        // Use this line to add a CheckBox
+        JCheckBox checkBox = new javax.swing.JCheckBox();
         tblParagraphs = new javax.swing.JTable();
         jScrollPane3 = new javax.swing.JScrollPane();
         tblRegExs = new javax.swing.JTable();
@@ -643,14 +647,14 @@ public class NCEParaGui extends javax.swing.JFrame {
 
             },
             new String [] {
-                "id", "page", "content", "type", "manual"
+                "id", "page", "content", "type", "confirmed"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class
+                java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -665,6 +669,7 @@ public class NCEParaGui extends javax.swing.JFrame {
         tblParagraphs.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tblParagraphs);
         tblParagraphs.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tblParagraphs.getColumn("confirmed").setCellEditor(new DefaultCellEditor(checkBox));
 
         jSplitPane1.setLeftComponent(jScrollPane1);
 

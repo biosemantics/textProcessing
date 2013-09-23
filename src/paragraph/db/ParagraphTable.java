@@ -33,7 +33,7 @@ public class ParagraphTable {
                     + "pageNumber bigint not null, "
                     + "content text(5000) not null, "
                     + "type text(1000) not null, "
-                    + "modManual bigint not null)");
+                    + "confirmed bigint not null)");
                     
             stmt.close();
         } catch (Exception e) {
@@ -44,12 +44,12 @@ public class ParagraphTable {
     public static void insertParagraph(Connection conn, Paragraph paragraph) throws IOException {
         try {
             PreparedStatement pstmt = conn.prepareStatement("insert into " + PARAGRAPH_TABLE_NAME 
-                    + " (documentID, pageNumber, content, type, modManual) values (?, ?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS);
+                    + " (documentID, pageNumber, content, type, confirmed) values (?, ?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS);
             pstmt.setInt(1, paragraph.getDocumentID());
             pstmt.setInt(2, paragraph.getPageNumber());
             pstmt.setString(3, paragraph.getContent());
             pstmt.setString(4, paragraph.getTypeString());
-            pstmt.setInt(5, paragraph.getModManual());
+            pstmt.setInt(5, paragraph.getConfirmed());
             pstmt.executeUpdate();
             
             ResultSet rs = pstmt.getGeneratedKeys();
@@ -80,7 +80,7 @@ public class ParagraphTable {
                 paragraph.setPageNumber(rs.getInt("pageNumber"));
                 paragraph.setContent(rs.getString("content"));
                 paragraph.setType(rs.getString("type"));
-                paragraph.setModManual(rs.getInt("modManual"));
+                paragraph.setConfirmed(rs.getInt("confirmed"));
             }
             
             rs.close();
@@ -108,7 +108,7 @@ public class ParagraphTable {
                 paragraph.setPageNumber(rs.getInt("pageNumber"));
                 paragraph.setContent(rs.getString("content"));
                 paragraph.setType(rs.getString("type"));
-                paragraph.setModManual(rs.getInt("modManual"));
+                paragraph.setConfirmed(rs.getInt("confirmed"));
                 
                 paragraphs.add(paragraph);
             }
@@ -150,11 +150,11 @@ public class ParagraphTable {
     public static void updateParagraph(Connection conn, Paragraph paragraph) throws IOException {
         try {
             PreparedStatement pstmt = conn.prepareStatement("update " + PARAGRAPH_TABLE_NAME 
-                    + " set content = ?, type = ?, modManual = ?"
+                    + " set content = ?, type = ?, confirmed = ?"
                     + " where paragraphID = ?");
             pstmt.setString(1, paragraph.getContent());
             pstmt.setString(2, paragraph.getTypeString());
-            pstmt.setInt(3, paragraph.getModManual());
+            pstmt.setInt(3, paragraph.getConfirmed());
             pstmt.setInt(4, paragraph.getParagraphID());
             pstmt.executeUpdate();
             

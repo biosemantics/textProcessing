@@ -14,7 +14,7 @@ public class Paragraph {
     private int pageNumber;
     private String content;
     private ParagraphType type;
-    private int modManual;
+    private int confirmed;
     
     public Paragraph() {
         
@@ -68,11 +68,11 @@ public class Paragraph {
         return this.type;
     }
 
-    public int getModManual() {
-        return this.modManual;
+    public int getConfirmed() {
+        return this.confirmed;
     }
 
-    public void setModManual(int modManual) {
-        this.modManual = modManual;
+    public void setConfirmed(int confirmed) {
+        this.confirmed = confirmed;
     }
 }

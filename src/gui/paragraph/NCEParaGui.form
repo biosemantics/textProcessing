@@ -250,10 +250,10 @@
                     <Column editable="false" title="page" type="java.lang.Integer"/>
                     <Column editable="false" title="content" type="java.lang.String"/>
                     <Column editable="false" title="type" type="java.lang.String"/>
-                    <Column editable="false" title="manual" type="java.lang.Integer"/>
+                    <Column editable="true" title="confirmed" type="java.lang.Boolean"/>
                   </Table>
                 </Property>
-                <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
+                <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor" postCode="tblParagraphs.getColumn(&quot;confirmed&quot;).setCellEditor(new DefaultCellEditor(checkBox));">
                   <TableColumnModel selectionModel="1">
                     <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                       <Title/>
@@ -287,6 +287,9 @@
                   <TableHeader reorderingAllowed="false" resizingAllowed="true"/>
                 </Property>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_CreateCodePre" type="java.lang.String" value="// Use this line to add a CheckBox &#xa;JCheckBox checkBox = new javax.swing.JCheckBox();"/>
+              </AuxValues>
             </Component>
           </SubComponents>
         </Container>
