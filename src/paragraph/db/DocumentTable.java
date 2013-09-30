@@ -29,7 +29,7 @@ public class DocumentTable {
             }
             stmt.execute("create table if not exists " + DOCUMENT_TABLE_NAME
                     + " (documentID bigint not null primary key auto_increment, "
-                    + "filename text(1000) not null)");
+                    + "filename text(1000) not null) DEFAULT CHARACTER SET = 'utf8';");
             
             stmt.close();
         } catch (Exception e) {

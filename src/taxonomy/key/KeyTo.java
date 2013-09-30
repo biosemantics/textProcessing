@@ -23,11 +23,20 @@ import taxonomy.key.bean.KeyStatement;
  * @author iychoi
  */
 public class KeyTo {
+    private String filename;
     private KeyHeading heading;
     private List<KeyStatement> statements;
     
     public KeyTo() {
         this.statements = new ArrayList<KeyStatement>();
+    }
+    
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+    
+    public String getFilename() {
+        return this.filename;
     }
     
     public void setHeading(KeyHeading heading) {

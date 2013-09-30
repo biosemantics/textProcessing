@@ -54,7 +54,7 @@ public class ParagraphLoader {
                 paragraph.setPageNumber(paragraphPage);
                 paragraph.setContent(paragraphContent.trim());
                 paragraph.setType(ParagraphType.PARAGRAPH_UNKNOWN);
-                paragraph.setConfirmed(0);
+                paragraph.setConfirmed(false);
                 ParagraphTable.insertParagraph(conn, paragraph);
             }
         }

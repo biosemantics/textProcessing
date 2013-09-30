@@ -33,7 +33,7 @@ public class ParagraphTable {
                     + "pageNumber bigint not null, "
                     + "content text(5000) not null, "
                     + "type text(1000) not null, "
-                    + "confirmed bigint not null)");
+                    + "confirmed bigint not null) DEFAULT CHARACTER SET = 'utf8';");
                     
             stmt.close();
         } catch (Exception e) {
@@ -49,7 +49,7 @@ public class ParagraphTable {
             pstmt.setInt(2, paragraph.getPageNumber());
             pstmt.setString(3, paragraph.getContent());
             pstmt.setString(4, paragraph.getTypeString());
-            pstmt.setInt(5, paragraph.getConfirmed());
+            pstmt.setInt(5, paragraph.getConfirmed() ? 1 : 0);
             pstmt.executeUpdate();
             
             ResultSet rs = pstmt.getGeneratedKeys();
@@ -80,7 +80,7 @@ public class ParagraphTable {
                 paragraph.setPageNumber(rs.getInt("pageNumber"));
                 paragraph.setContent(rs.getString("content"));
                 paragraph.setType(rs.getString("type"));
-                paragraph.setConfirmed(rs.getInt("confirmed"));
+                paragraph.setConfirmed(rs.getInt("confirmed") > 0 ? true : false);
             }
             
             rs.close();
@@ -108,7 +108,7 @@ public class ParagraphTable {
                 paragraph.setPageNumber(rs.getInt("pageNumber"));
                 paragraph.setContent(rs.getString("content"));
                 paragraph.setType(rs.getString("type"));
-                paragraph.setConfirmed(rs.getInt("confirmed"));
+                paragraph.setConfirmed(rs.getInt("confirmed") > 0 ? true : false);
                 
                 paragraphs.add(paragraph);
             }
@@ -154,7 +154,7 @@ public class ParagraphTable {
                     + " where paragraphID = ?");
             pstmt.setString(1, paragraph.getContent());
             pstmt.setString(2, paragraph.getTypeString());
-            pstmt.setInt(3, paragraph.getConfirmed());
+            pstmt.setInt(3, paragraph.getConfirmed() ? 1 : 0);
             pstmt.setInt(4, paragraph.getParagraphID());
             pstmt.executeUpdate();
             

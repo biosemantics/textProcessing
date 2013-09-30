@@ -33,7 +33,7 @@ public class RegExTable {
                     + "regex text(1000) not null, "
                     + "description text(1000) not null, "
                     + "paragraphType text(1000) not null, "
-                    + "priority bigint default 0)");
+                    + "priority bigint default 0) DEFAULT CHARACTER SET = 'utf8';");
             
             stmt.close();
         } catch (Exception e) {

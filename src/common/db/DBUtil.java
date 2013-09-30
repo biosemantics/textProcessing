@@ -7,9 +7,6 @@ package common.db;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Statement;
-import paragraph.db.DocumentTable;
-import paragraph.db.ParagraphTable;
-import paragraph.db.RegExTable;
 
 /**
  *

@@ -7,6 +7,7 @@ package taxonomy.key.bean;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import common.xml.XMLWritable;
+import org.w3c.dom.Attr;
 
 /**
  *
@@ -17,16 +18,18 @@ public class KeyStatement extends XMLWritable {
     private String id;
     private String statement;
     private String determination;
+    private String determinationRefFilename;
     private String nextStatementId;
     
     public KeyStatement() {
         
     }
     
-    public KeyStatement(String id, String statement, String determination, String nextStatementId) {
+    public KeyStatement(String id, String statement, String determination, String determinationRefFilename, String nextStatementId) {
         this.id = id;
         this.statement = statement;
         this.determination = determination;
+        this.determinationRefFilename = determinationRefFilename;
         this.nextStatementId = nextStatementId;
     }
     
@@ -52,6 +55,14 @@ public class KeyStatement extends XMLWritable {
     
     public String getDetermination() {
         return this.determination;
+    }
+    
+    public void setDeterminationRefFilename(String determinationRefFilename) {
+        this.determinationRefFilename = determinationRefFilename;
+    }
+    
+    public String getDeterminationRefFilename() {
+        return this.determinationRefFilename;
     }
     
     public void setNextStatementId(String nextStatementId) {
@@ -87,8 +98,14 @@ public class KeyStatement extends XMLWritable {
         if(this.determination != null && !this.determination.trim().equals("")) {
             Element determination = doc.createElement("determination");
             key_statement.appendChild(determination);
-
+            
             determination.setTextContent(this.determination);
+            
+            if(this.determinationRefFilename != null && !this.determinationRefFilename.trim().equals("")) {
+                Attr attr = doc.createAttribute("file_name");
+                attr.setValue(this.determinationRefFilename);
+                determination.setAttributeNode(attr);
+            }
         }
     }
     

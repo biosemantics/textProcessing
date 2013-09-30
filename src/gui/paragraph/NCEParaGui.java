@@ -19,6 +19,8 @@ import java.util.regex.Pattern;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
 import paragraph.RegExPriorityComparator;
 import paragraph.bean.Document;
@@ -63,6 +65,8 @@ public class NCEParaGui extends javax.swing.JFrame {
         }
         
         initComponents();
+        
+        addParagraphCellEditHandler();
 
         loadDjvuView(this.djvuFile);
         this.paragraphs = loadParagraphs(this.document);
@@ -70,6 +74,31 @@ public class NCEParaGui extends javax.swing.JFrame {
         showParagraphTableAll();
         showRegExTable();
         initCombobox();
+    }
+    
+    private void addParagraphCellEditHandler() {
+        this.tblParagraphs.getColumn("confirmed").getCellEditor().addCellEditorListener(new CellEditorListener() {
+
+            @Override
+            public void editingStopped(ChangeEvent ce) {
+                int selectedRow = NCEParaGui.this.tblParagraphs.getSelectedRow();
+                if (selectedRow >= 0 && selectedRow < NCEParaGui.this.tblParagraphs.getRowCount()) {
+                    int paragraphID = Integer.parseInt(NCEParaGui.this.tblParagraphs.getModel().getValueAt(selectedRow, 0).toString());
+                    boolean confirmed = Boolean.parseBoolean(NCEParaGui.this.tblParagraphs.getModel().getValueAt(selectedRow, 4).toString());
+        
+                    try {
+                        confirmParagraphType(paragraphID, confirmed);
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(NCEParaGui.this, ex.getMessage());
+                    }
+                }
+            }
+
+            @Override
+            public void editingCanceled(ChangeEvent ce) {
+            }
+            
+        });
     }
 
     private Document loadDocument(int documentID) throws IOException {
@@ -280,6 +309,38 @@ public class NCEParaGui extends javax.swing.JFrame {
             throw new IOException(ex.getMessage());
         }
     }
+    
+    private void confirmParagraphType(int paragraphID, boolean confirm) throws IOException {
+        Connection conn = DBUtil.getConnection();
+
+        Paragraph paragraph_update = null;
+        // find paragraph
+        for (Paragraph paragraph : this.paragraphs) {
+            if (paragraph.getParagraphID() == paragraphID) {
+                paragraph_update = paragraph;
+                break;
+            }
+        }
+
+        if (paragraph_update == null) {
+            throw new IOException("paragraph not found");
+        } else {
+            paragraph_update.setConfirmed(confirm);
+            ParagraphTable.updateParagraph(conn, paragraph_update);
+
+            if (this.tableModeShowAll) {
+                showParagraphTableAll();
+            } else {
+                showParagraphTableUnknown();
+            }
+        }
+
+        try {
+            conn.close();
+        } catch (SQLException ex) {
+            throw new IOException(ex.getMessage());
+        }
+    }
 
     private void updateParagraphData(int paragraphID, String content, ParagraphType type) throws IOException {
         Connection conn = DBUtil.getConnection();
@@ -298,7 +359,7 @@ public class NCEParaGui extends javax.swing.JFrame {
         } else {
             paragraph_update.setContent(content);
             paragraph_update.setType(type);
-            paragraph_update.setConfirmed(1);
+            paragraph_update.setConfirmed(true);
             ParagraphTable.updateParagraph(conn, paragraph_update);
 
             if (this.tableModeShowAll) {
@@ -353,7 +414,7 @@ public class NCEParaGui extends javax.swing.JFrame {
         Connection conn = DBUtil.getConnection();
         
         for (Paragraph paragraph : this.paragraphs) {
-            if(paragraph.getConfirmed() == 0) {
+            if(!paragraph.getConfirmed()) {
                 boolean matched = false;
                 for (RegEx regex : this.regexs) {
                     String paragraphString = paragraph.getContent();
@@ -981,6 +1042,7 @@ public class NCEParaGui extends javax.swing.JFrame {
                     new NCEParaGui().setVisible(true);
                 } catch (IOException ex) {
                     JOptionPane.showMessageDialog(null, ex.getMessage());
+                    System.exit(1);
                 }
             }
         });

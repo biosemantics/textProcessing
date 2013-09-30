@@ -14,7 +14,7 @@ public class Paragraph {
     private int pageNumber;
     private String content;
     private ParagraphType type;
-    private int confirmed;
+    private boolean confirmed;
     
     public Paragraph() {
         
@@ -68,11 +68,11 @@ public class Paragraph {
         return this.type;
     }
 
-    public int getConfirmed() {
+    public boolean getConfirmed() {
         return this.confirmed;
     }
 
-    public void setConfirmed(int confirmed) {
+    public void setConfirmed(boolean confirmed) {
         this.confirmed = confirmed;
     }
 }
