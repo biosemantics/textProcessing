@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package example;
+package examples.old;
 
 import common.utils.StringUtil;
 import java.io.File;
@@ -21,7 +21,7 @@ import taxonomy.bean.TaxonomyNomenclature;
  *
  * @author iychoi
  */
-public class Parse_7_Mitai_2004 {
+public class Parse_5_Hirashima_Tadauchi_2002 {
     public static void main(String[] args) throws Exception {
         if(args.length != 1) {
             System.err.println("specify text file path");
@@ -29,15 +29,13 @@ public class Parse_7_Mitai_2004 {
         }
         
         TaxonomyConfiguration conf = new TaxonomyConfiguration();
-        conf.setRankDefault("Species");
+        conf.setRankDefault("Subgenus");
         conf.setUnknownAsDiscussion(true);
         
         File file = new File(args[0]);
         DocumentSpecificSymbolTable dsst = new DocumentSpecificSymbolTable();
-        dsst.addSymbols("^Nomada maculifrons var.+", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_TAXONOMY_SYNONYM);
-        dsst.addSymbols("^Nomada comparata:.+", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_TAXONOMY_SYNONYM);
-        dsst.addSymbols("^Nomada ginran Tsuneki,.+", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_TAXONOMY_SYNONYM);
-        dsst.addSymbols("^Nomada yasha Tsuneki,.+", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_TAXONOMY_SYNONYM);
+        dsst.addSymbols("^Adamon, a new subgenus of Nomada Scopoli$", TaxonomyLineCategorizeAlg.TaxonomyLineType.LINE_TAXONOMY_NAME);
+        
         
         TaxonomyParser parser = new TaxonomyParser(file);
         List<Taxonomy> taxonomies = parser.parseTaxonomy(dsst, conf);
@@ -47,6 +45,7 @@ public class Parse_7_Mitai_2004 {
         
         File parentDir = file.getParentFile();
         
+        boolean bFirst = true;
         for(Taxonomy taxonomy : taxonomies) {
             TaxonomyNomenclature nomenclature = taxonomy.getNomenclature();
             if(nomenclature != null) {
@@ -55,8 +54,18 @@ public class Parse_7_Mitai_2004 {
                     String name = nomenclature.getName();
                     String[] nameSplit = name.split("\\s");
                     
-                    String hierarchy = "Genus Nomada (Hymenoptera: Apidae); " + name;
-                    nomenclature.setHierarchy(hierarchy.trim());
+                    if(bFirst) {
+                        bFirst = false;
+                        
+                        String hierarchy = "Genus Nomada Scopoli; Subgenus Adamon";
+
+                        nomenclature.setName("Nomada Scopoli Adamon");
+                        nomenclature.setHierarchy(hierarchy.trim());
+                    } else {
+                        String hierarchy = "Genus Nomada Scopoli; Subgenus Adamon; " + name;
+                        nomenclature.setHierarchy(hierarchy.trim());    
+                        nomenclature.setRank("Species");
+                    }
                 }
             }
         }

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package example;
+package examples.old;
 
 import common.utils.StringUtil;
 import java.io.File;

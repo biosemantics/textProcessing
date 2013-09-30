@@ -528,6 +528,9 @@ public class NCEParaGui extends javax.swing.JFrame {
                     case PARAGRAPH_DESCRIPTION_BODY:
                         paragraph.setType(ParagraphType.PARAGRAPH_DESCRIPTION_BODY);
                         break;
+                    case PARAGRAPH_DISCUSSION:
+                        paragraph.setType(ParagraphType.PARAGRAPH_DISCUSSION);
+                        break;
                     case PARAGRAPH_DISCUSSION_BODY:
                         paragraph.setType(ParagraphType.PARAGRAPH_DISCUSSION_BODY);
                         break;
@@ -536,12 +539,6 @@ public class NCEParaGui extends javax.swing.JFrame {
                         break;
                     case PARAGRAPH_TYPESPECIES_BODY:
                         paragraph.setType(ParagraphType.PARAGRAPH_TYPESPECIES_BODY);
-                        break;
-                    case PARAGRAPH_DISCUSSION_SUBTITLE:
-                        paragraph.setType(ParagraphType.PARAGRAPH_DISCUSSION_SUBBODY);
-                        break;
-                    case PARAGRAPH_DISCUSSION_SUBBODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_DISCUSSION_SUBBODY);
                         break;
                     case PARAGRAPH_SUBTITLE:
                         paragraph.setType(ParagraphType.PARAGRAPH_SUBBODY);
