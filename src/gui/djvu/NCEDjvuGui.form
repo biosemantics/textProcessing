@@ -30,6 +30,8 @@
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="lblPage" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
+                      <Component id="btnPrevPage" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="btnNextPage" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="btnFinish" min="-2" max="-2" attributes="0"/>
@@ -105,6 +107,7 @@
                   <Component id="btnNextPage" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="lblPage" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnFinish" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnPrevPage" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
@@ -226,6 +229,14 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSpecialFemaleActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnPrevPage">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="PrevPage"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPrevPageActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

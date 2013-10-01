@@ -5,28 +5,22 @@
 package gui.djvu;
 
 import djvu.DjvuConfiguration;
-import java.awt.Toolkit;
-import java.awt.event.WindowEvent;
 
 /**
  *
  * @author iychoi
  */
-public class NCEDjvuConfGui extends javax.swing.JFrame {
+public class DjvuConfigurationPopup extends javax.swing.JDialog {
 
     private DjvuConfiguration conf;
-    /**
-     * Creates new form NCEConfGui
-     */
-    public NCEDjvuConfGui() {
-        initComponents();
-        this.conf = new DjvuConfiguration();
-        
-        loadValues();
-    }
     
-    public NCEDjvuConfGui(DjvuConfiguration conf) {
+    /**
+     * Creates new form DjvuConfigurationPopup
+     */
+    public DjvuConfigurationPopup(DjvuConfiguration conf, java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
         initComponents();
+        
         this.conf = conf;
         
         loadValues();
@@ -55,8 +49,6 @@ public class NCEDjvuConfGui extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        lblPage = new javax.swing.JLabel();
-        txtPageStart = new javax.swing.JTextField();
         txtPageEnd = new javax.swing.JTextField();
         btnApply = new javax.swing.JButton();
         lblMargin = new javax.swing.JLabel();
@@ -64,15 +56,15 @@ public class NCEDjvuConfGui extends javax.swing.JFrame {
         lblMarginTop = new javax.swing.JLabel();
         txtMarginTop = new javax.swing.JTextField();
         lblMarginLeft = new javax.swing.JLabel();
+        lblMarginBottom = new javax.swing.JLabel();
         txtMarginLeft = new javax.swing.JTextField();
+        txtPageStart = new javax.swing.JTextField();
         lblMarginRight = new javax.swing.JLabel();
         txtMarginRight = new javax.swing.JTextField();
-        lblMarginBottom = new javax.swing.JLabel();
+        lblPage = new javax.swing.JLabel();
         txtMarginBottom = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        lblPage.setText("Pages");
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         btnApply.setText("Apply");
         btnApply.setToolTipText("");
@@ -90,9 +82,11 @@ public class NCEDjvuConfGui extends javax.swing.JFrame {
 
         lblMarginLeft.setText("Left");
 
+        lblMarginBottom.setText("Bottom");
+
         lblMarginRight.setText("Right");
 
-        lblMarginBottom.setText("Bottom");
+        lblPage.setText("Pages");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -102,7 +96,7 @@ public class NCEDjvuConfGui extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 348, Short.MAX_VALUE)
+                        .addGap(0, 326, Short.MAX_VALUE)
                         .addComponent(btnApply))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lblPage)
@@ -152,7 +146,7 @@ public class NCEDjvuConfGui extends javax.swing.JFrame {
                     .addComponent(txtMarginRight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblMarginBottom)
                     .addComponent(txtMarginBottom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnApply)
                 .addContainerGap())
         );
@@ -165,12 +159,12 @@ public class NCEDjvuConfGui extends javax.swing.JFrame {
             this.conf.setPageStart(Integer.parseInt(this.txtPageStart.getText()));
         } catch(Exception ex) {
         }
-        
+
         try {
             this.conf.setPageEnd(Integer.parseInt(this.txtPageEnd.getText()));
         } catch(Exception ex) {
         }
-        
+
         try {
             int marginLeft = Integer.parseInt(this.txtMarginLeft.getText());
             int marginTop = Integer.parseInt(this.txtMarginTop.getText());
@@ -179,10 +173,8 @@ public class NCEDjvuConfGui extends javax.swing.JFrame {
             this.conf.setMargin(marginLeft, marginRight, marginTop, marginBottom);
         } catch(Exception ex) {
         }
-        
-        
-        WindowEvent wev = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
-        Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
+
+        this.dispose();
     }//GEN-LAST:event_btnApplyActionPerformed
 
     /**
@@ -202,22 +194,31 @@ public class NCEDjvuConfGui extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(NCEDjvuConfGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DjvuConfigurationPopup.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(NCEDjvuConfGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DjvuConfigurationPopup.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(NCEDjvuConfGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DjvuConfigurationPopup.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(NCEDjvuConfGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DjvuConfigurationPopup.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
-        /* Create and display the form */
+        /* Create and display the dialog */
+        /*
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new NCEDjvuConfGui().setVisible(true);
+                DjvuConfigurationPopup dialog = new DjvuConfigurationPopup(new javax.swing.JFrame(), true);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
             }
         });
+        */
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnApply;

@@ -5,7 +5,6 @@
 package examples;
 
 import common.db.DBUtil;
-import static common.utils.RegExUtil.removeTrailDot;
 import common.utils.StringUtil;
 import java.io.File;
 import java.io.IOException;
@@ -17,8 +16,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import paragraph.bean.Document;
 import paragraph.bean.Paragraph;
-import paragraph.bean.ParagraphType;
-import static paragraph.bean.ParagraphType.PARAGRAPH_TAXONNAME;
 import paragraph.db.DocumentTable;
 import paragraph.db.ParagraphTable;
 import taxonomy.Taxonomy;
@@ -214,7 +211,7 @@ public class Parse_9_Mitai_Tadauchi_2006 {
         statement.setStatement(split[1]);
         
         try {
-            int nextStatementId = Integer.parseInt(split[2]);
+            int nextStatementId = Integer.parseInt(split[2].substring(0, 1));
             statement.setNextStatementId(split[2]);
         } catch(Exception ex) {
             statement.setDetermination(split[2]);
@@ -238,6 +235,7 @@ public class Parse_9_Mitai_Tadauchi_2006 {
             switch(paragraph.getType()) {
                 case PARAGRAPH_TITLE:
                 {
+                    /*
                     taxonomy = new Taxonomy();
                     // set metadata
                     TaxonomyMeta meta = new TaxonomyMeta(document.getFilename());
@@ -247,6 +245,7 @@ public class Parse_9_Mitai_Tadauchi_2006 {
 
                     // add to list
                     taxonomies.add(taxonomy);
+                    */
                     break;
                 }
                 case PARAGRAPH_TAXONNAME:
@@ -264,128 +263,161 @@ public class Parse_9_Mitai_Tadauchi_2006 {
                 }
                 case PARAGRAPH_KEYWORDS:
                 {
-                    taxonomy.getNomenclature().addOtherInfo(genNewOtherInfo(paragraph.getContent()));
+                    if(taxonomy != null) {
+                        taxonomy.getNomenclature().addOtherInfo(genNewOtherInfo(paragraph.getContent()));
+                    }
                     break;
                 }
                 case PARAGRAPH_AUTHOR:
                 {
-                    taxonomy.getNomenclature().addOtherInfo(genNewOtherInfo(paragraph.getContent()));
+                    if(taxonomy != null) {
+                        taxonomy.getNomenclature().addOtherInfo(genNewOtherInfo(paragraph.getContent()));
+                    }
                     break;
                 }
                 case PARAGRAPH_AUTHOR_DETAILS:
                 {
-                    taxonomy.getNomenclature().addOtherInfo(genNewOtherInfo(paragraph.getContent()));
+                    if(taxonomy != null) {
+                        taxonomy.getNomenclature().addOtherInfo(genNewOtherInfo(paragraph.getContent()));
+                    }
                     break;
                 }
                 case PARAGRAPH_INTRODUCTION:
                 {
-                    prevTitle = paragraph.getContent();
+                    if(taxonomy != null) {
+                        prevTitle = paragraph.getContent();
+                    }
                     break;
                 }
                 case PARAGRAPH_INTRODUCTION_BODY:
                 {
-                    if(taxonomy.getDiscussion() == null) {
-                        taxonomy.setDiscussion(new TaxonomyDiscussion());
+                    if(taxonomy != null) {
+                        if(taxonomy.getDiscussion() == null) {
+                            taxonomy.setDiscussion(new TaxonomyDiscussion());
+                        }
+
+                        taxonomy.getDiscussion().addElement(genNewElement(prevTitle, paragraph.getContent()));
                     }
-                    
-                    taxonomy.getDiscussion().addElement(genNewElement(prevTitle, paragraph.getContent()));
                     break;
                 }
                 case PARAGRAPH_MATERIALS_METHOD:
                 {
-                    prevTitle = paragraph.getContent();
+                    if(taxonomy != null) {
+                        prevTitle = paragraph.getContent();
+                    }
                     break;
                 }
                 case PARAGRAPH_MATERIALS_METHOD_BODY:
                 {
-                    taxonomy.addElement(genNewElement(prevTitle, paragraph.getContent()));
+                    if(taxonomy != null) {
+                        taxonomy.addElement(genNewElement(prevTitle, paragraph.getContent()));
+                    }
                     break;
                 }
                 case PARAGRAPH_SYNONYM: 
                 {
-                    taxonomy.addSynonym(genNewSynonym(paragraph.getContent()));
+                    if(taxonomy != null) {
+                        taxonomy.addSynonym(genNewSynonym(paragraph.getContent()));
+                    }
                     break;
                 }
                 case PARAGRAPH_REMARKS_WITH_BODY:
                 {
-                    if(taxonomy.getDiscussion() == null) {
-                        taxonomy.setDiscussion(new TaxonomyDiscussion());
+                    if(taxonomy != null) {
+                        if(taxonomy.getDiscussion() == null) {
+                            taxonomy.setDiscussion(new TaxonomyDiscussion());
+                        }
+
+                        String[] split = splitTitleBody(paragraph.getContent());
+                        prevTitle = split[0];
+
+                        taxonomy.getDiscussion().addElement(genNewElement(prevTitle, split[1]));
                     }
-                    
-                    String[] split = splitTitleBody(paragraph.getContent());
-                    prevTitle = split[0];
-                    
-                    taxonomy.getDiscussion().addElement(genNewElement(prevTitle, split[1]));
                     break;
                 }
                 case PARAGRAPH_REMARKS_BODY:
                 {
-                    if(taxonomy.getDiscussion() == null) {
-                        taxonomy.setDiscussion(new TaxonomyDiscussion());
+                    if(taxonomy != null) {
+                        if(taxonomy.getDiscussion() == null) {
+                            taxonomy.setDiscussion(new TaxonomyDiscussion());
+                        }
+
+                        taxonomy.getDiscussion().addElement(genNewElement(prevTitle, paragraph.getContent()));
                     }
-                    
-                    taxonomy.getDiscussion().addElement(genNewElement(prevTitle, paragraph.getContent()));
                     break;
                 }
                 case PARAGRAPH_DISCUSSION_BODY:
                 {
-                    if(taxonomy.getDiscussion() == null) {
-                        taxonomy.setDiscussion(new TaxonomyDiscussion());
+                    if(taxonomy != null) {
+                        if(taxonomy.getDiscussion() == null) {
+                            taxonomy.setDiscussion(new TaxonomyDiscussion());
+                        }
+
+                        taxonomy.addDiscussionNonTitled(genDiscussion(paragraph.getContent()));
                     }
-                    
-                    taxonomy.addDiscussionNonTitled(genDiscussion(paragraph.getContent()));
                     break;
                 }
                 case PARAGRAPH_DISTRIBUTION_WITH_BODY:
                 {
-                    String[] split = splitTitleBody(paragraph.getContent());
-                    prevTitle = split[0];
-                    
-                    taxonomy.addElement(genNewElement(prevTitle, split[1]));
+                    if(taxonomy != null) {
+                        String[] split = splitTitleBody(paragraph.getContent());
+                        prevTitle = split[0];
+
+                        taxonomy.addElement(genNewElement(prevTitle, split[1]));
+                    }
                     break;
                 }
                 case PARAGRAPH_DESCRIPTION_WITH_BODY:
                 {
-                    String[] split = splitTitleBody(paragraph.getContent());
-                    if(split[0].equals("Supplementary description")) {
-                        split = splitTitleBody(split[1]);
+                    if(taxonomy != null) {
+                        String[] split = splitTitleBody(paragraph.getContent());
+                        if(split[0].equals("Supplementary description")) {
+                            split = splitTitleBody(split[1]);
+                        }
+                        prevTitle = split[0];
+
+                        taxonomy.addDescription(genNewDescription(prevTitle, split[1]));
                     }
-                    prevTitle = split[0];
-                    
-                    taxonomy.addDescription(genNewDescription(prevTitle, split[1]));
                     break;
                 }
                 case PARAGRAPH_DISCUSSION_WITH_BODY:
                 {
-                    if(taxonomy.getDiscussion() == null) {
-                        taxonomy.setDiscussion(new TaxonomyDiscussion());
+                    if(taxonomy != null) {
+                        if(taxonomy.getDiscussion() == null) {
+                            taxonomy.setDiscussion(new TaxonomyDiscussion());
+                        }
+
+                        String[] split = splitTitleBody(paragraph.getContent());
+                        prevTitle = split[0];
+
+                        taxonomy.getDiscussion().addElement(genNewElement(prevTitle, split[1]));
                     }
-                    
-                    String[] split = splitTitleBody(paragraph.getContent());
-                    prevTitle = split[0];
-                    
-                    taxonomy.getDiscussion().addElement(genNewElement(prevTitle, split[1]));
                     break;
                 }
                 case PARAGRAPH_SUBTITLE_WITH_BODY:
                 {
-                    String[] split = splitTitleBody(paragraph.getContent());
-                    prevTitle = split[0];
-                    
-                    taxonomy.addElement(genNewElement(prevTitle, split[1]));
+                    if(taxonomy != null) {
+                        String[] split = splitTitleBody(paragraph.getContent());
+                        prevTitle = split[0];
+
+                        taxonomy.addElement(genNewElement(prevTitle, split[1]));
+                    }
                     break;
                 }
                 case PARAGRAPH_KEY:
                 {
-                    taxonomy.increaseKeyToTable();
-                    
+                    if(taxonomy != null) {
+                        taxonomy.increaseKeyToTable();
+                    }
                     keyto = genKeyTo(paragraph.getContent());
                     keytos.add(keyto);
                     break;
                 }
                 case PARAGRAPH_KEY_BODY:
                 {
-                    keyto.addStatement(genKeyStatement(paragraph.getContent()));
+                    if(keyto != null) {
+                        keyto.addStatement(genKeyStatement(paragraph.getContent()));
+                    }
                     break;
                 }
                 case PARAGRAPH_IGNORE:

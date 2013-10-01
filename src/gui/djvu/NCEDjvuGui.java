@@ -21,8 +21,6 @@ import djvu.algorithms.DjvuLineParagraphAlgCaption;
 import djvu.algorithms.DjvuLineParagraphAlgGap;
 import djvu.algorithms.DjvuLineParagraphAlgIndent;
 import java.awt.Insets;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
@@ -30,7 +28,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -106,20 +103,10 @@ public class NCEDjvuGui extends javax.swing.JFrame {
     }
     
     private void openConfiguration() {
-        NCEDjvuConfGui confGui = new NCEDjvuConfGui(this.djvuConf);
-        final JFrame currentWindow = this;
-        confGui.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                currentWindow.setEnabled(true);
-            }
-        });
-
-        currentWindow.setEnabled(false);
-        confGui.setAlwaysOnTop(true);
-        confGui.setResizable(false);
-        confGui.setLocationRelativeTo(getRootPane());
-        confGui.setVisible(true);
-        confGui.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        DjvuConfigurationPopup popup = new DjvuConfigurationPopup(this.djvuConf, this, true);
+        popup.setVisible(true);
+        
+        this.djvuConf = popup.getConfiguration();
     }
     
     private void startParsing() throws Exception {
@@ -192,6 +179,42 @@ public class NCEDjvuGui extends javax.swing.JFrame {
                     processPage(this.currentPage + 1);
                 } else {
                     throw new Exception("There's no next page");
+                }
+            }
+        }
+    }
+    
+    private void processPrevPage() throws Exception {
+        if(this.currentPage < 1) {
+            processFirstPage();
+        } else {
+            boolean findPage = false;
+            DjvuPage targetPage = null;
+            for(DjvuPage page : this.parsedPages) {
+                if(page.getPagenum() == this.currentPage) {
+                    findPage = true;
+                    break;
+                } else {
+                    targetPage = page;
+                }
+            }
+            
+            if(targetPage != null) {
+                processPage(targetPage.getPagenum());
+            } else {
+                boolean bFindPage = false;
+                int wantPage = this.currentPage - 1;
+                for(DjvuPage page : this.parsedPages) {
+                    if(page.getPagenum() == wantPage) {
+                        bFindPage = true;
+                        break;
+                    }
+                }
+                
+                if(bFindPage) {
+                    processPage(this.currentPage - 1);
+                } else {
+                    throw new Exception("There's no prev page");
                 }
             }
         }
@@ -452,6 +475,7 @@ public class NCEDjvuGui extends javax.swing.JFrame {
         btnFinish = new javax.swing.JButton();
         btnSpecialMale = new javax.swing.JButton();
         btnSpecialFemale = new javax.swing.JButton();
+        btnPrevPage = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -543,6 +567,13 @@ public class NCEDjvuGui extends javax.swing.JFrame {
             }
         });
 
+        btnPrevPage.setText("PrevPage");
+        btnPrevPage.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPrevPageActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -554,6 +585,8 @@ public class NCEDjvuGui extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(lblPage)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnPrevPage)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnNextPage)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnFinish))
@@ -611,7 +644,8 @@ public class NCEDjvuGui extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnNextPage)
                     .addComponent(lblPage)
-                    .addComponent(btnFinish))
+                    .addComponent(btnFinish)
+                    .addComponent(btnPrevPage))
                 .addContainerGap())
         );
 
@@ -741,6 +775,15 @@ public class NCEDjvuGui extends javax.swing.JFrame {
         this.txtPara.insert("♂", this.txtPara.getCaretPosition());
     }//GEN-LAST:event_btnSpecialMaleActionPerformed
 
+    private void btnPrevPageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrevPageActionPerformed
+        try {
+            saveCurrentPage();
+            processPrevPage();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage());
+        }
+    }//GEN-LAST:event_btnPrevPageActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -782,6 +825,7 @@ public class NCEDjvuGui extends javax.swing.JFrame {
     private javax.swing.JButton btnLoadDjvu;
     private javax.swing.JButton btnLoadDjvuXML;
     private javax.swing.JButton btnNextPage;
+    private javax.swing.JButton btnPrevPage;
     private javax.swing.JButton btnSpecialFemale;
     private javax.swing.JButton btnSpecialMale;
     private javax.swing.JButton btnStart;
