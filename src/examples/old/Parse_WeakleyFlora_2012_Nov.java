@@ -4,7 +4,6 @@
  */
 package examples.old;
 
-import static common.utils.RegExUtil.removeTrailDot;
 import common.utils.StringUtil;
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,39 +46,42 @@ public class Parse_WeakleyFlora_2012_Nov {
         return isFootnote;
     }
     
-    private static XWPFRun getFirstValidRun(XWPFParagraph para) {
+    private static XWPFRun getValidRun(XWPFParagraph para, int n) {
         List<XWPFRun> runs = para.getRuns();
-        XWPFRun first_valid_run = runs.get(0);
+        XWPFRun valid_run = null;
+        int validCount = 0;
+        
         for (int i = 0; i < runs.size(); i++) {
             XWPFRun run = runs.get(i);
             if (run == null) {
                 continue;
             }
 
-            if (run.getText(0) == null || run.getText(0).trim().equals("")
+            if (run.getText(0) == null || run.getText(0).equals("")
                     || run.getText(0).equals("•") || run.getText(0).equals("●")
                     || run.getText(0).equals("●")) {
                 continue;
             }
 
-            first_valid_run = run;
-            break;
+            validCount++;
+            if(validCount >= n) {
+                valid_run = run;
+                break;
+            }
         }
-        return first_valid_run;
+        return valid_run;
     }
     
-    private static boolean isBold(XWPFParagraph para) {
-        XWPFRun first_valid_run = getFirstValidRun(para);
-        if (first_valid_run.isBold()) {
+    private static boolean isBold(XWPFRun run) {
+        if(run.isBold()) 
             return true;
-        }
         
-        if (first_valid_run.getCTR() != null) {
-            if (first_valid_run.getCTR().getRPr() != null) {
+        if (run.getCTR() != null) {
+            if (run.getCTR().getRPr() != null) {
                 boolean is_rStyle_bold = false;
 
-                if (first_valid_run.getCTR().getRPr().getRStyle() != null) {
-                    String rStyle = first_valid_run.getCTR().getRPr()
+                if (run.getCTR().getRPr().getRStyle() != null) {
+                    String rStyle = run.getCTR().getRPr()
                             .getRStyle().getVal();
                     if (rStyle.equals("bold")) {
                         is_rStyle_bold = true;
@@ -87,8 +89,8 @@ public class Parse_WeakleyFlora_2012_Nov {
                 }
 
                 if (is_rStyle_bold) {
-                    if (first_valid_run.getCTR().getRPr().getB() != null) {
-                        if (first_valid_run.getCTR().getRPr().getB().getVal()
+                    if (run.getCTR().getRPr().getB() != null) {
+                        if (run.getCTR().getRPr().getB().getVal()
                                 .intValue() == 0) {
                             return false;
                         }
@@ -101,6 +103,11 @@ public class Parse_WeakleyFlora_2012_Nov {
             }
         }
         return false;
+    }
+    
+    private static boolean isStartWithBold(XWPFParagraph para) {
+        XWPFRun first_valid_run = getValidRun(para, 1);
+        return isBold(first_valid_run);
     }
     
     private static boolean isCenterAligned(XWPFParagraph para) {
@@ -125,9 +132,10 @@ public class Parse_WeakleyFlora_2012_Nov {
     }
     
     private static boolean isSubTaxonTitle(String paragraph) {
-        if (paragraph.matches("^(\\*\\??)\t[A-Z][a-z]+[^:]+\\.  .+$")) {
-            return true;
-        } else if(paragraph.matches("^\t[A-Z][a-z]+.+\\.  .+$")) {
+        //if (paragraph.matches("^(\\*\\??)\t[A-Z][a-z]+[^:]+\\.  .+$")) {
+        //    return true;
+        //} else 
+        if(paragraph.matches("^\t[A-Z][a-z]+.+\\.  .+$")) {
             return true;
         } else if(paragraph.matches("^\t?[A-Z][a-z]+[^:]+\\.  .+$")) {
             return true;
@@ -168,7 +176,7 @@ public class Parse_WeakleyFlora_2012_Nov {
         return key;
     }
     
-    private static Taxonomy genTaxon(File source, String title) {
+    private static Taxonomy genTaxon(File source, XWPFParagraph para) {
         Taxonomy taxon = new Taxonomy();
         
         TaxonomyMeta meta = new TaxonomyMeta();
@@ -176,14 +184,20 @@ public class Parse_WeakleyFlora_2012_Nov {
         taxon.setMeta(meta);
         
         TaxonomyNomenclature nomenclature = new TaxonomyNomenclature();
-        nomenclature.setName(getTaxonName(title));
-        nomenclature.setCommonName(getTaxonCommonName(title));
-        nomenclature.setNameInfo(title);
+        String taxonNameInfo = para.getText().trim();
+        String taxonName = getTaxonName(para);
+        String commonName = getTaxonCommonName(para);
+        String authority = getAuthority(para, taxonName);
+        
+        nomenclature.setName(taxonName);
+        nomenclature.setAuthority(authority);
+        nomenclature.setCommonName(commonName);
+        nomenclature.setNameInfo(taxonNameInfo);
         taxon.setNomenclture(nomenclature);
         return taxon;
     }
     
-    private static Taxonomy genSubTaxon(File source, String title) {
+    private static Taxonomy genSubTaxon(File source, XWPFParagraph para, String title) {
         Taxonomy taxon = new Taxonomy();
         
         TaxonomyMeta meta = new TaxonomyMeta();
@@ -191,26 +205,145 @@ public class Parse_WeakleyFlora_2012_Nov {
         taxon.setMeta(meta);
         
         TaxonomyNomenclature nomenclature = new TaxonomyNomenclature();
-        nomenclature.setName(getSubTaxonName(title));
-        nomenclature.setCommonName(getSubTaxonCommonName(title));
-        nomenclature.setNameInfo(title);
+        String taxonNameInfo = title;
+        String taxonName = getSubTaxonName(para, title);
+        String commonName = getSubTaxonCommonName(title);
+        String authority = getSubAuthority(title, taxonName);
+        
+        nomenclature.setName(taxonName);
+        nomenclature.setAuthority(authority);
+        nomenclature.setCommonName(commonName);
+        nomenclature.setNameInfo(taxonNameInfo);
         taxon.setNomenclture(nomenclature);
         return taxon;
     }
     
-    private static String getTaxonName(String title) {
-        Pattern pattern1 = Pattern.compile("^\\d+\\. (.+)$");
-        Matcher mt1 = pattern1.matcher(title);
-        if (mt1.find()) {
-            String next = mt1.group(1).trim();
-            Pattern pattern2 = Pattern.compile("^(.+) \\d+.+$");
-            Matcher mt2 = pattern2.matcher(next);
-            if (mt2.find()) {
-                return mt2.group(1).trim();
+    private static String getTaxonName(XWPFParagraph para) {
+        String taxonNameInfoBoldStart = "";
+        
+        for(int i=0;i<para.getRuns().size();i++) {
+            XWPFRun run = getValidRun(para, i+1);
+            if(run != null && isBold(run)) {
+                taxonNameInfoBoldStart += run.getText(0);
+            } else {
+                break;
             }
-            return next;
         }
-        return title;
+        
+        taxonNameInfoBoldStart = taxonNameInfoBoldStart.trim();
+        
+        Pattern pattern1 = Pattern.compile("^\\d+\\. (.+)$");
+        Matcher mt1 = pattern1.matcher(taxonNameInfoBoldStart);
+        if (mt1.find()) {
+            return mt1.group(1).trim();
+        }
+        return null;
+    }
+    
+    private static String getSubTaxonName(XWPFParagraph para, String title) {
+        String taxonNameInfoBoldStart = "";
+        int boldNum = 0;
+        int boldFirstRun = 0;
+        int boldLastRun = 0;
+        
+        int lastIndex = 0;
+        for(int i=0;i<para.getRuns().size();i++) {
+            XWPFRun run = getValidRun(para, i+1);
+            if(run != null) {
+                int idx = title.indexOf(run.getText(0).trim(), lastIndex);
+                if(idx >= lastIndex) {
+                    lastIndex = idx + run.getText(0).trim().length();
+                    
+                    if(isBold(run)) {
+                        boldNum++;
+                        
+                        if(boldNum == 1) {
+                            boldFirstRun = i+1;
+                        } else {
+                            boldLastRun = i+1;
+                        }
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+        
+        if(boldNum == 1) {
+            XWPFRun run = getValidRun(para, boldFirstRun);
+            taxonNameInfoBoldStart = run.getText(0).trim();
+        } else {
+            for(int i=boldFirstRun;i<=boldLastRun;i++) {
+                XWPFRun run = getValidRun(para, i);
+                if(run != null) {
+                    taxonNameInfoBoldStart += run.getText(0);
+                }
+            }
+        }
+        
+        //System.out.println("found : " + taxonNameInfoBoldStart.trim());
+        return taxonNameInfoBoldStart.trim();
+    }
+    
+    private static String getParentSubTaxonName(XWPFParagraph para, String taxonName) {
+        int sspIdx = taxonName.indexOf("ssp.");
+        int varIdx = taxonName.indexOf("var.");
+        
+        int idx2nd = Math.max(sspIdx, varIdx);
+        if(idx2nd < 0) {
+            System.err.println("ssp or var not found : " + taxonName);
+            return null;
+        }
+        
+        String title = taxonName.substring(0, idx2nd).trim();
+        
+        String taxonNameInfoBoldStart = "";
+        int boldNum = 0;
+        int boldFirstRun = 0;
+        int boldLastRun = 0;
+        
+        int lastIndex = 0;
+        for(int i=0;i<para.getRuns().size();i++) {
+            XWPFRun run = getValidRun(para, i+1);
+            if(run != null) {
+                int idx = title.indexOf(run.getText(0).trim(), lastIndex);
+                if(idx >= lastIndex) {
+                    lastIndex = idx + run.getText(0).trim().length();
+                    
+                    if(isBold(run)) {
+                        boldNum++;
+                        
+                        if(boldNum == 1) {
+                            boldFirstRun = i+1;
+                        } else {
+                            boldLastRun = i+1;
+                        }
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+        
+        if(boldNum == 1) {
+            XWPFRun run = getValidRun(para, boldFirstRun);
+            taxonNameInfoBoldStart = run.getText(0).trim();
+        } else {
+            for(int i=boldFirstRun;i<=boldLastRun;i++) {
+                XWPFRun run = getValidRun(para, i);
+                if(run != null) {
+                    taxonNameInfoBoldStart += run.getText(0);
+                }
+            }
+        }
+        
+        System.out.println("found : " + taxonNameInfoBoldStart.trim());
+        return taxonNameInfoBoldStart.trim();
+    }
+    
+    private static String getTaxonCommonName(XWPFParagraph para) {
+        String title = para.getText().trim();
+        return getTaxonCommonName(title);
     }
     
     private static String getTaxonCommonName(String title) {
@@ -228,17 +361,73 @@ public class Parse_WeakleyFlora_2012_Nov {
         return "";
     }
     
-    private static String getSubTaxonName(String title) {
-        int idx = title.indexOf(",");
-        if(idx > 0) {
-            return title.substring(0, idx).trim();
+    private static String getAuthority(XWPFParagraph para, String taxonName) {
+        String title = para.getText().trim();
+        String rem = null;
+        
+        int taxonNameEndPos = title.indexOf(taxonName);
+        if(taxonNameEndPos > 0) {
+            rem = title.substring(taxonNameEndPos + taxonName.length()).trim();
+        } else {
+            System.err.println("taxon name error : " + title);
+            return null;
         }
-        return title;
+        
+        Pattern pattern1 = Pattern.compile("^(.+) \\d+ \\((.+)\\)$");
+        Matcher mt1 = pattern1.matcher(rem);
+        if (mt1.find()) {
+            return mt1.group(1).trim();
+        }
+        return null;
+    }
+    
+    private static String getSubAuthority(String title, String taxonName) {
+        String rem = null;
+        
+        int taxonNameEndPos = title.indexOf(taxonName);
+        if(taxonNameEndPos >= 0) {
+            rem = title.substring(taxonNameEndPos + taxonName.length()).trim();
+        } else {
+            System.err.println("taxon name : " + taxonName);
+            System.err.println("subtaxon name error : " + title);
+            return null;
+        }
+        
+        int idx = rem.indexOf(",");
+        if(idx >= 0) {
+            return rem.substring(0, idx).trim();
+        }
+        return null;
+    }
+    
+    private static String getParentSubTaxonAuthority(String title, String taxonName) {
+        String rem = null;
+        
+        int taxonNameEndPos = title.indexOf(taxonName);
+        if(taxonNameEndPos >= 0) {
+            rem = title.substring(taxonNameEndPos + taxonName.length()).trim();
+        } else {
+            System.err.println("taxon name : " + taxonName);
+            System.err.println("subtaxon name error : " + title);
+            return null;
+        }
+        
+        int sspIdx = rem.indexOf("ssp.");
+        if(sspIdx >= 0) {
+            return rem.substring(0, sspIdx).trim();
+        }
+        
+        int varIdx = rem.indexOf("var.");
+        if(varIdx >= 0) {
+            return rem.substring(0, varIdx).trim();
+        }
+        
+        return null;
     }
     
     private static String getSubTaxonCommonName(String title) {
         int idx = title.indexOf(",");
-        if(idx > 0) {
+        if(idx >= 0) {
             return title.substring(idx + 1).trim();
         }
         return "";
@@ -246,16 +435,16 @@ public class Parse_WeakleyFlora_2012_Nov {
     
     private static String getSubTaxonTitle(String paragraph) {
         String newPara = paragraph.trim();
-        if(newPara.startsWith("*")) {
-            newPara = newPara.substring(1).trim();
-        }
+        //if(newPara.startsWith("*")) {
+        //    newPara = newPara.substring(1).trim();
+        //}
         
-        if(newPara.startsWith("?")) {
-            newPara = newPara.substring(1).trim();
-        }
+        //if(newPara.startsWith("?")) {
+        //    newPara = newPara.substring(1).trim();
+        //}
         
         int idx = newPara.indexOf(".  ");
-        if(idx > 0) {
+        if(idx >= 0) {
             newPara = newPara.substring(0, idx).trim();
         }
         return newPara;
@@ -263,7 +452,7 @@ public class Parse_WeakleyFlora_2012_Nov {
     
     private static String getSubTaxonDiscussion(String paragraph) {
         int idx = paragraph.indexOf(".  ");
-        if(idx > 0) {
+        if(idx >= 0) {
             return paragraph.substring(idx + 3).trim();
         }
         return paragraph;
@@ -273,7 +462,7 @@ public class Parse_WeakleyFlora_2012_Nov {
         String[] bodyExt = new String[2];
         int idxStart = body.indexOf("[");
         int idxEnd = body.indexOf("]");
-        if(idxStart > 0 && idxEnd > 0) {
+        if(idxStart >= 0 && idxEnd >= 0) {
             bodyExt[0] = body.substring(0, idxStart).trim();
             bodyExt[1] = body.substring(idxStart, idxEnd+1).trim();
         } else {
@@ -283,6 +472,7 @@ public class Parse_WeakleyFlora_2012_Nov {
         return bodyExt;
     }
     
+    /*
     private static String[] splitKeyTitle(String keytitle) {
         Pattern pattern1 = Pattern.compile("^((Key|KEY) [A-Z]+\\d*) – (.+)$");
         Matcher mt1 = pattern1.matcher(keytitle);
@@ -294,6 +484,7 @@ public class Parse_WeakleyFlora_2012_Nov {
         }
         return null;
     }
+    */
     
     private static String[] splitKeyData(String keydata) {
         Pattern pattern1 = Pattern.compile("^(\\d+)\t(.+)\t(.+)$");
@@ -371,15 +562,20 @@ public class Parse_WeakleyFlora_2012_Nov {
                     taxonTitle = paragraphString;
                     keyTitle = null;
                     
-                    prevTaxon = genTaxon(file, taxonTitle);
+                    prevTaxon = genTaxon(file, para);
                     // exception
                     if(taxonTitle.startsWith("147. ROSACEAE")) {
+                        prevTaxon.getNomenclature().setName("ROSACEAE");
+                        prevTaxon.getNomenclature().setAuthority("A.L. de Jussieu");
                         prevTaxon.getNomenclature().setRank("Family");
-                        prevTaxon.getNomenclature().setHierarchy("Family Rose");
+                        prevTaxon.getNomenclature().setHierarchy("ROSACEAE A.L. de Jussieu");
+                        prevTaxon.getNomenclature().setHierarchyClean("ROSACEAE");
                     } else {
                         String taxonName = prevTaxon.getNomenclature().getName();
+                        String taxonAuthority = prevTaxon.getNomenclature().getAuthority();
                         prevTaxon.getNomenclature().setRank("Genus");
-                        prevTaxon.getNomenclature().setHierarchy("Family Rose; Genus " + taxonName);
+                        prevTaxon.getNomenclature().setHierarchy("ROSACEAE A.L. de Jussieu; " + (taxonName + " " + taxonAuthority).trim());
+                        prevTaxon.getNomenclature().setHierarchyClean("ROSACEAE; " + taxonName);
                     }
                     taxonomies.add(prevTaxon);
                     bPrevTaxonTitle = true;
@@ -417,13 +613,14 @@ public class Parse_WeakleyFlora_2012_Nov {
                         if(bPrevTaxonTitle) {
                             String original = prevTaxon.getNomenclature().getNameInfo();
                             prevTaxon.getNomenclature().setNameInfo(original + " " + paragraphString);
+                            prevTaxon.getNomenclature().setCommonName(getTaxonCommonName(original + " " + paragraphString));
                         }
                     }
                     // keyto heading
                     if(prevKeyTo != null) {
                         if(bPrevKeyTitle) {
                             String original = prevKeyTo.getHeading().getHeading();
-                            System.out.println(original);
+                            //System.out.println(original);
                             prevKeyTo.getHeading().setHeading(original + " " + paragraphString);
                         }
                     }
@@ -433,7 +630,7 @@ public class Parse_WeakleyFlora_2012_Nov {
                 String paragraphString = para.getText().trim();
                 if(isKeyData(paragraphString)) {
                     if(keyTitle == null) {
-                        keyTitle = "Key To " + prevTaxon.getNomenclature().getName();
+                        keyTitle = "Key To " + prevTaxon.getNomenclature().getName() + " " + prevTaxon.getNomenclature().getAuthority();
                         
                         prevKeyTo = genKeyTo(keyTitle);
                         keytos.add(prevKeyTo);
@@ -480,16 +677,38 @@ public class Parse_WeakleyFlora_2012_Nov {
                         String paragraphStringOthers = para.getText();
                         boolean isSubTaxon = false;
                         if (isSubTaxonTitle(paragraphStringOthers)) {
-                            isSubTaxon = true;
+                            if(isStartWithBold(para)) {
+                                String subtaxonTitle = getSubTaxonTitle(paragraphStringOthers);
+                                if(subtaxonTitle.indexOf("×") >= 0) {
+                                } else {
+                                    isSubTaxon = true;
+                                }
+                            }
                         }
                         
                         if(isSubTaxon) {
                             String subtaxonTitle = getSubTaxonTitle(paragraphStringOthers);
-                            Taxonomy subTaxon = genSubTaxon(file, subtaxonTitle);
+                            Taxonomy subTaxon = genSubTaxon(file, para, subtaxonTitle);
 
                             String taxonName = subTaxon.getNomenclature().getName();
-                            subTaxon.getNomenclature().setRank("Species");
-                            subTaxon.getNomenclature().setHierarchy(prevTaxon.getNomenclature().getHierarchy() + "; Species " + taxonName);
+                            String authority = subTaxon.getNomenclature().getAuthority();
+                            if(taxonName.indexOf("ssp.") > 0) {
+                                subTaxon.getNomenclature().setRank("Subspecies");
+                                String parentTaxonName = getParentSubTaxonName(para, taxonName);
+                                String parentTaxonAuthority = getParentSubTaxonAuthority(taxonName, parentTaxonName);
+                                subTaxon.getNomenclature().setHierarchy(prevTaxon.getNomenclature().getHierarchy() + "; " + (parentTaxonName + " " + parentTaxonAuthority).trim() + "; " + (taxonName + " " + authority).trim());
+                                subTaxon.getNomenclature().setHierarchyClean(prevTaxon.getNomenclature().getHierarchyClean() + "; " + parentTaxonName + "; " + taxonName);
+                            } else if(taxonName.indexOf("var.") > 0) {
+                                String parentTaxonName = getParentSubTaxonName(para, taxonName);
+                                String parentTaxonAuthority = getParentSubTaxonAuthority(taxonName, parentTaxonName);
+                                subTaxon.getNomenclature().setRank("Variety");
+                                subTaxon.getNomenclature().setHierarchy(prevTaxon.getNomenclature().getHierarchy() + "; " + (parentTaxonName + " " + parentTaxonAuthority).trim() + "; " + (taxonName + " " + authority).trim());
+                                subTaxon.getNomenclature().setHierarchyClean(prevTaxon.getNomenclature().getHierarchyClean() + "; " + parentTaxonName + "; " + taxonName);
+                            } else {
+                                subTaxon.getNomenclature().setRank("Species");
+                                subTaxon.getNomenclature().setHierarchy(prevTaxon.getNomenclature().getHierarchy() + "; " + (taxonName + " " + authority).trim());
+                                subTaxon.getNomenclature().setHierarchyClean(prevTaxon.getNomenclature().getHierarchyClean() + "; " + taxonName);
+                            }
                             
                             String body = getSubTaxonDiscussion(paragraphStringOthers);
                             
@@ -517,35 +736,33 @@ public class Parse_WeakleyFlora_2012_Nov {
         
         
         for(KeyTo keyto : keytos) {
-            // scan ref key to files
-            boolean isMyTaxon = false;
+            // find parent taxonomy
+            Taxonomy parentTaxonomy = null;
+            for(Taxonomy taxonomy : taxonomies) {
+                for(TaxonomyKeyFile keyFile : taxonomy.getKeyFiles()) {
+                    if(keyFile.getKeyFile().equals(keyto.getFilename())) {
+                        // found!!
+                        parentTaxonomy = taxonomy;
+                        break;
+                    }
+                }
+            }
+            
+            // find child key files
             for(KeyStatement statement : keyto.getStatement()) {
                 if(statement.getDetermination() != null && isRefKeyStatement(statement.getDetermination())) {
                     // is ref
-                    //System.out.println("Key file - " + statement.getDetermination());
                     String refFilename = null;
                     
-                    for(Taxonomy taxonomy : taxonomies) {
-                        for(TaxonomyKeyFile keyFile : taxonomy.getKeyFiles()) {
-                            if(keyFile.getKeyFile().indexOf(statement.getDetermination()) > 0) {
-                                // found!!
-                                refFilename = keyFile.getKeyFile();
-                            }
-                            
-                            if(keyFile.getKeyFile().equals(keyto.getFilename())) {
-                                // mine
-                                isMyTaxon = true;
-                            }
-                        }
-                        
-                        if(isMyTaxon) {
+                    for(TaxonomyKeyFile keyFile : parentTaxonomy.getKeyFiles()) {
+                        if(keyFile.getKeyFile().toLowerCase().indexOf(statement.getDetermination().toLowerCase()) >= 0) {
+                            // found!!
+                            refFilename = keyFile.getKeyFile();
                             break;
                         }
                     }
-                    
-                    if(isMyTaxon) {
-                        statement.setDeterminationRefFilename(refFilename);
-                    }
+
+                    statement.setDeterminationRefFilename(refFilename);
                 }
             }
             
@@ -555,7 +772,7 @@ public class Parse_WeakleyFlora_2012_Nov {
         
         int taxonIndex = 1;
         for(Taxonomy taxonomy : taxonomies) {
-            File outTaxonFile = new File(taxonDir, StringUtil.getSafeFileName(taxonIndex + ". " + taxonomy.getNomenclature().getName()) + ".xml");
+            File outTaxonFile = new File(taxonDir, StringUtil.getSafeFileName(taxonIndex + ". " + (taxonomy.getNomenclature().getName() + " " + taxonomy.getNomenclature().getAuthority())).trim() + ".xml");
             taxonomy.toXML(outTaxonFile);
             taxonIndex++;
         }

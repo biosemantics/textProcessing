@@ -16,9 +16,11 @@ import org.w3c.dom.Element;
  */
 public class TaxonomyNomenclature extends XMLWritable {
     private String name;
+    private String authority;
     private String rank;
     private String common_name;
     private String hierarchy;
+    private String hierarchy_clean;
     private String name_info;
     private List<TaxonomyOtherInfo> other_infos;
     
@@ -26,12 +28,14 @@ public class TaxonomyNomenclature extends XMLWritable {
         this.other_infos = new ArrayList<TaxonomyOtherInfo>();
     }
     
-    public TaxonomyNomenclature(String name, String rank, String common_name, String name_info, String hierarchy) {
+    public TaxonomyNomenclature(String name, String authority, String rank, String common_name, String name_info, String hierarchy, String hierarchy_clean) {
         this.name = name;
+        this.authority = authority;
         this.rank = rank;
         this.common_name = common_name;
         this.name_info = name_info;
         this.hierarchy = hierarchy;
+        this.hierarchy_clean = hierarchy_clean;
         
         this.other_infos = new ArrayList<TaxonomyOtherInfo>();
     }
@@ -42,6 +46,14 @@ public class TaxonomyNomenclature extends XMLWritable {
     
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public String getAuthority() {
+        return this.authority;
+    }
+    
+    public void setAuthority(String authority) {
+        this.authority = authority;
     }
     
     public String getRank() {
@@ -76,6 +88,14 @@ public class TaxonomyNomenclature extends XMLWritable {
         return this.hierarchy;
     }
     
+    public void setHierarchyClean(String hierarchy_clean) {
+        this.hierarchy_clean = hierarchy_clean;
+    }
+    
+    public String getHierarchyClean() {
+        return this.hierarchy_clean;
+    }
+    
     public void addOtherInfo(TaxonomyOtherInfo otherInfo) {
         this.other_infos.add(otherInfo);
     }
@@ -94,6 +114,13 @@ public class TaxonomyNomenclature extends XMLWritable {
         
         name.setTextContent(this.name);
         
+        if(this.authority != null && !this.authority.trim().equals("")) {
+            Element authority = doc.createElement("authority");
+            nomenclature.appendChild(authority);
+            
+            authority.setTextContent(this.authority);
+        }
+        
         Element rank = doc.createElement("rank");
         nomenclature.appendChild(rank);
         
@@ -110,6 +137,11 @@ public class TaxonomyNomenclature extends XMLWritable {
         nomenclature.appendChild(hierarchy);
         
         hierarchy.setTextContent(this.hierarchy);
+        
+        Element hierarchy_clean = doc.createElement("taxon_hierarchy_clean");
+        nomenclature.appendChild(hierarchy_clean);
+        
+        hierarchy_clean.setTextContent(this.hierarchy_clean);
         
         Element name_info = doc.createElement("name_info");
         nomenclature.appendChild(name_info);

@@ -78,6 +78,38 @@ public class Parse_9_Mitai_Tadauchi_2006 {
         return newTaxon.trim();
     }
     
+    private String getPureName(String name) {
+        String authority = getAuthority(name);
+        
+        int idx = name.indexOf(authority);
+        if(idx >= 0) {
+            return name.substring(0, idx).trim();
+        }
+        
+        System.out.println("No purename found - " + name);
+        return null;
+    }
+    
+    private String getAuthority(String name) {
+        int spacePos = 0;
+        for(int i=name.length()-1;i>=0;i--) {
+            if(name.charAt(i) == ' ') {
+                if(i >= 1 && name.charAt(i - 1) != '.') {
+                    spacePos = i;
+                    break;
+                }
+            }
+        }
+        
+        String authority = name.substring(spacePos + 1).trim();
+        if(authority.charAt(0) >= 'A' && authority.charAt(0) <= 'Z') {
+            return authority;
+        } else {
+            System.out.println("No authority found - " + name);
+            return null;
+        }
+    }
+    
     private TaxonomyNomenclature genNewTitle(String title) {
         TaxonomyNomenclature nomenclature = new TaxonomyNomenclature();
         nomenclature.setName(title);
@@ -89,9 +121,11 @@ public class Parse_9_Mitai_Tadauchi_2006 {
     private TaxonomyNomenclature genNewNomenclature(String taxon) {
         TaxonomyNomenclature nomenclature = new TaxonomyNomenclature();
         String taxonName = getTaxonName(taxon);
-        nomenclature.setName(taxonName);
+        nomenclature.setName(getPureName(taxonName));
+        nomenclature.setAuthority(getAuthority(taxonName));
         nomenclature.setNameInfo(taxon);
-        nomenclature.setHierarchy("Species " + taxonName);
+        nomenclature.setHierarchy(taxonName);
+        nomenclature.setHierarchyClean(getPureName(taxonName));
         nomenclature.setRank("Species");
         return nomenclature;
     }
@@ -468,7 +502,7 @@ public class Parse_9_Mitai_Tadauchi_2006 {
         for(Taxonomy taxon : taxonomies) {
             TaxonomyNomenclature nomenclature = taxon.getNomenclature();
             if(nomenclature != null) {
-                File outTaxonFile = new File(taxonOutDir, StringUtil.getSafeFileName(taxonfileIndex + ". " + nomenclature.getName()) + ".xml");
+                File outTaxonFile = new File(taxonOutDir, StringUtil.getSafeFileName(taxonfileIndex + ". " + nomenclature.getName() + " " +nomenclature.getAuthority()) + ".xml");
                 taxon.toXML(outTaxonFile);
                 taxonfileIndex++;
             }
