@@ -511,6 +511,6 @@ public class Parse_9_Mitai_Tadauchi_2006 {
     
     public static void main(String[] args) throws Exception {
         Parse_9_Mitai_Tadauchi_2006 obj = new Parse_9_Mitai_Tadauchi_2006();
-        obj.start(Integer.parseInt(args[0]));
+        obj.start(1);
     }
 }

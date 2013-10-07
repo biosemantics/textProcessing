@@ -288,23 +288,19 @@ public class RegExUtil {
     
     public static String getParagraph(String text) {
         //[page : 5]
-        String EXPRESSION = "^\\[page : (\\d+)\\](.+)";
-        Pattern p = Pattern.compile(EXPRESSION);
-        Matcher mt = p.matcher(text);
-        if(mt.matches()) {
-            return mt.group(2);
+        int idxBraceEnd = text.indexOf("]");
+        if(idxBraceEnd > 0) {
+            return text.substring(idxBraceEnd + 1);
         }
         return "";
     }
     
     public static int getPageOfParagraph(String text) {
         //[page : 5]
-        String EXPRESSION = "^\\[page : (\\d+)\\](.+)";
-        Pattern p = Pattern.compile(EXPRESSION);
-        Matcher mt = p.matcher(text);
-        if(mt.matches()) {
-            String page = mt.group(1);
-            return Integer.parseInt(page);
+        int idxBraceEnd = text.indexOf("]");
+        if(idxBraceEnd > 0) {
+            String newText = text.substring(8, idxBraceEnd);
+            return Integer.parseInt(newText);
         }
         return 0;
     }

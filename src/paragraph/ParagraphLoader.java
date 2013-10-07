@@ -44,6 +44,7 @@ public class ParagraphLoader {
         String[] paragraphs = RegExUtil.splitWithNewLines(filedata);
         
         for(String paragraphString : paragraphs) {
+            
             if(paragraphString != null && !paragraphString.trim().equals("")) {
                 // add rows
                 String paragraphContent = RegExUtil.getParagraph(paragraphString.trim());
