@@ -749,7 +749,7 @@ public class Parse_WeakleyFlora_2012_Nov {
             }
             
             // find child key files
-            for(KeyStatement statement : keyto.getStatement()) {
+            for(KeyStatement statement : keyto.getStatements()) {
                 if(statement.getDetermination() != null && isRefKeyStatement(statement.getDetermination())) {
                     // is ref
                     String refFilename = null;

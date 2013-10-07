@@ -15,6 +15,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import taxonomy.key.bean.KeyDiscussion;
 import taxonomy.key.bean.KeyHeading;
 import taxonomy.key.bean.KeyStatement;
 
@@ -25,9 +26,11 @@ import taxonomy.key.bean.KeyStatement;
 public class KeyTo {
     private String filename;
     private KeyHeading heading;
+    private List<KeyDiscussion> discussions;
     private List<KeyStatement> statements;
     
     public KeyTo() {
+        this.discussions = new ArrayList<KeyDiscussion>();
         this.statements = new ArrayList<KeyStatement>();
     }
     
@@ -47,11 +50,19 @@ public class KeyTo {
         return this.heading;
     }
     
+    public void addDiscussion(KeyDiscussion discuss) {
+        this.discussions.add(discuss);
+    }
+    
+    public List<KeyDiscussion> getDiscussions() {
+        return this.discussions;
+    }
+    
     public void addStatement(KeyStatement statement) {
         this.statements.add(statement);
     }
     
-    public List<KeyStatement> getStatement() {
+    public List<KeyStatement> getStatements() {
         return this.statements;
     }
     
@@ -78,6 +89,12 @@ public class KeyTo {
         
         if(this.heading != null) {
             this.heading.toXML(doc, key);
+        }
+        
+        if(this.discussions != null) {
+            for(KeyDiscussion discuss : this.discussions) {
+                discuss.toXML(doc, key);
+            }
         }
         
         if(this.statements != null) {
