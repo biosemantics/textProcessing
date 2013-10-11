@@ -268,7 +268,7 @@ public class NCEDjvuGui extends javax.swing.JFrame {
                         String pageString = StreamUtil.readFileString(pageFile);
                         String[] paragraphs = RegExUtil.splitWithNewLines(pageString);
                         boolean endWithNewLine = RegExUtil.isEndWithNewLines(pageString);
-                        
+                        //System.out.println("page " + pageNum + " ends with newLine" + endWithNewLine);
                         for(int i=0;i<paragraphs.length;i++) {
                             String para = paragraphs[i];
                             if(i == 0) {
@@ -476,6 +476,7 @@ public class NCEDjvuGui extends javax.swing.JFrame {
         btnSpecialMale = new javax.swing.JButton();
         btnSpecialFemale = new javax.swing.JButton();
         btnPrevPage = new javax.swing.JButton();
+        btnSpecialMercury = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -574,6 +575,13 @@ public class NCEDjvuGui extends javax.swing.JFrame {
             }
         });
 
+        btnSpecialMercury.setText("☿");
+        btnSpecialMercury.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSpecialMercuryActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -591,28 +599,31 @@ public class NCEDjvuGui extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnFinish))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(btnLoadDjvuXML)
                                     .addComponent(btnLoadCopyText))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(lblCopiedText)
-                                    .addComponent(lblDjvuXML)))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                    .addComponent(lblDjvuXML))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
                                 .addComponent(btnLoadDjvu)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(lblDjvu)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 155, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 152, Short.MAX_VALUE)
                                 .addComponent(btnConf)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btnSpecialFemale)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnSpecialMale)))
+                        .addGap(9, 9, 9)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnStart, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(btnSpecialMale)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnSpecialFemale)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnSpecialMercury)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -637,7 +648,8 @@ public class NCEDjvuGui extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSpecialMale)
-                    .addComponent(btnSpecialFemale))
+                    .addComponent(btnSpecialFemale)
+                    .addComponent(btnSpecialMercury))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -784,6 +796,10 @@ public class NCEDjvuGui extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnPrevPageActionPerformed
 
+    private void btnSpecialMercuryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSpecialMercuryActionPerformed
+        this.txtPara.insert("☿", this.txtPara.getCaretPosition());
+    }//GEN-LAST:event_btnSpecialMercuryActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -828,6 +844,7 @@ public class NCEDjvuGui extends javax.swing.JFrame {
     private javax.swing.JButton btnPrevPage;
     private javax.swing.JButton btnSpecialFemale;
     private javax.swing.JButton btnSpecialMale;
+    private javax.swing.JButton btnSpecialMercury;
     private javax.swing.JButton btnStart;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblCopiedText;

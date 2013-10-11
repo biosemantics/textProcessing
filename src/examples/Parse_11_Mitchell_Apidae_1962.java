@@ -36,7 +36,7 @@ import taxonomy.key.bean.KeyStatement;
  *
  * @author iychoi
  */
-public class Parse_10_Mitai_Tadauchi_2007 {
+public class Parse_11_Mitchell_Apidae_1962 {
     
     private int documentID;
     private Document document;
@@ -148,9 +148,25 @@ public class Parse_10_Mitai_Tadauchi_2007 {
         nomenclature.setAuthority(getAuthority(taxonName));
         //System.out.println("authority : " + getAuthority(taxonName));
         nomenclature.setNameInfo(taxon);
-        nomenclature.setHierarchy(getPureName(taxonName) + " " + getAuthority(taxonName));
-        nomenclature.setHierarchyClean(getPureName(taxonName));
+        nomenclature.setHierarchy("FAMILY APIDAE; " + getPureName(taxonName) + " " + getAuthority(taxonName));
+        nomenclature.setHierarchyClean("FAMILY APIDAE; " + getPureName(taxonName));
         nomenclature.setRank("Species");
+        return nomenclature;
+    }
+    
+    private TaxonomyNomenclature genNewNomenclatureForTitle(String taxon) {
+        TaxonomyNomenclature nomenclature = new TaxonomyNomenclature();
+        String taxonName = taxon;
+        String pureTaxonName = "APIDAE";
+        System.out.println("taxonName : " + taxonName);
+        nomenclature.setName(pureTaxonName);
+        //System.out.println("name : " + getPureName(taxonName));
+        nomenclature.setAuthority(null);
+        //System.out.println("authority : " + getAuthority(taxonName));
+        nomenclature.setNameInfo(taxonName);
+        nomenclature.setHierarchy(taxonName);
+        nomenclature.setHierarchyClean(taxonName);
+        nomenclature.setRank("Family");
         return nomenclature;
     }
     
@@ -175,7 +191,7 @@ public class Parse_10_Mitai_Tadauchi_2007 {
                 braceStart = true;
             } else if(content.charAt(i) == ')') {
                 braceStart = false;
-            } else if(content.charAt(i) == ':' || content.charAt(i) == '.') {
+            } else if(content.charAt(i) == ':' || content.charAt(i) == '.' || content.charAt(i) == '-') {
                 // possible position
                 if(!braceStart) {
                     divPosition = i;
@@ -284,6 +300,19 @@ public class Parse_10_Mitai_Tadauchi_2007 {
         return statement;
     }
     
+    private String getFullTaxonName(String name, String authority) {
+        String full = "";
+        if(name != null) {
+            full += name;
+        }
+        
+        if(authority != null) {
+            full += " " + authority;
+        }
+        
+        return full.trim();
+    }
+    
     public void start(int documentID) throws IOException, Exception {
         this.documentID = documentID;
         this.document = loadDocument(this.documentID);
@@ -295,7 +324,6 @@ public class Parse_10_Mitai_Tadauchi_2007 {
         Taxonomy taxonomy = null;
         KeyTo keyto = null;
         String prevTitle = null;
-        String prevMainTitle = null;
         for(Paragraph paragraph : paragraphs) {
             switch(paragraph.getType()) {
                 case PARAGRAPH_TAXONNAME:
@@ -305,41 +333,26 @@ public class Parse_10_Mitai_Tadauchi_2007 {
                     TaxonomyMeta meta = new TaxonomyMeta(document.getFilename());
                     taxonomy.setMeta(meta);
 
-                    taxonomy.setNomenclture(genNewNomenclature(paragraph.getContent()));
-
+                    if(paragraph.getContent().startsWith("FAMILY APIDAE")) {
+                        taxonomy.setNomenclture(genNewNomenclatureForTitle(paragraph.getContent()));
+                    } else {
+                        taxonomy.setNomenclture(genNewNomenclature(paragraph.getContent()));
+                    }
                     // add to list
                     taxonomies.add(taxonomy);
+                    break;
+                }
+                case PARAGRAPH_OTHERINFO:
+                {
+                    if(taxonomy != null) {
+                        taxonomy.getNomenclature().addOtherInfo(genNewOtherInfo(paragraph.getContent()));
+                    }
                     break;
                 }
                 case PARAGRAPH_SYNONYM: 
                 {
                     if(taxonomy != null) {
                         taxonomy.addSynonym(genNewSynonym(paragraph.getContent()));
-                    }
-                    break;
-                }
-                case PARAGRAPH_REMARKS_WITH_BODY:
-                {
-                    if(taxonomy != null) {
-                        if(taxonomy.getDiscussion() == null) {
-                            taxonomy.setDiscussion(new TaxonomyDiscussion());
-                        }
-
-                        String[] split = splitTitleBody(paragraph.getContent());
-                        prevTitle = split[0];
-
-                        taxonomy.getDiscussion().addElement(genNewElement(prevTitle, split[1]));
-                    }
-                    break;
-                }
-                case PARAGRAPH_REMARKS_BODY:
-                {
-                    if(taxonomy != null) {
-                        if(taxonomy.getDiscussion() == null) {
-                            taxonomy.setDiscussion(new TaxonomyDiscussion());
-                        }
-
-                        taxonomy.getDiscussion().addElement(genNewElement(prevTitle, paragraph.getContent()));
                     }
                     break;
                 }
@@ -364,31 +377,13 @@ public class Parse_10_Mitai_Tadauchi_2007 {
                     }
                     break;
                 }
-                case PARAGRAPH_DESCRIPTION:
-                {
-                    if(paragraph.getContent().startsWith("Description.") || paragraph.getContent().startsWith("Redescription.") || paragraph.getContent().startsWith("First generation.")) {
-                        prevMainTitle = paragraph.getContent();
-                    } else {
-                        // Female
-                        // male
-                        prevTitle = paragraph.getContent();
-                    }
-                    break;
-                }
                 case PARAGRAPH_DESCRIPTION_WITH_BODY:
                 {
                     if(taxonomy != null) {
                         String[] split = splitTitleBody(paragraph.getContent());
                         prevTitle = split[0];
 
-                        taxonomy.addDescription(genNewDescription(prevMainTitle + "; " + prevTitle, split[1]));
-                    }
-                    break;
-                }
-                case PARAGRAPH_DESCRIPTION_BODY:
-                {
-                    if(taxonomy != null) {
-                        taxonomy.addDescription(genNewDescription(prevMainTitle + "; " + prevTitle, paragraph.getContent()));
+                        taxonomy.addDescription(genNewDescription(prevTitle, split[1]));
                     }
                     break;
                 }
@@ -404,13 +399,18 @@ public class Parse_10_Mitai_Tadauchi_2007 {
                 }
                 case PARAGRAPH_KEY:
                 {
-                    if(paragraph.getContent().startsWith("Artificial key to the all Japanese species")) {
+                    if(paragraph.getContent().startsWith("KEY TO SPECIES")) {
                         prevTitle = paragraph.getContent();
                     } else {
                         if(taxonomy != null) {
                             taxonomy.increaseKeyToTable();
                         }
-                        keyto = genKeyTo(prevTitle + " - " + paragraph.getContent());
+                        
+                        if(prevTitle == null) {
+                            keyto = genKeyTo(paragraph.getContent());
+                        } else {
+                            keyto = genKeyTo(prevTitle + " - " + paragraph.getContent());
+                        }
                         keytos.add(keyto);
                     }
                     break;
@@ -444,12 +444,12 @@ public class Parse_10_Mitai_Tadauchi_2007 {
         File keyOutDir = new File("key");
         keyOutDir.mkdir();
         int keyfileIndex = 1;
-        //int allocKeyToTableNum = 0;
+        int allocKeyToTableNum = 0;
         for(KeyTo key : keytos) {
             File outKeyFile = new File(keyOutDir, StringUtil.getSafeFileName(keyfileIndex + ". " + key.getHeading().getHeading()) + ".xml");
             key.toXML(outKeyFile);
             keyfileIndex++;
-            /*
+            
             int sumKeyTo = 0;
             
             for(int i=0;i<taxonomies.size();i++) {
@@ -463,7 +463,6 @@ public class Parse_10_Mitai_Tadauchi_2007 {
                     break;
                 }
             }
-            */
         }
         
         File taxonOutDir = new File("taxon");
@@ -474,7 +473,7 @@ public class Parse_10_Mitai_Tadauchi_2007 {
         for(Taxonomy taxon : taxonomies) {
             TaxonomyNomenclature nomenclature = taxon.getNomenclature();
             if(nomenclature != null) {
-                File outTaxonFile = new File(taxonOutDir, StringUtil.getSafeFileName(taxonfileIndex + ". " + nomenclature.getName() + " " +nomenclature.getAuthority()) + ".xml");
+                File outTaxonFile = new File(taxonOutDir, StringUtil.getSafeFileName(taxonfileIndex + ". " + getFullTaxonName(nomenclature.getName(), nomenclature.getAuthority())) + ".xml");
                 taxon.toXML(outTaxonFile);
                 taxonfileIndex++;
             }
@@ -482,7 +481,7 @@ public class Parse_10_Mitai_Tadauchi_2007 {
     }
     
     public static void main(String[] args) throws Exception {
-        Parse_10_Mitai_Tadauchi_2007 obj = new Parse_10_Mitai_Tadauchi_2007();
-        obj.start(9);
+        Parse_11_Mitchell_Apidae_1962 obj = new Parse_11_Mitchell_Apidae_1962();
+        obj.start(11);
     }
 }

@@ -337,7 +337,7 @@ public class Parse_WeakleyFlora_2012_Nov {
             }
         }
         
-        System.out.println("found : " + taxonNameInfoBoldStart.trim());
+        //System.out.println("found : " + taxonNameInfoBoldStart.trim());
         return taxonNameInfoBoldStart.trim();
     }
     
@@ -366,14 +366,18 @@ public class Parse_WeakleyFlora_2012_Nov {
         String rem = null;
         
         int taxonNameEndPos = title.indexOf(taxonName);
-        if(taxonNameEndPos > 0) {
+        if(taxonNameEndPos >= 0) {
             rem = title.substring(taxonNameEndPos + taxonName.length()).trim();
         } else {
             System.err.println("taxon name error : " + title);
             return null;
         }
         
-        Pattern pattern1 = Pattern.compile("^(.+) \\d+ \\((.+)\\)$");
+        //System.out.println("Full name : " + title);
+        //System.out.println("Taxon name : " + taxonName);
+        //System.out.println("rem : " + rem);
+        
+        Pattern pattern1 = Pattern.compile("^(.+) \\d+\\s?(\\((.+)\\))?$");
         Matcher mt1 = pattern1.matcher(rem);
         if (mt1.find()) {
             return mt1.group(1).trim();
@@ -396,8 +400,16 @@ public class Parse_WeakleyFlora_2012_Nov {
         int idx = rem.indexOf(",");
         if(idx >= 0) {
             return rem.substring(0, idx).trim();
+        } else {
+            // end with .?
+            System.err.println("subtaxon name error : " + title);
+            
+            if(rem.endsWith(".")) {
+                return rem.substring(0, rem.length() - 1).trim();
+            } else {
+                return rem.trim();
+            }
         }
-        return null;
     }
     
     private static String getParentSubTaxonAuthority(String title, String taxonName) {
@@ -470,6 +482,35 @@ public class Parse_WeakleyFlora_2012_Nov {
             bodyExt[1] = "";
         }
         return bodyExt;
+    }
+    
+    private static String combineNameAuthority(String taxonName, String taxonAuthority) {
+        String combined = "";
+        if(taxonName != null) {
+            combined += taxonName;
+        }
+        
+        if(taxonAuthority != null) {
+            combined += " " + taxonAuthority;
+        }
+        
+        return combined.trim();
+    }
+    
+    private static String combineNameAuthority(Taxonomy taxon) {
+        String taxonName = taxon.getNomenclature().getName();
+        String taxonAuthority = taxon.getNomenclature().getAuthority();
+        
+        String combined = "";
+        if(taxonName != null) {
+            combined += taxonName;
+        }
+        
+        if(taxonAuthority != null) {
+            combined += " " + taxonAuthority;
+        }
+        
+        return combined.trim();
     }
     
     /*
@@ -572,9 +613,8 @@ public class Parse_WeakleyFlora_2012_Nov {
                         prevTaxon.getNomenclature().setHierarchyClean("ROSACEAE");
                     } else {
                         String taxonName = prevTaxon.getNomenclature().getName();
-                        String taxonAuthority = prevTaxon.getNomenclature().getAuthority();
                         prevTaxon.getNomenclature().setRank("Genus");
-                        prevTaxon.getNomenclature().setHierarchy("ROSACEAE A.L. de Jussieu; " + (taxonName + " " + taxonAuthority).trim());
+                        prevTaxon.getNomenclature().setHierarchy("ROSACEAE A.L. de Jussieu; " + combineNameAuthority(prevTaxon));
                         prevTaxon.getNomenclature().setHierarchyClean("ROSACEAE; " + taxonName);
                     }
                     taxonomies.add(prevTaxon);
@@ -612,8 +652,12 @@ public class Parse_WeakleyFlora_2012_Nov {
                     if(prevTaxon != null) {
                         if(bPrevTaxonTitle) {
                             String original = prevTaxon.getNomenclature().getNameInfo();
-                            prevTaxon.getNomenclature().setNameInfo(original + " " + paragraphString);
-                            prevTaxon.getNomenclature().setCommonName(getTaxonCommonName(original + " " + paragraphString));
+                            String taxonName = prevTaxon.getNomenclature().getName();
+                            String taxonNameInfo = (original + " " + paragraphString).trim();
+                            prevTaxon.getNomenclature().setNameInfo(taxonNameInfo);
+                            prevTaxon.getNomenclature().setHierarchy("ROSACEAE A.L. de Jussieu; " + combineNameAuthority(prevTaxon));
+                            prevTaxon.getNomenclature().setHierarchyClean("ROSACEAE; " + taxonName);
+                            prevTaxon.getNomenclature().setCommonName(getTaxonCommonName(taxonNameInfo));
                         }
                     }
                     // keyto heading
@@ -630,7 +674,7 @@ public class Parse_WeakleyFlora_2012_Nov {
                 String paragraphString = para.getText().trim();
                 if(isKeyData(paragraphString)) {
                     if(keyTitle == null) {
-                        keyTitle = "Key To " + prevTaxon.getNomenclature().getName() + " " + prevTaxon.getNomenclature().getAuthority();
+                        keyTitle = "Key To " + combineNameAuthority(prevTaxon);
                         
                         prevKeyTo = genKeyTo(keyTitle);
                         keytos.add(prevKeyTo);
@@ -696,17 +740,17 @@ public class Parse_WeakleyFlora_2012_Nov {
                                 subTaxon.getNomenclature().setRank("Subspecies");
                                 String parentTaxonName = getParentSubTaxonName(para, taxonName);
                                 String parentTaxonAuthority = getParentSubTaxonAuthority(taxonName, parentTaxonName);
-                                subTaxon.getNomenclature().setHierarchy(prevTaxon.getNomenclature().getHierarchy() + "; " + (parentTaxonName + " " + parentTaxonAuthority).trim() + "; " + (taxonName + " " + authority).trim());
+                                subTaxon.getNomenclature().setHierarchy(prevTaxon.getNomenclature().getHierarchy() + "; " + combineNameAuthority(parentTaxonName, parentTaxonAuthority) + "; " + combineNameAuthority(taxonName, authority));
                                 subTaxon.getNomenclature().setHierarchyClean(prevTaxon.getNomenclature().getHierarchyClean() + "; " + parentTaxonName + "; " + taxonName);
                             } else if(taxonName.indexOf("var.") > 0) {
                                 String parentTaxonName = getParentSubTaxonName(para, taxonName);
                                 String parentTaxonAuthority = getParentSubTaxonAuthority(taxonName, parentTaxonName);
                                 subTaxon.getNomenclature().setRank("Variety");
-                                subTaxon.getNomenclature().setHierarchy(prevTaxon.getNomenclature().getHierarchy() + "; " + (parentTaxonName + " " + parentTaxonAuthority).trim() + "; " + (taxonName + " " + authority).trim());
+                                subTaxon.getNomenclature().setHierarchy(prevTaxon.getNomenclature().getHierarchy() + "; " + combineNameAuthority(parentTaxonName, parentTaxonAuthority) + "; " + combineNameAuthority(taxonName, authority));
                                 subTaxon.getNomenclature().setHierarchyClean(prevTaxon.getNomenclature().getHierarchyClean() + "; " + parentTaxonName + "; " + taxonName);
                             } else {
                                 subTaxon.getNomenclature().setRank("Species");
-                                subTaxon.getNomenclature().setHierarchy(prevTaxon.getNomenclature().getHierarchy() + "; " + (taxonName + " " + authority).trim());
+                                subTaxon.getNomenclature().setHierarchy(prevTaxon.getNomenclature().getHierarchy() + "; " + combineNameAuthority(taxonName, authority));
                                 subTaxon.getNomenclature().setHierarchyClean(prevTaxon.getNomenclature().getHierarchyClean() + "; " + taxonName);
                             }
                             
@@ -772,7 +816,7 @@ public class Parse_WeakleyFlora_2012_Nov {
         
         int taxonIndex = 1;
         for(Taxonomy taxonomy : taxonomies) {
-            File outTaxonFile = new File(taxonDir, StringUtil.getSafeFileName(taxonIndex + ". " + (taxonomy.getNomenclature().getName() + " " + taxonomy.getNomenclature().getAuthority())).trim() + ".xml");
+            File outTaxonFile = new File(taxonDir, StringUtil.getSafeFileName(taxonIndex + ". " + combineNameAuthority(taxonomy) + ".xml"));
             taxonomy.toXML(outTaxonFile);
             taxonIndex++;
         }

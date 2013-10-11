@@ -280,7 +280,7 @@ public class RegExUtil {
         String EXPRESSION = "\\n[\\r\\t ]*\\n[\\r\\t ]*\\n*$";
         Pattern p = Pattern.compile(EXPRESSION);
         Matcher mt = p.matcher(text);
-        if(mt.matches()) {
+        if(mt.find()) {
             return true;
         }
         return false;
