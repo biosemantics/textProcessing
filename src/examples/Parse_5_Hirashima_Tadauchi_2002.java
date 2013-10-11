@@ -27,6 +27,7 @@ import taxonomy.bean.TaxonomyMeta;
 import taxonomy.bean.TaxonomyNomenclature;
 import taxonomy.bean.TaxonomyOtherInfo;
 import taxonomy.bean.TaxonomySynonym;
+import taxonomy.bean.TaxonomyTypeSpecies;
 import taxonomy.key.KeyTo;
 import taxonomy.key.bean.KeyDiscussion;
 import taxonomy.key.bean.KeyHeading;
@@ -36,7 +37,7 @@ import taxonomy.key.bean.KeyStatement;
  *
  * @author iychoi
  */
-public class Parse_4_Droege_2010 {
+public class Parse_5_Hirashima_Tadauchi_2002 {
     
     private int documentID;
     private Document document;
@@ -148,9 +149,25 @@ public class Parse_4_Droege_2010 {
         nomenclature.setAuthority(getAuthority(taxonName));
         //System.out.println("authority : " + getAuthority(taxonName));
         nomenclature.setNameInfo(taxon);
-        nomenclature.setHierarchy(getPureName(taxonName) + " " + getAuthority(taxonName));
-        nomenclature.setHierarchyClean(getPureName(taxonName));
+        nomenclature.setHierarchy("Nomada Scopoli; Subgenus Adamon; " + getPureName(taxonName) + " " + getAuthority(taxonName));
+        nomenclature.setHierarchyClean("Nomada Scopoli; Subgenus Adamon; " + getPureName(taxonName));
         nomenclature.setRank("Species");
+        return nomenclature;
+    }
+    
+    private TaxonomyNomenclature genNewNomenclatureForTitle(String taxon) {
+        TaxonomyNomenclature nomenclature = new TaxonomyNomenclature();
+        String taxonName = taxon;
+        String pureTaxonName = "Adamon";
+        System.out.println("taxonName : " + taxonName);
+        nomenclature.setName(pureTaxonName);
+        //System.out.println("name : " + getPureName(taxonName));
+        nomenclature.setAuthority(null);
+        //System.out.println("authority : " + getAuthority(taxonName));
+        nomenclature.setNameInfo(taxonName);
+        nomenclature.setHierarchy("Nomada Scopoli; Subgenus Adamon");
+        nomenclature.setHierarchyClean("Nomada Scopoli; Subgenus Adamon");
+        nomenclature.setRank("Subgenus");
         return nomenclature;
     }
     
@@ -165,6 +182,12 @@ public class Parse_4_Droege_2010 {
         elem.setName(title);
         elem.setText(content);
         return elem;
+    }
+    
+    private TaxonomyTypeSpecies genNewTypeSpecies(String typespeciesStr) {
+        TaxonomyTypeSpecies typespecies = new TaxonomyTypeSpecies();
+        typespecies.setTypeSpecies(typespeciesStr);
+        return typespecies;
     }
     
     private String[] splitTitleBody(String content) {
@@ -249,7 +272,11 @@ public class Parse_4_Droege_2010 {
     private TaxonomyDescription genNewDescription(String title, String content) {
         TaxonomyDescription desc = new TaxonomyDescription();
         desc.setType(TaxonomyDescription.TaxonomyDescriptionType.DESCRIPTION_GENERIC);
-        desc.setTitle(title);
+        if(removeTrailingDot(title).equalsIgnoreCase("description")) {
+            // make it empty
+        } else {
+            desc.setTitle(removeTrailingDot(title));
+        }
         desc.setDescription(content);
         return desc;
     }
@@ -259,6 +286,30 @@ public class Parse_4_Droege_2010 {
         desc.setType(TaxonomyDescription.TaxonomyDescriptionType.DESCRIPTION_DIAGNOSIS);
         desc.setDescription(content);
         return desc;
+    }
+    
+    private KeyTo genKeyTo(String content) {
+        KeyTo keyto = new KeyTo();
+        KeyHeading heading = new KeyHeading();
+        heading.setHeading(content);
+        keyto.setHeading(heading);
+        return keyto;
+    }
+    
+    private KeyStatement genKeyStatement(String content) {
+        KeyStatement statement = new KeyStatement();
+        String[] split = splitKeyStatement(content);
+        statement.setId(split[0]);
+        statement.setStatement(split[1]);
+        
+        try {
+            int nextStatementId = Integer.parseInt(split[2].substring(0, 1));
+            statement.setNextStatementId(split[2]);
+        } catch(Exception ex) {
+            statement.setDetermination(split[2]);
+        }
+        
+        return statement;
     }
     
     private String getFullTaxonName(String name, String authority) {
@@ -294,7 +345,11 @@ public class Parse_4_Droege_2010 {
                     TaxonomyMeta meta = new TaxonomyMeta(document.getFilename());
                     taxonomy.setMeta(meta);
 
-                    taxonomy.setNomenclture(genNewNomenclature(paragraph.getContent()));
+                    if(paragraph.getContent().startsWith("Adamon, a new subgenus of Nomada Scopoli")) {
+                        taxonomy.setNomenclture(genNewNomenclatureForTitle(paragraph.getContent()));
+                    } else {
+                        taxonomy.setNomenclture(genNewNomenclature(paragraph.getContent()));
+                    }
                     
                     // add to list
                     taxonomies.add(taxonomy);
@@ -333,18 +388,33 @@ public class Parse_4_Droege_2010 {
                     }
                     break;
                 }
-                case PARAGRAPH_DISCUSSION:
-                {
-                    prevTitle = paragraph.getContent();
-                    break;
-                }
-                case PARAGRAPH_DISCUSSION_BODY:
+                case PARAGRAPH_SUBTITLE_WITH_BODY:
                 {
                     if(taxonomy != null) {
-                        if(taxonomy.getDiscussion() == null) {
-                            taxonomy.setDiscussion(new TaxonomyDiscussion());
-                        }
-                        taxonomy.getDiscussion().addElement(genNewElement(prevTitle, paragraph.getContent()));
+                        String[] split = splitTitleBody(paragraph.getContent());
+                        prevTitle = split[0];
+
+                        taxonomy.addElement(genNewElement(prevTitle, split[1]));
+                    }
+                    break;
+                }
+                case PARAGRAPH_TYPESPECIES_WITH_BODY:
+                {
+                    if(taxonomy != null) {
+                        String[] split = splitTitleBody(paragraph.getContent());
+                        prevTitle = split[0];
+
+                        taxonomy.addTypeSpecies(genNewTypeSpecies(split[1]));
+                    }
+                    break;
+                }
+                case PARAGRAPH_DISTRIBUTION_WITH_BODY:
+                {
+                    if(taxonomy != null) {
+                        String[] split = splitTitleBody(paragraph.getContent());
+                        prevTitle = split[0];
+
+                        taxonomy.addElement(genNewElement(prevTitle, split[1]));
                     }
                     break;
                 }
@@ -372,6 +442,23 @@ public class Parse_4_Droege_2010 {
                     }
                     break;
                 }
+                case PARAGRAPH_KEY:
+                {
+                    if(taxonomy != null) {
+                        taxonomy.increaseKeyToTable();
+                    }
+
+                    keyto = genKeyTo(paragraph.getContent());
+                    keytos.add(keyto);
+                    break;
+                }
+                case PARAGRAPH_KEY_BODY:
+                {
+                    if(keyto != null) {
+                        keyto.addStatement(genKeyStatement(paragraph.getContent()));
+                    }
+                    break;
+                }
                 case PARAGRAPH_IGNORE:
                     break;
                 default:
@@ -381,6 +468,18 @@ public class Parse_4_Droege_2010 {
                     break;
                 }
             }
+        }
+        
+        // to file
+        File keyOutDir = new File("key");
+        keyOutDir.mkdir();
+        int keyfileIndex = 1;
+        for(KeyTo key : keytos) {
+            File outKeyFile = new File(keyOutDir, StringUtil.getSafeFileName(keyfileIndex + ". " + key.getHeading().getHeading()) + ".xml");
+            key.toXML(outKeyFile);
+            keyfileIndex++;
+            
+            taxonomies.get(0).addKeyFile(new TaxonomyKeyFile(outKeyFile));
         }
         
         File taxonOutDir = new File("taxon");
@@ -399,7 +498,7 @@ public class Parse_4_Droege_2010 {
     }
     
     public static void main(String[] args) throws Exception {
-        Parse_4_Droege_2010 obj = new Parse_4_Droege_2010();
-        obj.start(12);
+        Parse_5_Hirashima_Tadauchi_2002 obj = new Parse_5_Hirashima_Tadauchi_2002();
+        obj.start(13);
     }
 }

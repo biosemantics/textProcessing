@@ -359,10 +359,6 @@ public class Parse_11_Mitchell_Apidae_1962 {
                 case PARAGRAPH_DISCUSSION_NON_TITLED_BODY:
                 {
                     if(taxonomy != null) {
-                        if(taxonomy.getDiscussion() == null) {
-                            taxonomy.setDiscussion(new TaxonomyDiscussion());
-                        }
-
                         taxonomy.addDiscussionNonTitled(genDiscussion(paragraph.getContent()));
                     }
                     break;

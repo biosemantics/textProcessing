@@ -387,10 +387,6 @@ public class Parse_10_Mitai_Tadauchi_2007 {
                 case PARAGRAPH_DISCUSSION_NON_TITLED_BODY:
                 {
                     if(taxonomy != null) {
-                        if(taxonomy.getDiscussion() == null) {
-                            taxonomy.setDiscussion(new TaxonomyDiscussion());
-                        }
-
                         taxonomy.addDiscussionNonTitled(genDiscussion(paragraph.getContent()));
                     }
                     break;
