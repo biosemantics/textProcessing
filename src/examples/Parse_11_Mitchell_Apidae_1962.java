@@ -157,7 +157,7 @@ public class Parse_11_Mitchell_Apidae_1962 {
     private TaxonomyNomenclature genNewNomenclatureForTitle(String taxon) {
         TaxonomyNomenclature nomenclature = new TaxonomyNomenclature();
         String taxonName = taxon;
-        String pureTaxonName = "APIDAE";
+        String pureTaxonName = "FAMILY APIDAE";
         System.out.println("taxonName : " + taxonName);
         nomenclature.setName(pureTaxonName);
         //System.out.println("name : " + getPureName(taxonName));
