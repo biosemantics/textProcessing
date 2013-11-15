@@ -459,6 +459,15 @@ public class NCEParaGui extends javax.swing.JFrame {
             if(paragraph.getType().equals(ParagraphType.PARAGRAPH_UNKNOWN)) {
                 boolean bUpdated = true;
                 switch(previousType) {
+                    case PARAGRAPH_SYNONYM:
+                        paragraph.setType(ParagraphType.PARAGRAPH_SYNONYM);
+                        break;
+                    case PARAGRAPH_OTHERINFO:
+                        paragraph.setType(ParagraphType.PARAGRAPH_OTHERINFO);
+                        break;
+                    case PARAGRAPH_IGNORE:
+                        paragraph.setType(ParagraphType.PARAGRAPH_OTHERINFO);
+                        break;
                     case PARAGRAPH_ABSTRACT:
                         paragraph.setType(ParagraphType.PARAGRAPH_ABSTRACT_BODY);
                         break;
@@ -487,7 +496,7 @@ public class NCEParaGui extends javax.swing.JFrame {
                         paragraph.setType(ParagraphType.PARAGRAPH_DISTRIBUTION_BODY);
                         break;
                     case PARAGRAPH_DISTRIBUTION_WITH_BODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_DISTRIBUTION_BODY);
+                        paragraph.setType(ParagraphType.PARAGRAPH_DISTRIBUTION_WITH_BODY);
                         break;
                     case PARAGRAPH_KEY:
                         paragraph.setType(ParagraphType.PARAGRAPH_KEY_BODY);
@@ -502,7 +511,7 @@ public class NCEParaGui extends javax.swing.JFrame {
                         paragraph.setType(ParagraphType.PARAGRAPH_REMARKS_BODY);
                         break;
                     case PARAGRAPH_REMARKS_WITH_BODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_REMARKS_BODY);
+                        paragraph.setType(ParagraphType.PARAGRAPH_REMARKS_WITH_BODY);
                         break;
                     case PARAGRAPH_ACKNOWLEDGEMENT:
                         paragraph.setType(ParagraphType.PARAGRAPH_ACKNOWLEDGEMENT_BODY);
@@ -516,11 +525,17 @@ public class NCEParaGui extends javax.swing.JFrame {
                     case PARAGRAPH_DIAGNOSIS_BODY:
                         paragraph.setType(ParagraphType.PARAGRAPH_DIAGNOSIS_BODY);
                         break;
+                    case PARAGRAPH_DIAGNOSIS_WITH_BODY:
+                        paragraph.setType(ParagraphType.PARAGRAPH_DIAGNOSIS_WITH_BODY);
+                        break;
                     case PARAGRAPH_DEFINITION:
                         paragraph.setType(ParagraphType.PARAGRAPH_DEFINITION_BODY);
                         break;
                     case PARAGRAPH_DEFINITION_BODY:
                         paragraph.setType(ParagraphType.PARAGRAPH_DEFINITION_BODY);
+                        break;
+                    case PARAGRAPH_DEFINITION_WITH_BODY:
+                        paragraph.setType(ParagraphType.PARAGRAPH_DEFINITION_WITH_BODY);
                         break;
                     case PARAGRAPH_DESCRIPTION:
                         paragraph.setType(ParagraphType.PARAGRAPH_DESCRIPTION_BODY);
@@ -528,11 +543,20 @@ public class NCEParaGui extends javax.swing.JFrame {
                     case PARAGRAPH_DESCRIPTION_BODY:
                         paragraph.setType(ParagraphType.PARAGRAPH_DESCRIPTION_BODY);
                         break;
+                    case PARAGRAPH_DESCRIPTION_WITH_BODY:
+                        paragraph.setType(ParagraphType.PARAGRAPH_DESCRIPTION_WITH_BODY);
+                        break;
                     case PARAGRAPH_DISCUSSION:
                         paragraph.setType(ParagraphType.PARAGRAPH_DISCUSSION);
                         break;
                     case PARAGRAPH_DISCUSSION_BODY:
                         paragraph.setType(ParagraphType.PARAGRAPH_DISCUSSION_BODY);
+                        break;
+                    case PARAGRAPH_DISCUSSION_WITH_BODY:
+                        paragraph.setType(ParagraphType.PARAGRAPH_DISCUSSION_WITH_BODY);
+                        break;
+                    case PARAGRAPH_DISCUSSION_NON_TITLED_BODY:
+                        paragraph.setType(ParagraphType.PARAGRAPH_DISCUSSION_NON_TITLED_BODY);
                         break;
                     case PARAGRAPH_TYPESPECIES:
                         paragraph.setType(ParagraphType.PARAGRAPH_TYPESPECIES_BODY);
@@ -545,6 +569,9 @@ public class NCEParaGui extends javax.swing.JFrame {
                         break;
                     case PARAGRAPH_SUBBODY:
                         paragraph.setType(ParagraphType.PARAGRAPH_SUBBODY);
+                        break;
+                    case PARAGRAPH_SUBTITLE_WITH_BODY:
+                        paragraph.setType(ParagraphType.PARAGRAPH_SUBTITLE_WITH_BODY);
                         break;
                     default:
                         bUpdated = false;

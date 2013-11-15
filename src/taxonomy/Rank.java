@@ -40,6 +40,7 @@ public class Rank {
             rankPredefined.add("Subgenera");
             rankPredefined.add("Subgenus");
             rankPredefined.add("Species");
+            rankPredefined.add("Subspecies");
         }
     }
 

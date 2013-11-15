@@ -25,7 +25,7 @@ public class DjvuConfiguration {
     
     private int thresholdMinIndent = 10;
     private int thresholdMaxIndent = 100;
-    private int thresholdMinVGap = 20;
+    private int thresholdMinVGap = 40;
     
     public DjvuConfiguration() {
         

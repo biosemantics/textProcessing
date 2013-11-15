@@ -5,6 +5,7 @@
 package djvu;
 
 import common.utils.RegExUtil;
+import djvu.algorithms.DjvuLineOrderAlgAuto;
 import djvu.algorithms.DjvuLineParagraphAlgCaption;
 import djvu.algorithms.DjvuLineParagraphAlgGap;
 import djvu.algorithms.DjvuLineParagraphAlgIndent;
@@ -59,7 +60,7 @@ public class testDjvuParagraphExtractor {
         paraAlgs.add(new DjvuLineParagraphAlgGap());
         paraAlgs.add(new DjvuLineParagraphAlgCaption());
         
-        List<String> paragraphs = paragraphExtractor.extractParagraphs(pages, filter, paraAlgs, conf);
+        List<String> paragraphs = paragraphExtractor.extractParagraphs(pages, filter, paraAlgs, new DjvuLineOrderAlgAuto(), conf);
         
         for(String paragraph : paragraphs) {
             System.out.println(paragraph);

@@ -30,6 +30,8 @@
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="lblPage" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
+                      <Component id="btnReprocessPage" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="btnPrevPage" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="btnNextPage" min="-2" max="-2" attributes="0"/>
@@ -37,28 +39,36 @@
                       <Component id="btnFinish" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
-                      <Group type="103" groupAlignment="1" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="btnLoadDjvuXML" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="btnLoadCopyText" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Group type="103" groupAlignment="1" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="btnLoadDjvuXML" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="btnLoadCopyText" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="lblCopiedText" min="-2" max="-2" attributes="0"/>
+                                          <Component id="lblDjvuXML" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="1" attributes="0">
+                                      <Component id="btnLoadDjvu" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="lblDjvu" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace pref="152" max="32767" attributes="0"/>
+                                      <Component id="btnConf" min="-2" max="-2" attributes="0"/>
+                                  </Group>
                               </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="lblCopiedText" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lblDjvuXML" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
                           </Group>
-                          <Group type="102" alignment="1" attributes="0">
-                              <Component id="btnLoadDjvu" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="lblDjvu" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="152" max="32767" attributes="0"/>
-                              <Component id="btnConf" min="-2" max="-2" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="cboParagraphAlg" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="btnStart" alignment="1" min="-2" pref="109" max="-2" attributes="0"/>
                           <Group type="102" alignment="1" attributes="0">
@@ -104,6 +114,7 @@
                   <Component id="btnSpecialMale" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnSpecialFemale" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnSpecialMercury" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="cboParagraphAlg" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jScrollPane1" pref="149" max="32767" attributes="0"/>
@@ -113,6 +124,7 @@
                   <Component id="lblPage" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnFinish" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnPrevPage" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnReprocessPage" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
@@ -250,6 +262,27 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSpecialMercuryActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnReprocessPage">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Reparse"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnReprocessPageActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cboParagraphAlg">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="2">
+            <StringItem index="0" value="AUTO"/>
+            <StringItem index="1" value="2COL"/>
+          </StringArray>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cboParagraphAlgActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

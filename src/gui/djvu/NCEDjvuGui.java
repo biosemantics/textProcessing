@@ -12,11 +12,14 @@ import gui.common.ScreenUtil;
 import djvu.DjvuConfiguration;
 import djvu.DjvuLine;
 import djvu.DjvuLineFilter;
+import djvu.DjvuLineOrderAlg;
 import djvu.DjvuLineTextCorrector;
 import djvu.DjvuPage;
 import djvu.DjvuParagraphAlg;
 import djvu.DjvuParagraphExtractor;
 import djvu.DjvuXMLReader;
+import djvu.algorithms.DjvuLineOrderAlg2Col;
+import djvu.algorithms.DjvuLineOrderAlgAuto;
 import djvu.algorithms.DjvuLineParagraphAlgCaption;
 import djvu.algorithms.DjvuLineParagraphAlgGap;
 import djvu.algorithms.DjvuLineParagraphAlgIndent;
@@ -139,9 +142,9 @@ public class NCEDjvuGui extends javax.swing.JFrame {
     private void processFirstPage() {
         try {
             if(this.parsedPages != null && this.parsedPages.size() > 0) {
-                processPage(this.parsedPages.get(0).getPagenum());
+                processPage(this.parsedPages.get(0).getPagenum(), true);
             } else {
-                processPage(1);
+                processPage(1, true);
             }
         } catch(Exception ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage());
@@ -164,7 +167,7 @@ public class NCEDjvuGui extends javax.swing.JFrame {
             }
             
             if(targetPage != null) {
-                processPage(targetPage.getPagenum());
+                processPage(targetPage.getPagenum(), true);
             } else {
                 boolean bFindPage = false;
                 int wantPage = this.currentPage + 1;
@@ -176,7 +179,7 @@ public class NCEDjvuGui extends javax.swing.JFrame {
                 }
                 
                 if(bFindPage) {
-                    processPage(this.currentPage + 1);
+                    processPage(this.currentPage + 1, true);
                 } else {
                     throw new Exception("There's no next page");
                 }
@@ -200,7 +203,7 @@ public class NCEDjvuGui extends javax.swing.JFrame {
             }
             
             if(targetPage != null) {
-                processPage(targetPage.getPagenum());
+                processPage(targetPage.getPagenum(), true);
             } else {
                 boolean bFindPage = false;
                 int wantPage = this.currentPage - 1;
@@ -212,7 +215,7 @@ public class NCEDjvuGui extends javax.swing.JFrame {
                 }
                 
                 if(bFindPage) {
-                    processPage(this.currentPage - 1);
+                    processPage(this.currentPage - 1, true);
                 } else {
                     throw new Exception("There's no prev page");
                 }
@@ -305,7 +308,7 @@ public class NCEDjvuGui extends javax.swing.JFrame {
         }
     }
     
-    private void processPage(int pageNum) throws Exception {
+    private void processPage(int pageNum, boolean usePageFile) throws Exception {
         boolean findPage = false;
         DjvuPage targetPage = null;
         for(DjvuPage page : this.parsedPages) {
@@ -318,11 +321,17 @@ public class NCEDjvuGui extends javax.swing.JFrame {
         if(findPage) {
             // check stored file
             File prevFile = getPageFile(targetPage.getPagenum());
-            if(prevFile.exists() && prevFile.isFile()) {
+            if(usePageFile && prevFile.exists() && prevFile.isFile()) {
                 String pageText = StreamUtil.readFileString(prevFile);
                 this.txtPara.setText(pageText);
             } else {
                 DjvuParagraphExtractor paraExtractor = new DjvuParagraphExtractor();
+                
+                DjvuLineOrderAlg orderAlg = new DjvuLineOrderAlgAuto();
+                if(this.cboParagraphAlg.getSelectedItem().equals("2COL")) {
+                    orderAlg = new DjvuLineOrderAlg2Col();
+                }
+                
                 DjvuLineFilter filter = new DjvuLineFilter() {
                     @Override
                     public boolean accept(DjvuLine line) {
@@ -339,7 +348,7 @@ public class NCEDjvuGui extends javax.swing.JFrame {
                 paraAlgs.add(new DjvuLineParagraphAlgGap());
                 paraAlgs.add(new DjvuLineParagraphAlgCaption());
 
-                List<String> paragraphs = paraExtractor.extractParagraphs(targetPage, filter, paraAlgs, this.djvuConf);
+                List<String> paragraphs = paraExtractor.extractParagraphs(targetPage, filter, paraAlgs, orderAlg, this.djvuConf);
 
                 String paraText = "";
 
@@ -477,6 +486,8 @@ public class NCEDjvuGui extends javax.swing.JFrame {
         btnSpecialFemale = new javax.swing.JButton();
         btnPrevPage = new javax.swing.JButton();
         btnSpecialMercury = new javax.swing.JButton();
+        btnReprocessPage = new javax.swing.JButton();
+        cboParagraphAlg = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -582,6 +593,20 @@ public class NCEDjvuGui extends javax.swing.JFrame {
             }
         });
 
+        btnReprocessPage.setText("Reparse");
+        btnReprocessPage.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReprocessPageActionPerformed(evt);
+            }
+        });
+
+        cboParagraphAlg.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "AUTO", "2COL" }));
+        cboParagraphAlg.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cboParagraphAlgActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -593,29 +618,36 @@ public class NCEDjvuGui extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(lblPage)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnReprocessPage)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnPrevPage)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnNextPage)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnFinish))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(btnLoadDjvuXML)
-                                    .addComponent(btnLoadCopyText))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(lblCopiedText)
-                                    .addComponent(lblDjvuXML))
-                                .addGap(0, 0, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnLoadDjvu)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lblDjvu)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 152, Short.MAX_VALUE)
-                                .addComponent(btnConf)))
-                        .addGap(9, 9, 9)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(btnLoadDjvuXML)
+                                            .addComponent(btnLoadCopyText))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(lblCopiedText)
+                                            .addComponent(lblDjvuXML))
+                                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(btnLoadDjvu)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(lblDjvu)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 152, Short.MAX_VALUE)
+                                        .addComponent(btnConf)))
+                                .addGap(9, 9, 9))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(cboParagraphAlg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnStart, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -649,7 +681,8 @@ public class NCEDjvuGui extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSpecialMale)
                     .addComponent(btnSpecialFemale)
-                    .addComponent(btnSpecialMercury))
+                    .addComponent(btnSpecialMercury)
+                    .addComponent(cboParagraphAlg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -657,7 +690,8 @@ public class NCEDjvuGui extends javax.swing.JFrame {
                     .addComponent(btnNextPage)
                     .addComponent(lblPage)
                     .addComponent(btnFinish)
-                    .addComponent(btnPrevPage))
+                    .addComponent(btnPrevPage)
+                    .addComponent(btnReprocessPage))
                 .addContainerGap())
         );
 
@@ -800,6 +834,18 @@ public class NCEDjvuGui extends javax.swing.JFrame {
         this.txtPara.insert("☿", this.txtPara.getCaretPosition());
     }//GEN-LAST:event_btnSpecialMercuryActionPerformed
 
+    private void btnReprocessPageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReprocessPageActionPerformed
+        try {
+            processPage(this.currentPage, false);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage());
+        }
+    }//GEN-LAST:event_btnReprocessPageActionPerformed
+
+    private void cboParagraphAlgActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboParagraphAlgActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cboParagraphAlgActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -842,10 +888,12 @@ public class NCEDjvuGui extends javax.swing.JFrame {
     private javax.swing.JButton btnLoadDjvuXML;
     private javax.swing.JButton btnNextPage;
     private javax.swing.JButton btnPrevPage;
+    private javax.swing.JButton btnReprocessPage;
     private javax.swing.JButton btnSpecialFemale;
     private javax.swing.JButton btnSpecialMale;
     private javax.swing.JButton btnSpecialMercury;
     private javax.swing.JButton btnStart;
+    private javax.swing.JComboBox cboParagraphAlg;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblCopiedText;
     private javax.swing.JLabel lblDjvu;

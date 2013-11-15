@@ -148,9 +148,13 @@ public class Parse_10_Mitai_Tadauchi_2007 {
         nomenclature.setAuthority(getAuthority(taxonName));
         //System.out.println("authority : " + getAuthority(taxonName));
         nomenclature.setNameInfo(taxon);
-        nomenclature.setHierarchy("ruficornis Alexander; " + getPureName(taxonName) + " " + getAuthority(taxonName));
-        nomenclature.setHierarchyClean("ruficornis; " + getPureName(taxonName));
-        nomenclature.setRank("Species");
+        nomenclature.setHierarchy(getFullTaxonName(getPureName(taxonName), getAuthority(taxonName)));
+        nomenclature.setHierarchyClean(getPureName(taxonName));
+        if(getPureName(taxonName).split("\\s").length >= 3) {
+            nomenclature.setRank("Subspecies");
+        } else {
+            nomenclature.setRank("Species");
+        }
         return nomenclature;
     }
     
@@ -167,7 +171,7 @@ public class Parse_10_Mitai_Tadauchi_2007 {
         nomenclature.setNameInfo(taxon);
         nomenclature.setHierarchy(taxonName);
         nomenclature.setHierarchyClean(pureTaxonName);
-        nomenclature.setRank("Species Group");
+        nomenclature.setRank("species_group");
         return nomenclature;
     }
     
