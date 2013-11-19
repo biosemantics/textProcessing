@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.3" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
+  <Properties>
+    <Property name="defaultCloseOperation" type="int" value="2"/>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="1" attributes="0">
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      <Component id="btnApply" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="lblPage" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="txtPageStart" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="lblPageSep" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="19" max="-2" attributes="0"/>
+                              <Component id="txtPageEnd" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="lblMargin" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="lblMarginTop" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="txtMarginTop" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="lblMarginLeft" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="txtMarginLeft" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="lblMarginRight" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="txtMarginRight" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="lblMarginBottom" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="txtMarginBottom" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="lblVGap" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="txtVGap" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="lblPage" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtPageStart" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtPageEnd" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lblPageSep" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="lblMargin" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lblMarginTop" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtMarginTop" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lblMarginLeft" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtMarginLeft" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lblMarginRight" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtMarginRight" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lblMarginBottom" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtMarginBottom" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="lblVGap" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtVGap" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="32767" attributes="0"/>
+              <Component id="btnApply" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Component class="javax.swing.JTextField" name="txtPageEnd">
+    </Component>
+    <Component class="javax.swing.JButton" name="btnApply">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Apply"/>
+        <Property name="toolTipText" type="java.lang.String" value=""/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnApplyActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblMargin">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Margin"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblPageSep">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="~"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblMarginTop">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Top"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtMarginTop">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblMarginLeft">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Left"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblMarginBottom">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Bottom"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtMarginLeft">
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtPageStart">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblMarginRight">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Right"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtMarginRight">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblPage">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Pages"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtMarginBottom">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblVGap">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Paragraph Vertical Gap"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtVGap">
+    </Component>
+  </SubComponents>
+</Form>
