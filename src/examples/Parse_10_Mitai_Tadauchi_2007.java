@@ -1,7 +1,4 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package examples;
 
 import common.db.DBUtil;
@@ -32,10 +29,6 @@ import taxonomy.key.bean.KeyDiscussion;
 import taxonomy.key.bean.KeyHeading;
 import taxonomy.key.bean.KeyStatement;
 
-/**
- *
- * @author iychoi
- */
 public class Parse_10_Mitai_Tadauchi_2007 {
     
     private int documentID;
@@ -502,21 +495,20 @@ public class Parse_10_Mitai_Tadauchi_2007 {
             File outKeyFile = new File(keyOutDir, StringUtil.getSafeFileName(keyfileIndex + ". " + key.getHeading().getHeading()) + ".xml");
             key.toXML(outKeyFile);
             keyfileIndex++;
-            /*
-            int sumKeyTo = 0;
             
-            for(int i=0;i<taxonomies.size();i++) {
-                Taxonomy taxon = taxonomies.get(i);
-                int keyToNum =  taxon.getKeyToTableNumber();
-                sumKeyTo += keyToNum;
+            //int sumKeyTo = 0;
+            
+            //for(int i=0;i<taxonomies.size();i++) {
+            //    Taxonomy taxon = taxonomies.get(i);
+            //    int keyToNum =  taxon.getKeyToTableNumber();
+            //    sumKeyTo += keyToNum;
                 
-                if(allocKeyToTableNum < sumKeyTo) {
-                    taxon.addKeyFile(new TaxonomyKeyFile(outKeyFile));
-                    allocKeyToTableNum++;
-                    break;
-                }
-            }
-            */
+            //    if(allocKeyToTableNum < sumKeyTo) {
+            //        taxon.addKeyFile(new TaxonomyKeyFile(outKeyFile));
+            //        allocKeyToTableNum++;
+            //        break;
+            //    }
+            //}
         }
         
         File taxonOutDir = new File("taxon");
@@ -539,3 +531,4 @@ public class Parse_10_Mitai_Tadauchi_2007 {
         obj.start(9);
     }
 }
+*/

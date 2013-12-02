@@ -89,7 +89,7 @@ public class NCEParaGui extends javax.swing.JFrame {
                     try {
                         confirmParagraphType(paragraphID, confirmed);
                     } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(NCEParaGui.this, ex.getMessage());
+                        JOptionPane.showMessageDialog(NCEParaGui.this, ex.toString());
                     }
                 }
             }
@@ -107,7 +107,7 @@ public class NCEParaGui extends javax.swing.JFrame {
         try {
             conn.close();
         } catch (SQLException ex) {
-            throw new IOException(ex.getMessage());
+            throw new IOException(ex.toString());
         }
         return document;
     }
@@ -119,7 +119,7 @@ public class NCEParaGui extends javax.swing.JFrame {
         try {
             conn.close();
         } catch (SQLException ex) {
-            throw new IOException(ex.getMessage());
+            throw new IOException(ex.toString());
         }
         return paragraphs;
     }
@@ -131,7 +131,7 @@ public class NCEParaGui extends javax.swing.JFrame {
         try {
             conn.close();
         } catch (SQLException ex) {
-            throw new IOException(ex.getMessage());
+            throw new IOException(ex.toString());
         }
         return regexs;
     }
@@ -255,7 +255,7 @@ public class NCEParaGui extends javax.swing.JFrame {
         try {
             conn.close();
         } catch (SQLException ex) {
-            throw new IOException(ex.getMessage());
+            throw new IOException(ex.toString());
         }
     }
     
@@ -292,7 +292,7 @@ public class NCEParaGui extends javax.swing.JFrame {
         try {
             conn.close();
         } catch (SQLException ex) {
-            throw new IOException(ex.getMessage());
+            throw new IOException(ex.toString());
         }
     }
     
@@ -306,7 +306,7 @@ public class NCEParaGui extends javax.swing.JFrame {
         try {
             conn.close();
         } catch (SQLException ex) {
-            throw new IOException(ex.getMessage());
+            throw new IOException(ex.toString());
         }
     }
     
@@ -338,7 +338,7 @@ public class NCEParaGui extends javax.swing.JFrame {
         try {
             conn.close();
         } catch (SQLException ex) {
-            throw new IOException(ex.getMessage());
+            throw new IOException(ex.toString());
         }
     }
 
@@ -372,7 +372,7 @@ public class NCEParaGui extends javax.swing.JFrame {
         try {
             conn.close();
         } catch (SQLException ex) {
-            throw new IOException(ex.getMessage());
+            throw new IOException(ex.toString());
         }
     }
     
@@ -406,7 +406,7 @@ public class NCEParaGui extends javax.swing.JFrame {
         try {
             conn.close();
         } catch (SQLException ex) {
-            throw new IOException(ex.getMessage());
+            throw new IOException(ex.toString());
         }
     }
     
@@ -447,7 +447,7 @@ public class NCEParaGui extends javax.swing.JFrame {
         try {
             conn.close();
         } catch (SQLException ex) {
-            throw new IOException(ex.getMessage());
+            throw new IOException(ex.toString());
         }
     }
     
@@ -457,130 +457,14 @@ public class NCEParaGui extends javax.swing.JFrame {
         ParagraphType previousType = ParagraphType.PARAGRAPH_UNKNOWN;
         for (Paragraph paragraph : this.paragraphs) {
             if(paragraph.getType().equals(ParagraphType.PARAGRAPH_UNKNOWN)) {
-                boolean bUpdated = true;
-                switch(previousType) {
-                    case PARAGRAPH_SYNONYM:
-                        paragraph.setType(ParagraphType.PARAGRAPH_SYNONYM);
-                        break;
-                    case PARAGRAPH_OTHERINFO:
-                        paragraph.setType(ParagraphType.PARAGRAPH_OTHERINFO);
-                        break;
-                    case PARAGRAPH_IGNORE:
-                        paragraph.setType(ParagraphType.PARAGRAPH_OTHERINFO);
-                        break;
-                    case PARAGRAPH_ABSTRACT:
-                        paragraph.setType(ParagraphType.PARAGRAPH_ABSTRACT_BODY);
-                        break;
-                    case PARAGRAPH_ABSTRACT_BODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_ABSTRACT_BODY);
-                        break;
-                    case PARAGRAPH_AUTHOR:
-                        paragraph.setType(ParagraphType.PARAGRAPH_AUTHOR_DETAILS);
-                        break;
-                    case PARAGRAPH_AUTHOR_DETAILS:
-                        paragraph.setType(ParagraphType.PARAGRAPH_AUTHOR_DETAILS);
-                        break;
-                    case PARAGRAPH_INTRODUCTION:
-                        paragraph.setType(ParagraphType.PARAGRAPH_INTRODUCTION_BODY);
-                        break;
-                    case PARAGRAPH_INTRODUCTION_BODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_INTRODUCTION_BODY);
-                        break;
-                    case PARAGRAPH_MATERIALS_METHOD_BODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_INTRODUCTION_BODY);
-                        break;
-                    case PARAGRAPH_DISTRIBUTION:
-                        paragraph.setType(ParagraphType.PARAGRAPH_DISTRIBUTION_BODY);
-                        break;
-                    case PARAGRAPH_DISTRIBUTION_BODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_DISTRIBUTION_BODY);
-                        break;
-                    case PARAGRAPH_DISTRIBUTION_WITH_BODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_DISTRIBUTION_WITH_BODY);
-                        break;
-                    case PARAGRAPH_KEY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_KEY_BODY);
-                        break;
-                    case PARAGRAPH_KEY_BODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_KEY_BODY);
-                        break;
-                    case PARAGRAPH_REMARKS:
-                        paragraph.setType(ParagraphType.PARAGRAPH_REMARKS_BODY);
-                        break;
-                    case PARAGRAPH_REMARKS_BODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_REMARKS_BODY);
-                        break;
-                    case PARAGRAPH_REMARKS_WITH_BODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_REMARKS_WITH_BODY);
-                        break;
-                    case PARAGRAPH_ACKNOWLEDGEMENT:
-                        paragraph.setType(ParagraphType.PARAGRAPH_ACKNOWLEDGEMENT_BODY);
-                        break;
-                    case PARAGRAPH_ACKNOWLEDGEMENT_BODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_ACKNOWLEDGEMENT_BODY);
-                        break;
-                    case PARAGRAPH_DIAGNOSIS:
-                        paragraph.setType(ParagraphType.PARAGRAPH_DIAGNOSIS_BODY);
-                        break;
-                    case PARAGRAPH_DIAGNOSIS_BODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_DIAGNOSIS_BODY);
-                        break;
-                    case PARAGRAPH_DIAGNOSIS_WITH_BODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_DIAGNOSIS_WITH_BODY);
-                        break;
-                    case PARAGRAPH_DEFINITION:
-                        paragraph.setType(ParagraphType.PARAGRAPH_DEFINITION_BODY);
-                        break;
-                    case PARAGRAPH_DEFINITION_BODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_DEFINITION_BODY);
-                        break;
-                    case PARAGRAPH_DEFINITION_WITH_BODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_DEFINITION_WITH_BODY);
-                        break;
-                    case PARAGRAPH_DESCRIPTION:
-                        paragraph.setType(ParagraphType.PARAGRAPH_DESCRIPTION_BODY);
-                        break;
-                    case PARAGRAPH_DESCRIPTION_BODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_DESCRIPTION_BODY);
-                        break;
-                    case PARAGRAPH_DESCRIPTION_WITH_BODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_DESCRIPTION_WITH_BODY);
-                        break;
-                    case PARAGRAPH_DISCUSSION:
-                        paragraph.setType(ParagraphType.PARAGRAPH_DISCUSSION);
-                        break;
-                    case PARAGRAPH_DISCUSSION_BODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_DISCUSSION_BODY);
-                        break;
-                    case PARAGRAPH_DISCUSSION_WITH_BODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_DISCUSSION_WITH_BODY);
-                        break;
-                    case PARAGRAPH_DISCUSSION_NON_TITLED_BODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_DISCUSSION_NON_TITLED_BODY);
-                        break;
-                    case PARAGRAPH_TYPESPECIES:
-                        paragraph.setType(ParagraphType.PARAGRAPH_TYPESPECIES_BODY);
-                        break;
-                    case PARAGRAPH_TYPESPECIES_BODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_TYPESPECIES_BODY);
-                        break;
-                    case PARAGRAPH_SUBTITLE:
-                        paragraph.setType(ParagraphType.PARAGRAPH_SUBBODY);
-                        break;
-                    case PARAGRAPH_SUBBODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_SUBBODY);
-                        break;
-                    case PARAGRAPH_SUBTITLE_WITH_BODY:
-                        paragraph.setType(ParagraphType.PARAGRAPH_SUBTITLE_WITH_BODY);
-                        break;
-                    default:
-                        bUpdated = false;
-                        break;
+                String prevTypeString = previousType.toString();
+                ParagraphType newType = ParagraphType.valueOf(prevTypeString + "_BODY");
+                if(newType == null) {
+                    newType = previousType;
                 }
                 
-                if(bUpdated) {
-                    ParagraphTable.updateParagraph(conn, paragraph);
-                }
+                paragraph.setType(newType);
+                ParagraphTable.updateParagraph(conn, paragraph);
             }
             
             previousType = paragraph.getType();
@@ -595,7 +479,7 @@ public class NCEParaGui extends javax.swing.JFrame {
         try {
             conn.close();
         } catch (SQLException ex) {
-            throw new IOException(ex.getMessage());
+            throw new IOException(ex.toString());
         }
     }
 
@@ -781,6 +665,7 @@ public class NCEParaGui extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tblRegExs.setColumnSelectionAllowed(true);
         tblRegExs.getTableHeader().setReorderingAllowed(false);
         jScrollPane3.setViewportView(tblRegExs);
         tblRegExs.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -914,7 +799,7 @@ public class NCEParaGui extends javax.swing.JFrame {
                 ParagraphType type = ParagraphType.valueOf(typeString);
                 updateParagraphData(this.editingParagraphID, this.txtParagraph.getText(), type);
             } catch (IOException ex) {
-                JOptionPane.showMessageDialog(this, ex.getMessage());
+                JOptionPane.showMessageDialog(this, ex.toString());
             }
         } else {
             JOptionPane.showMessageDialog(this, "Canceled! : ParagraphID = " + this.editingParagraphID);
@@ -945,7 +830,7 @@ public class NCEParaGui extends javax.swing.JFrame {
                 showRegExTable();
             }
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage());
+            JOptionPane.showMessageDialog(this, ex.toString());
         }
     }//GEN-LAST:event_btnEditRegExActionPerformed
 
@@ -957,7 +842,7 @@ public class NCEParaGui extends javax.swing.JFrame {
             this.regexs = loadRegExs(this.document);
             showRegExTable();
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage());
+            JOptionPane.showMessageDialog(this, ex.toString());
         }
     }//GEN-LAST:event_btnAddRegExActionPerformed
 
@@ -969,7 +854,7 @@ public class NCEParaGui extends javax.swing.JFrame {
             try {
                 moveUpRegEx(regexID);
             } catch (IOException ex) {
-                JOptionPane.showMessageDialog(this, ex.getMessage());
+                JOptionPane.showMessageDialog(this, ex.toString());
             }
         }
     }//GEN-LAST:event_btnRegExMoveUpActionPerformed
@@ -982,7 +867,7 @@ public class NCEParaGui extends javax.swing.JFrame {
             try {
                 moveDownRegEx(regexID);
             } catch (IOException ex) {
-                JOptionPane.showMessageDialog(this, ex.getMessage());
+                JOptionPane.showMessageDialog(this, ex.toString());
             }
         }
     }//GEN-LAST:event_btnRegExMoveDownActionPerformed
@@ -991,7 +876,7 @@ public class NCEParaGui extends javax.swing.JFrame {
         try {
             applyRegExToParagraphs();
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage());
+            JOptionPane.showMessageDialog(this, ex.toString());
         }
     }//GEN-LAST:event_btnApplyAllRegExActionPerformed
 
@@ -1012,7 +897,7 @@ public class NCEParaGui extends javax.swing.JFrame {
                 deleteRegEx(regexID);
             }
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage());
+            JOptionPane.showMessageDialog(this, ex.toString());
         }
     }//GEN-LAST:event_btnRemoveRegExActionPerformed
 
@@ -1020,7 +905,7 @@ public class NCEParaGui extends javax.swing.JFrame {
         try {
             applyRegExToUnknownParagraphs();
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage());
+            JOptionPane.showMessageDialog(this, ex.toString());
         }
     }//GEN-LAST:event_btnApplyRegExUnknownActionPerformed
 
@@ -1028,7 +913,7 @@ public class NCEParaGui extends javax.swing.JFrame {
         try {
             inheritPreviousParagraphType();
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage());
+            JOptionPane.showMessageDialog(this, ex.toString());
         }        
     }//GEN-LAST:event_btnInheritActionPerformed
 
@@ -1065,7 +950,7 @@ public class NCEParaGui extends javax.swing.JFrame {
                 try {
                     new NCEParaGui().setVisible(true);
                 } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(null, ex.getMessage());
+                    JOptionPane.showMessageDialog(null, ex.toString());
                     System.exit(1);
                 }
             }

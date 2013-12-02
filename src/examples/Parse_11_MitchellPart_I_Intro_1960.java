@@ -1,7 +1,4 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package examples;
 
 import common.db.DBUtil;
@@ -23,10 +20,6 @@ import taxonomy.key.bean.KeyDiscussion;
 import taxonomy.key.bean.KeyHeading;
 import taxonomy.key.bean.KeyStatement;
 
-/**
- *
- * @author iychoi
- */
 public class Parse_11_MitchellPart_I_Intro_1960 {
     
     private int documentID;
@@ -197,3 +190,4 @@ public class Parse_11_MitchellPart_I_Intro_1960 {
         obj.start(10);
     }
 }
+*/

@@ -15,22 +15,20 @@ import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
-import taxonomy.Taxonomy;
-import taxonomy.bean.TaxonomyDiscussion;
-import taxonomy.bean.TaxonomyGenericElement;
-import taxonomy.bean.TaxonomyKeyFile;
-import taxonomy.bean.TaxonomyMeta;
-import taxonomy.bean.TaxonomyNomenclature;
-import taxonomy.key.KeyTo;
-import taxonomy.key.bean.KeyHeading;
-import taxonomy.key.bean.KeyStatement;
+import xml.taxonomy.beans.key.Key;
+import xml.taxonomy.beans.key.KeyStatement;
+import xml.taxonomy.beans.treatment.Meta;
+import xml.taxonomy.beans.treatment.ProcessedBy;
+import xml.taxonomy.beans.treatment.Processor;
+import xml.taxonomy.beans.treatment.TaxonIdentification;
+import xml.taxonomy.beans.treatment.Treatment;
 
 /**
  *
  * @author iychoi
  */
 public class Parse_WeakleyFlora_2012_Nov {
-    
+    /*
     private static boolean isFootnote(XWPFParagraph para) {
         boolean isFootnote = false;
         if (para.getCTP() != null) {
@@ -167,23 +165,33 @@ public class Parse_WeakleyFlora_2012_Nov {
         return false;
     }
     
-    private static KeyTo genKeyTo(String title) {
-        KeyTo key = new KeyTo();
+    private static Key genKeyTo(String title) {
+        xml.taxonomy.beans.key.ObjectFactory factory = new xml.taxonomy.beans.key.ObjectFactory();
+        Key key = factory.createKey();
 
-        KeyHeading heading = new KeyHeading();
-        heading.setHeading(title);
-        key.setHeading(heading);
+        key.setKeyHeading(title);
         return key;
     }
     
-    private static Taxonomy genTaxon(File source, XWPFParagraph para) {
-        Taxonomy taxon = new Taxonomy();
+    private static Treatment genTaxon(File source, XWPFParagraph para) {
+        xml.taxonomy.beans.treatment.ObjectFactory factory = new xml.taxonomy.beans.treatment.ObjectFactory();
+        Treatment taxon = factory.createTreatment();
         
-        TaxonomyMeta meta = new TaxonomyMeta();
-        meta.setSource(source);
+        Meta meta = factory.createMeta();
+        meta.setSource(source.getName());
+
+        ProcessedBy processedby = factory.createProcessedBy();
+        
+        Processor processor = factory.createProcessor();
+        processor.setProcessType("format conversion");
+        processor.setValue("Illyoung Choi");
+        
+        processedby.getProcessorOrCharaparser().add(processor);
+        
+        meta.setProcessedBy(processedby);
         taxon.setMeta(meta);
         
-        TaxonomyNomenclature nomenclature = new TaxonomyNomenclature();
+        TaxonIdentification nomenclature = factory.createTaxonIdentification();
         String taxonNameInfo = para.getText().trim();
         String taxonName = getTaxonName(para);
         String commonName = getTaxonCommonName(para);
@@ -513,20 +521,6 @@ public class Parse_WeakleyFlora_2012_Nov {
         return combined.trim();
     }
     
-    /*
-    private static String[] splitKeyTitle(String keytitle) {
-        Pattern pattern1 = Pattern.compile("^((Key|KEY) [A-Z]+\\d*) – (.+)$");
-        Matcher mt1 = pattern1.matcher(keytitle);
-        if (mt1.find()) {
-            String[] split = new String[2];
-            split[0] = mt1.group(1).trim();
-            split[1] = mt1.group(3).trim();
-            return split;
-        }
-        return null;
-    }
-    */
-    
     private static String[] splitKeyData(String keydata) {
         Pattern pattern1 = Pattern.compile("^(\\d+)\t(.+)\t(.+)$");
         Matcher mt1 = pattern1.matcher(keydata);
@@ -821,4 +815,5 @@ public class Parse_WeakleyFlora_2012_Nov {
             taxonIndex++;
         }
     }
+    */
 }

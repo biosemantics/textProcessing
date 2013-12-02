@@ -7,15 +7,6 @@ package examples.old;
 import common.utils.StringUtil;
 import java.io.File;
 import java.util.List;
-import taxonomy.key.KeyTo;
-import taxonomy.key.KeyToParser;
-import taxonomy.DocumentSpecificSymbolTable;
-import taxonomy.Taxonomy;
-import taxonomy.TaxonomyConfiguration;
-import taxonomy.TaxonomyLineCategorizeAlg;
-import taxonomy.TaxonomyParser;
-import taxonomy.bean.TaxonomyKeyFile;
-import taxonomy.bean.TaxonomyNomenclature;
 
 /**
  *
@@ -27,7 +18,7 @@ public class Parse_7_Mitai_2004 {
             System.err.println("specify text file path");
             return;
         }
-        
+        /*
         TaxonomyConfiguration conf = new TaxonomyConfiguration();
         conf.setRankDefault("Species");
         conf.setUnknownAsDiscussion(true);
@@ -85,5 +76,6 @@ public class Parse_7_Mitai_2004 {
                 taxonfileIndex++;
             }
         }
+        */
     }
 }

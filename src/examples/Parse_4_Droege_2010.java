@@ -4,33 +4,25 @@
  */
 package examples;
 
-import common.db.DBUtil;
 import common.utils.StringUtil;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import paragraph.bean.Document;
 import paragraph.bean.Paragraph;
-import paragraph.db.DocumentTable;
-import paragraph.db.ParagraphTable;
-import taxonomy.Taxonomy;
-import taxonomy.bean.TaxonomyDescription;
-import taxonomy.bean.TaxonomyDiscussion;
-import taxonomy.bean.TaxonomyGenericElement;
-import taxonomy.bean.TaxonomyKeyFile;
-import taxonomy.bean.TaxonomyMeta;
-import taxonomy.bean.TaxonomyNomenclature;
-import taxonomy.bean.TaxonomyOtherInfo;
-import taxonomy.bean.TaxonomySynonym;
-import taxonomy.key.KeyTo;
-import taxonomy.key.bean.KeyDiscussion;
-import taxonomy.key.bean.KeyHeading;
-import taxonomy.key.bean.KeyStatement;
+import xml.taxonomy.Hierarchy;
+import xml.taxonomy.HierarchyEntry;
+import xml.taxonomy.Rank;
+import xml.taxonomy.TaxonXMLCommon;
+import xml.taxonomy.Taxonomy;
+import xml.taxonomy.beans.key.Key;
+import xml.taxonomy.beans.treatment.Treatment;
 
 /**
  *
@@ -41,28 +33,10 @@ public class Parse_4_Droege_2010 {
     private int documentID;
     private Document document;
     private List<Paragraph> paragraphs;
+    private String processor_name;
     
-    private Document loadDocument(int documentID) throws IOException {
-        Connection conn = DBUtil.getConnection();
-        Document document = DocumentTable.getDocument(conn, documentID);
-        try {
-            conn.close();
-        } catch (SQLException ex) {
-            throw new IOException(ex.getMessage());
-        }
-        return document;
-    }
-    
-    private List<Paragraph> loadParagraphs(Document document) throws IOException {
-        Connection conn = DBUtil.getConnection();
-        List<Paragraph> paragraphs = ParagraphTable.getParagraphs(conn, document.getDocumentID());
-
-        try {
-            conn.close();
-        } catch (SQLException ex) {
-            throw new IOException(ex.getMessage());
-        }
-        return paragraphs;
+    public Parse_4_Droege_2010(String processor_name) {
+        this.processor_name = processor_name;
     }
     
     private String getTaxonName(String nameInfo) {
@@ -71,7 +45,7 @@ public class Parse_4_Droege_2010 {
         if(idxBrace > 0) {
             newTaxon = nameInfo.substring(0, idxBrace).trim();
         }
-        
+
         int idxDot = nameInfo.indexOf(".");
         if(idxDot > 0) {
             newTaxon = newTaxon.substring(idxDot + 1).trim();
@@ -138,163 +112,131 @@ public class Parse_4_Droege_2010 {
             return null;
         }
     }
-
-    private TaxonomyNomenclature genNewNomenclature(String taxon) {
-        TaxonomyNomenclature nomenclature = new TaxonomyNomenclature();
-        String taxonName = getTaxonName(taxon);
-        System.out.println("taxonName : " + taxonName);
-        nomenclature.setName(getPureName(taxonName));
-        //System.out.println("name : " + getPureName(taxonName));
-        nomenclature.setAuthority(getAuthority(taxonName));
-        //System.out.println("authority : " + getAuthority(taxonName));
-        nomenclature.setNameInfo(taxon);
-        nomenclature.setHierarchy(getPureName(taxonName) + " " + getAuthority(taxonName));
-        nomenclature.setHierarchyClean(getPureName(taxonName));
-        nomenclature.setRank("Species");
-        return nomenclature;
+    
+    private String removeBrace(String name) {
+        if(name.startsWith("(") && name.endsWith(")")) {
+            return name.substring(1, name.length() - 1);
+        }
+        return name;
     }
     
-    private TaxonomyOtherInfo genNewOtherInfo(String otherinfo_str) {
-        TaxonomyOtherInfo otherinfo = new TaxonomyOtherInfo();
-        otherinfo.setOtherInfo(otherinfo_str);
-        return otherinfo;
-    }
-    
-    private TaxonomyGenericElement genNewElement(String title, String content) {
-        TaxonomyGenericElement elem = new TaxonomyGenericElement();
-        elem.setName(title);
-        elem.setText(content);
-        return elem;
-    }
-    
-    private String[] splitTitleBody(String content) {
-        int divPosition = 0;
-        boolean braceStart = false;
-        for(int i=0;i<content.length();i++) {
-            if(content.charAt(i) == '(') {
-                braceStart = true;
-            } else if(content.charAt(i) == ')') {
-                braceStart = false;
-            } else if(content.charAt(i) == ':' || content.charAt(i) == '.' || content.charAt(i) == '-') {
-                // possible position
-                if(!braceStart) {
-                    divPosition = i;
-                    break;
+    private HierarchyEntry getHierarchyEntry(String name, String rank) throws IOException {
+        List<String> new_name_parts = new ArrayList<String>();
+        List<String> new_rank_parts = new ArrayList<String>();
+        List<String> new_auth_parts = new ArrayList<String>();
+        
+        String firstPart = null;
+        boolean hasSecondPart = false;
+        if(name.indexOf(" ssp. ") >= 0 || name.indexOf(" var. ") >= 0) {
+            // split into two
+            int idx = 0;
+            int len = 0;
+            String rnk = null;
+            if(name.indexOf(" ssp. ") >= 0) {
+                idx = name.indexOf(" ssp. ");
+                len = 6;
+                rnk = "Subspecies";
+            } else if(name.indexOf(" var. ") >= 0) {
+                idx = name.indexOf(" var. ");
+                len = 6;
+                rnk = "Variety";
+            }
+            
+            firstPart = name.substring(0, idx).trim();
+            String secondPart = name.substring(idx + 6).trim();
+            
+            String secondAuth = getAuthority(secondPart);
+            String secondName = getPureName(secondPart);
+            System.out.println("secondName : " + secondName);
+            if(secondName.split("\\s").length > 1) {
+                throw new IOException("second part has more than 2 parts : " + secondName);
+            }
+            
+            new_name_parts.add(0, secondName);
+            new_rank_parts.add(0, rnk);
+            new_auth_parts.add(0, secondAuth);
+            hasSecondPart = true;
+        } else {
+            firstPart = name;
+        }
+        
+        String firstAuth = getAuthority(firstPart);
+        String firstName = getPureName(firstPart);
+        
+        String[] name_parts = firstName.split("\\s");
+        for(int i=name_parts.length-1;i>=0;i--) {
+            String pure_name = removeBrace(name_parts[i]);
+            new_name_parts.add(0, pure_name);
+            if(i == name_parts.length-1) {
+                new_auth_parts.add(0, firstAuth);
+            } else {
+                new_auth_parts.add(0, null);
+            }
+        }
+        
+        String prevRank = rank;
+        for(int i=0;i<name_parts.length;i++) {
+            int me = name_parts.length - 1 - i;
+            if(hasSecondPart) {
+                String newRank = Rank.findParentRank(prevRank, name_parts.length + 1);
+                new_rank_parts.add(0, newRank);
+                prevRank = newRank;
+            } else {
+                if(me == name_parts.length - 1) {
+                    new_rank_parts.add(0, prevRank);
+                } else {
+                    String newRank = Rank.findParentRank(prevRank, name_parts.length);
+                    new_rank_parts.add(0, newRank);
+                    prevRank = newRank;
                 }
             }
         }
+        
+        String[] entryNames = new String[new_name_parts.size()];
+        String[] entryRanks = new String[new_rank_parts.size()];
+        String[] entryAuths = new String[new_auth_parts.size()];
+        
+        entryNames = new_name_parts.toArray(entryNames);
+        entryRanks = new_rank_parts.toArray(entryRanks);
+        entryAuths = new_auth_parts.toArray(entryAuths);
+        
+        HierarchyEntry entry = new HierarchyEntry(entryNames, entryRanks, entryAuths);
+        return entry;
+    }
 
-        String[] split = new String[2];
-        split[0] = content.substring(0, divPosition).trim();
-        split[1] = content.substring(divPosition+1).trim();
-        return split;
-    }
-    
-    private String removeTrailingDot(String content) {
-        int dotStart = content.length();
-        for(int i=0;i<content.length();i++) {
-            if(content.charAt(content.length() - 1 - i) == '.') {
-                dotStart = content.length() - 1 - i;
-            } else {
-                break;
-            }
-        }
+    private HierarchyEntry genHierarchyEntry(String taxonNameInfo) throws IOException {
+        System.out.println("taxonNameInfo : " + taxonNameInfo);
         
-        return content.substring(0, dotStart).trim();
-    }
-    
-    private String removeStartingDot(String content) {
-        int dotEnd = 0;
-        for(int i=0;i<content.length();i++) {
-            if(content.charAt(i) == '.') {
-                dotEnd = i + 1;
-            } else {
-                break;
-            }
-        }
+        String taxonName = getTaxonName(taxonNameInfo);
+        System.out.println("full name : " + taxonName);
+        String rank = "Species";
         
-        return content.substring(dotEnd).trim();
-    }
-    
-    private String[] splitKeyStatement(String content) {
-        String[] split1 = content.split("\\.{3,}");
-        String first = removeTrailingDot(split1[0]);
-        String second = removeStartingDot(split1[1]);
-        
-        String[] split = new String[3];
-        
-        Pattern p1 = Pattern.compile("^([-–]|\\d+)(\\.)?\\s(.+)$");
-        Matcher mt1 = p1.matcher(first);
-        if(mt1.find()) {
-            split[0] = mt1.group(1).trim();
-            split[1] = mt1.group(3).trim();
-            split[2] = second;
-        }
-        
-        return split;
-    }
-    
-    private TaxonomySynonym genNewSynonym(String synonym) {
-        TaxonomySynonym syn = new TaxonomySynonym();
-        syn.setSynonym(synonym);
-        return syn;
-    }
-    
-    private TaxonomyDiscussion genDiscussion(String discussion) {
-        TaxonomyDiscussion diss = new TaxonomyDiscussion();
-        diss.setText(discussion);
-        return diss;
-    }
-    
-    private TaxonomyDescription genNewDescription(String title, String content) {
-        TaxonomyDescription desc = new TaxonomyDescription();
-        desc.setType(TaxonomyDescription.TaxonomyDescriptionType.DESCRIPTION_GENERIC);
-        desc.setTitle(title);
-        desc.setDescription(content);
-        return desc;
-    }
-    
-    private TaxonomyDescription genNewDiagnosis(String content) {
-        TaxonomyDescription desc = new TaxonomyDescription();
-        desc.setType(TaxonomyDescription.TaxonomyDescriptionType.DESCRIPTION_DIAGNOSIS);
-        desc.setDescription(content);
-        return desc;
-    }
-    
-    private String getFullTaxonName(String name, String authority) {
-        String full = "";
-        if(name != null) {
-            full += name;
-        }
-        
-        if(authority != null) {
-            full += " " + authority;
-        }
-        
-        return full.trim();
+        HierarchyEntry entry = getHierarchyEntry(taxonName, rank);
+        return entry;
     }
     
     public void start(int documentID) throws IOException, Exception {
         this.documentID = documentID;
-        this.document = loadDocument(this.documentID);
-        this.paragraphs = loadParagraphs(document);
+        this.document = TaxonXMLCommon.loadDocument(this.documentID);
+        this.paragraphs = TaxonXMLCommon.loadParagraphs(document);
         
         List<Taxonomy> taxonomies = new ArrayList<Taxonomy>();
-        List<KeyTo> keytos = new ArrayList<KeyTo>();
+        Hierarchy hierarchy = new Hierarchy();
         
         Taxonomy taxonomy = null;
-        KeyTo keyto = null;
+        Key key = null;
         String prevTitle = null;
         for(Paragraph paragraph : paragraphs) {
             switch(paragraph.getType()) {
                 case PARAGRAPH_TAXONNAME:
                 {
-                    taxonomy = new Taxonomy();
+                    taxonomy = TaxonXMLCommon.createNewTaxonomy();
                     // set metadata
-                    TaxonomyMeta meta = new TaxonomyMeta(document.getFilename());
-                    taxonomy.setMeta(meta);
-
-                    taxonomy.setNomenclture(genNewNomenclature(paragraph.getContent()));
+                    TaxonXMLCommon.addNewMeta(taxonomy, this.processor_name, document.getFilename());
+                    taxonomy.setTaxonName(getTaxonName(paragraph.getContent()));
+                    
+                    HierarchyEntry hierarchy_entry = genHierarchyEntry(paragraph.getContent());
+                    TaxonXMLCommon.addNewIdentification(taxonomy, hierarchy, hierarchy_entry, paragraph.getContent());
                     
                     // add to list
                     taxonomies.add(taxonomy);
@@ -302,35 +244,17 @@ public class Parse_4_Droege_2010 {
                 }
                 case PARAGRAPH_OTHERINFO:
                 {
-                    if(taxonomy != null) {
-                        taxonomy.getNomenclature().addOtherInfo(genNewOtherInfo(paragraph.getContent()));
-                    }
+                    TaxonXMLCommon.addNewOtherInfoOnName(taxonomy, paragraph.getContent());
                     break;
                 }
                 case PARAGRAPH_SYNONYM: 
                 {
-                    if(taxonomy != null) {
-                        taxonomy.addSynonym(genNewSynonym(paragraph.getContent()));
-                    }
+                    TaxonXMLCommon.addNewSynonym(taxonomy, paragraph.getContent());
                     break;
                 }
                 case PARAGRAPH_DISCUSSION_NON_TITLED_BODY:
                 {
-                    if(taxonomy != null) {
-                        taxonomy.addDiscussionNonTitled(genDiscussion(paragraph.getContent()));
-                    }
-                    break;
-                }
-                case PARAGRAPH_SUBTITLE:
-                {
-                    prevTitle = paragraph.getContent();
-                    break;
-                }
-                case PARAGRAPH_SUBBODY:
-                {
-                    if(taxonomy != null) {
-                        taxonomy.addElement(genNewElement(prevTitle, paragraph.getContent()));
-                    }
+                    TaxonXMLCommon.addNewDiscussion(taxonomy, paragraph.getContent());
                     break;
                 }
                 case PARAGRAPH_DISCUSSION:
@@ -340,12 +264,7 @@ public class Parse_4_Droege_2010 {
                 }
                 case PARAGRAPH_DISCUSSION_BODY:
                 {
-                    if(taxonomy != null) {
-                        if(taxonomy.getDiscussion() == null) {
-                            taxonomy.setDiscussion(new TaxonomyDiscussion());
-                        }
-                        taxonomy.getDiscussion().addElement(genNewElement(prevTitle, paragraph.getContent()));
-                    }
+                    TaxonXMLCommon.addNewDiscussion(taxonomy, prevTitle, paragraph.getContent());
                     break;
                 }
                 case PARAGRAPH_DESCRIPTION:
@@ -355,21 +274,43 @@ public class Parse_4_Droege_2010 {
                 }
                 case PARAGRAPH_DESCRIPTION_BODY:
                 {
-                    if(taxonomy != null) {
-                        taxonomy.addDescription(genNewDescription(prevTitle, paragraph.getContent()));
-                    }
+                    TaxonXMLCommon.addNewDescription(taxonomy, prevTitle, paragraph.getContent());
                     break;
                 }
-                case PARAGRAPH_DIAGNOSIS:
+                case PARAGRAPH_MATERIAL:
                 {
                     prevTitle = paragraph.getContent();
                     break;
                 }
-                case PARAGRAPH_DIAGNOSIS_BODY:
+                case PARAGRAPH_MATERIAL_BODY:
                 {
-                    if(taxonomy != null) {
-                        taxonomy.addDescription(genNewDiagnosis(paragraph.getContent()));
-                    }
+                    TaxonXMLCommon.addNewMaterial(taxonomy, prevTitle, paragraph.getContent());
+                    break;
+                }
+                case PARAGRAPH_ARTICULATION:
+                {
+                    prevTitle = paragraph.getContent();
+                    break;
+                }
+                case PARAGRAPH_ARTICULATION_BODY:
+                {
+                    TaxonXMLCommon.addNewArticulation(taxonomy, prevTitle, paragraph.getContent());
+                    break;
+                }
+                case PARAGRAPH_HABITAT:
+                case PARAGRAPH_ELEVATION:
+                case PARAGRAPH_ECOLOGY:
+                case PARAGRAPH_DISTRIBUTION:
+                {
+                    prevTitle = paragraph.getContent();
+                    break;
+                }
+                case PARAGRAPH_HABITAT_BODY:
+                case PARAGRAPH_ELEVATION_BODY:
+                case PARAGRAPH_ECOLOGY_BODY:
+                case PARAGRAPH_DISTRIBUTION_BODY:
+                {
+                    TaxonXMLCommon.addNewHabitatElevationDistribution(taxonomy, prevTitle, paragraph.getContent());
                     break;
                 }
                 case PARAGRAPH_IGNORE:
@@ -383,23 +324,33 @@ public class Parse_4_Droege_2010 {
             }
         }
         
-        File taxonOutDir = new File("taxon");
+        File taxonOutDir = new File("taxonomy");
         taxonOutDir.mkdir();
         
         // taxon file
         int taxonfileIndex = 1;
         for(Taxonomy taxon : taxonomies) {
-            TaxonomyNomenclature nomenclature = taxon.getNomenclature();
-            if(nomenclature != null) {
-                File outTaxonFile = new File(taxonOutDir, StringUtil.getSafeFileName(taxonfileIndex + ". " + getFullTaxonName(nomenclature.getName(), nomenclature.getAuthority())) + ".xml");
-                taxon.toXML(outTaxonFile);
+            if(!taxon.getTreatment().getTaxonIdentification().isEmpty()) {
+                String taxonName = taxon.getTaxonName();
+                File outTaxonFile = new File(taxonOutDir, StringUtil.getSafeFileName(taxonfileIndex + ". " + taxonName + ".xml"));
+                createXML(taxon, outTaxonFile);
                 taxonfileIndex++;
             }
         }
     }
     
+    private void createXML(Taxonomy taxonomy, File outFile) throws JAXBException {
+        JAXBContext jaxbContext = JAXBContext.newInstance(Treatment.class);
+        Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+        // output pretty printed
+        jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+        jaxbMarshaller.marshal(taxonomy.getTreatment(), outFile);
+    }
+    
     public static void main(String[] args) throws Exception {
-        Parse_4_Droege_2010 obj = new Parse_4_Droege_2010();
+        Parse_4_Droege_2010 obj = new Parse_4_Droege_2010("Illyoung Choi");
         obj.start(12);
     }
 }

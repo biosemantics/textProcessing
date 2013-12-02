@@ -7,16 +7,6 @@ package examples.old;
 import common.utils.StringUtil;
 import java.io.File;
 import java.util.List;
-import taxonomy.key.KeyTo;
-import taxonomy.key.KeyToParser;
-import taxonomy.DocumentSpecificSymbolTable;
-import taxonomy.Taxonomy;
-import taxonomy.TaxonomyConfiguration;
-import taxonomy.TaxonomyLineCategorizeAlg;
-import taxonomy.TaxonomyParser;
-import taxonomy.bean.TaxonomyDescription;
-import taxonomy.bean.TaxonomyKeyFile;
-import taxonomy.bean.TaxonomyNomenclature;
 
 /**
  *
@@ -29,6 +19,7 @@ public class Parse_Abebe_FreshwaterNematodes {
             return;
         }
         
+        /*
         TaxonomyConfiguration conf = new TaxonomyConfiguration();
         conf.setRankDefault("Order");
         conf.setUnknownAsDiscussion(true);
@@ -131,5 +122,6 @@ public class Parse_Abebe_FreshwaterNematodes {
                 taxonfileIndex++;
             }
         }
+        */
     }
 }

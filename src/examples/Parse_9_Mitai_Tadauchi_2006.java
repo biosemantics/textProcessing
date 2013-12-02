@@ -2,6 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+/*
 package examples;
 
 import common.db.DBUtil;
@@ -31,10 +32,6 @@ import taxonomy.key.KeyTo;
 import taxonomy.key.bean.KeyHeading;
 import taxonomy.key.bean.KeyStatement;
 
-/**
- *
- * @author iychoi
- */
 public class Parse_9_Mitai_Tadauchi_2006 {
     
     private int documentID;
@@ -267,21 +264,6 @@ public class Parse_9_Mitai_Tadauchi_2006 {
         String prevTitle = null;
         for(Paragraph paragraph : paragraphs) {
             switch(paragraph.getType()) {
-                case PARAGRAPH_TITLE:
-                {
-                    /*
-                    taxonomy = new Taxonomy();
-                    // set metadata
-                    TaxonomyMeta meta = new TaxonomyMeta(document.getFilename());
-                    taxonomy.setMeta(meta);
-
-                    taxonomy.setNomenclture(genNewTitle(paragraph.getContent()));
-
-                    // add to list
-                    taxonomies.add(taxonomy);
-                    */
-                    break;
-                }
                 case PARAGRAPH_TAXONNAME:
                 {
                     taxonomy = new Taxonomy();
@@ -514,3 +496,4 @@ public class Parse_9_Mitai_Tadauchi_2006 {
         obj.start(1);
     }
 }
+*/
