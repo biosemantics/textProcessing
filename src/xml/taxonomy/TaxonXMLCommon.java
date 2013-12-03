@@ -5,15 +5,21 @@
 package xml.taxonomy;
 
 import common.db.DBUtil;
+import common.utils.StringUtil;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.xml.bind.JAXBElement;
 import paragraph.bean.Document;
 import paragraph.bean.Paragraph;
 import paragraph.db.DocumentTable;
 import paragraph.db.ParagraphTable;
+import xml.taxonomy.beans.key.Determination;
+import xml.taxonomy.beans.key.Key;
+import xml.taxonomy.beans.key.KeyStatement;
 import xml.taxonomy.beans.treatment.Description;
 import xml.taxonomy.beans.treatment.Discussion;
 import xml.taxonomy.beans.treatment.HabitatElevationDistributionOrEcology;
@@ -243,5 +249,108 @@ public class TaxonXMLCommon {
             newTitle = newTitle.substring(0, newTitle.length()-1);
         }
         return newTitle;
+    }
+    
+    public static String[] splitTitleBody(String content) {
+        int divPosition = 0;
+        boolean braceStart = false;
+        for(int i=0;i<content.length();i++) {
+            if(content.charAt(i) == '(') {
+                braceStart = true;
+            } else if(content.charAt(i) == ')') {
+                braceStart = false;
+            } else if(content.charAt(i) == ':' || content.charAt(i) == '.' || content.charAt(i) == '-') {
+                // possible position
+                if(!braceStart) {
+                    divPosition = i;
+                    break;
+                }
+            }
+        }
+
+        String[] split = new String[2];
+        split[0] = content.substring(0, divPosition).trim();
+        split[1] = content.substring(divPosition+1).trim();
+        return split;
+    }
+    
+    public static Key createNewKey(String title) {
+        Key key = KeyFactory.createKey();
+        key.setKeyHeading(title);
+        return key;
+    }
+    
+    public static void addNewMeta(Key key, String processor_name, String source) {
+        xml.taxonomy.beans.key.Meta meta = KeyFactory.createMeta();
+        meta.setSource(source);
+        
+        xml.taxonomy.beans.key.ProcessedBy processedby = KeyFactory.createProcessedBy();
+        xml.taxonomy.beans.key.Processor processor = KeyFactory.createProcessor();
+        
+        processor.setProcessType("format conversion");
+        processor.setValue(processor_name);
+        
+        processedby.getProcessorOrCharaparser().add(processor);
+        meta.setProcessedBy(processedby);
+        key.setMeta(meta);
+    }
+    
+    public static void addNewDiscussion(Key key, String content) {
+        JAXBElement<String> discuss = KeyFactory.createDiscussion(content);
+        key.getDiscussionOrKeyHeadOrKeyStatement().add(discuss);
+    }
+
+    public static void addKeyStatement(Key key, String id, String statementString, String destFilename, String dest) {
+        KeyStatement statement = KeyFactory.createKeyStatement();
+        statement.setStatementId(id);
+        statement.setStatement(statementString);
+        try {
+            int nextStatementId = Integer.parseInt(dest.substring(0, 1));
+            statement.setNextStatementId(dest);
+        } catch(Exception ex) {
+            Determination determination = KeyFactory.createDetermination();
+            determination.setValue(dest);
+            determination.setFileName(destFilename);
+        }
+        
+        key.getDiscussionOrKeyHeadOrKeyStatement().add(statement);
+    }
+    
+    public static void addKeyFile(Taxonomy taxonomy, String name) {
+        JAXBElement<String> keyfile = TreatmentFactory.createKeyFile(name);
+        taxonomy.getTreatment().getDescriptionOrTypeOrSynonym().add(keyfile);
+    }
+    
+    public static void addKeyStatement(Key key, String id, String statementString, String dest) {
+        KeyStatement statement = KeyFactory.createKeyStatement();
+        statement.setStatementId(id);
+        statement.setStatement(statementString);
+        try {
+            int nextStatementId = Integer.parseInt(dest.substring(0, 1));
+            statement.setNextStatementId(dest);
+        } catch(Exception ex) {
+            Determination determination = KeyFactory.createDetermination();
+            determination.setValue(dest);
+        }
+        
+        key.getDiscussionOrKeyHeadOrKeyStatement().add(statement);
+    }
+    
+    public static String[] splitKeyStatement(String content) {
+        String[] split1 = content.split("\\.{3,}");
+        String first = StringUtil.removeTrailingDot(split1[0]);
+        String second = StringUtil.removeStartingDot(split1[1]);
+        
+        String[] split = new String[3];
+        
+        Pattern p1 = Pattern.compile("^([-–]|\\d+)(\\.)?\\s(.+)$");
+        Matcher mt1 = p1.matcher(first);
+        if(mt1.find()) {
+            split[0] = mt1.group(1).trim();
+            split[1] = mt1.group(3).trim();
+            split[2] = second;
+        }
+        
+        return split;
     }
 }

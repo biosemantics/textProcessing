@@ -161,4 +161,30 @@ public class StringUtil {
         
         return cleanText;
     }
+    
+    public static String removeTrailingDot(String content) {
+        int dotStart = content.length();
+        for(int i=0;i<content.length();i++) {
+            if(content.charAt(content.length() - 1 - i) == '.') {
+                dotStart = content.length() - 1 - i;
+            } else {
+                break;
+            }
+        }
+        
+        return content.substring(0, dotStart).trim();
+    }
+    
+    public static String removeStartingDot(String content) {
+        int dotEnd = 0;
+        for(int i=0;i<content.length();i++) {
+            if(content.charAt(i) == '.') {
+                dotEnd = i + 1;
+            } else {
+                break;
+            }
+        }
+        
+        return content.substring(dotEnd).trim();
+    }
 }

@@ -458,8 +458,13 @@ public class NCEParaGui extends javax.swing.JFrame {
         for (Paragraph paragraph : this.paragraphs) {
             if(paragraph.getType().equals(ParagraphType.PARAGRAPH_UNKNOWN)) {
                 String prevTypeString = previousType.toString();
-                ParagraphType newType = ParagraphType.valueOf(prevTypeString + "_BODY");
-                if(newType == null) {
+                ParagraphType newType = null;
+                try {
+                    newType = ParagraphType.valueOf(prevTypeString + "_BODY");
+                    if (newType == null) {
+                        newType = previousType;
+                    }
+                } catch(Exception ex) {
                     newType = previousType;
                 }
                 

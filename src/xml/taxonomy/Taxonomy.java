@@ -13,12 +13,15 @@ import xml.taxonomy.beans.treatment.Treatment;
 public class Taxonomy {
     private Treatment treatment;
     private String name;
+    private int keyCount;
     
     public Taxonomy() {
+        this.keyCount = 0;
     }
     
     public Taxonomy(Treatment treatment) {
         this.treatment = treatment;
+        this.keyCount = 0;
     }
     
     public void setTreatment(Treatment treatment) {
@@ -35,6 +38,14 @@ public class Taxonomy {
     
     public String getTaxonName() {
         return this.name;
+    }
+
+    public void increaseKeyToTable() {
+        this.keyCount++;
+    }
+
+    public int getKeyToTable() {
+        return this.keyCount;
     }
     
 }
