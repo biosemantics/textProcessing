@@ -37,6 +37,7 @@ public class Hierarchy {
         HierarchyEntry parentEntry = null;
         for(HierarchyEntry entry_parent : this.entries) {
             String[] entry_names = entry_parent.getNames();
+            String[] entry_ranks = entry_parent.getRanks();
             int point = 0;
             
             if(Rank.compareRanks(entry_parent.getRanks()[entry_parent.getRanks().length - 1], entry.getRanks()[entry.getRanks().length - 1]) >= 0) {
@@ -45,10 +46,20 @@ public class Hierarchy {
             
             for(int i=0;i<entry_names.length;i++) {
                 String entry_name = entry_names[entry_names.length - 1 - i];
-                for(String name_part : entry.getNames()) {
+                String entry_rank = entry_ranks[entry_ranks.length - 1 - i];
+                for(int j=0;j<entry.getNames().length;j++) {
+                    String name_part = entry.getNames()[j];
+                    String rank_part = entry.getRanks()[j];
                     if(entry_name.equalsIgnoreCase(name_part)) {
-                        // find same part
-                        point++;
+                        if(rank_part == null) {
+                            // find same part
+                            point++;
+                        } else {
+                            if(entry_rank.equalsIgnoreCase(rank_part)) {
+                                // find same part
+                                point++;
+                            }
+                        }
                     }
                 }
             }
@@ -78,8 +89,15 @@ public class Hierarchy {
             int pos = parentNames.length;
             for(int i=0;i<parentNames.length;i++) {
                 if(parentNames[i].equalsIgnoreCase(entry.getNames()[0])) {
-                    pos = i;
-                    break;
+                    if(entry.getRanks()[0] == null) {
+                        pos = i;
+                        break;
+                    } else {
+                        if(parentRanks[i].equalsIgnoreCase(entry.getRanks()[0])) {
+                            pos = i;
+                            break;
+                        }
+                    }
                 }
             }
             
@@ -124,8 +142,15 @@ public class Hierarchy {
             int pos = parentNames.length;
             for(int i=0;i<parentNames.length;i++) {
                 if(parentNames[i].equalsIgnoreCase(entry.getNames()[0])) {
-                    pos = i;
-                    break;
+                    if(entry.getRanks()[0] == null) {
+                        pos = i;
+                        break;
+                    } else {
+                        if(parentRanks[i].equalsIgnoreCase(entry.getRanks()[0])) {
+                            pos = i;
+                            break;
+                        }
+                    }
                 }
             }
             

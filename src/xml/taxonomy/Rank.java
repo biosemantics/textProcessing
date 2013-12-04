@@ -125,6 +125,16 @@ public class Rank {
         throw new IOException("cannot find rank info : " + rank);
     }
     
+    public static String findChildRank(String rank, List<RankRelation> relation) throws IOException {
+        for (RankRelation rr : relation) {
+            if (rr.getParentRank().equalsIgnoreCase(rank.trim())) {
+                return rr.getChildRank();
+            }
+        }
+        
+        throw new IOException("cannot find rank info : " + rank);
+    }
+    
     public static String findChildRank(String rank, int nameParts) throws IOException {
         if(nameParts == 2) {
             for (RankRelation rr : rankRelationForTwoPartNames) {
@@ -140,6 +150,16 @@ public class Rank {
             }
         } else {
             throw new IOException("cannot find rank info : " + rank + ", " + nameParts);
+        }
+        
+        throw new IOException("cannot find rank info : " + rank);
+    }
+    
+    public static String findParentRank(String rank, List<RankRelation> relation) throws IOException {
+        for (RankRelation rr : relation) {
+            if (rr.getChildRank().equalsIgnoreCase(rank.trim())) {
+                return rr.getParentRank();
+            }
         }
         
         throw new IOException("cannot find rank info : " + rank);

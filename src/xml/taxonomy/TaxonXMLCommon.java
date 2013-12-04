@@ -331,6 +331,7 @@ public class TaxonXMLCommon {
         } catch(Exception ex) {
             Determination determination = KeyFactory.createDetermination();
             determination.setValue(dest);
+            statement.setDetermination(determination);
         }
         
         key.getDiscussionOrKeyHeadOrKeyStatement().add(statement);
@@ -352,5 +353,40 @@ public class TaxonXMLCommon {
         }
         
         return split;
+    }
+    
+    public static String getFirstRank(String name) throws IOException {
+        String[] name_parts = name.split("\\s");
+        if(name_parts.length > 1) {
+            if(Rank.checkRank(name_parts[0])) {
+                return Rank.findRank(name_parts[0]);
+            }
+        }
+        return null;
+    }
+    
+    public static String removeFirstRank(String name) {
+        String[] name_parts = name.split("\\s");
+        boolean hasRank = false;
+        if(name_parts.length > 1) {
+            if(Rank.checkRank(name_parts[0])) {
+                hasRank = true;
+            }
+            
+            if(hasRank) {
+                String newName = "";
+                for(int i=1;i<name_parts.length;i++) {
+                    if(!newName.equals("")) {
+                        newName += " ";
+                    }
+                    newName += name_parts[i];
+                }
+                return newName;
+            }
+            return name;
+            
+        } else {
+            return name;
+        }
     }
 }
