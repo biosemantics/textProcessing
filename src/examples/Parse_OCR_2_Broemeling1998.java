@@ -29,22 +29,22 @@ import xml.taxonomy.beans.treatment.Treatment;
  *
  * @author iychoi
  */
-public class Parse_18_Swenk_Stelididae_1914 {
+public class Parse_OCR_2_Broemeling1998 {
     
     private int documentID;
     private Document document;
     private List<Paragraph> paragraphs;
     private String processor_name;
     
-    public Parse_18_Swenk_Stelididae_1914(String processor_name) {
+    public Parse_OCR_2_Broemeling1998(String processor_name) {
         this.processor_name = processor_name;
     }
     
     private String getTaxonName(String nameInfo) {
         String newTaxon = nameInfo;
-        int idxBrace = nameInfo.indexOf("[");
+        int idxBrace = newTaxon.indexOf("[");
         if(idxBrace > 0) {
-            newTaxon = nameInfo.substring(0, idxBrace).trim();
+            newTaxon = newTaxon.substring(0, idxBrace).trim();
         }
 
         /*
@@ -53,6 +53,21 @@ public class Parse_18_Swenk_Stelididae_1914 {
             newTaxon = newTaxon.substring(idxDot + 1).trim();
         }
         */
+        
+        int idxNewSp = newTaxon.indexOf(" NEW SPECIES");
+        if(idxNewSp > 0) {
+            newTaxon = newTaxon.substring(0, idxNewSp).trim();
+        }
+        
+        int idxNewSubg = newTaxon.indexOf(" NEW SUBGENUS");
+        if(idxNewSubg > 0) {
+            newTaxon = newTaxon.substring(0, idxNewSubg).trim();
+        }
+        
+        int idxNewCb = newTaxon.indexOf(" NEW COMBINATION");
+        if(idxNewCb > 0) {
+            newTaxon = newTaxon.substring(0, idxNewCb).trim();
+        }
         
         Pattern p1 = Pattern.compile("^(.+)?, \\d+$");
         Matcher mt1 = p1.matcher(newTaxon);
@@ -78,6 +93,11 @@ public class Parse_18_Swenk_Stelididae_1914 {
     }
     
     private String getAuthority(String name) {
+        // Exceptional case for this paper
+        if(name.endsWith("Asteronomada")) {
+            return null;
+        }
+        
         String name2 = name;
         if(name2.endsWith(", sp. nov.")) {
             int lastIdx = name2.indexOf(", sp. nov.");
@@ -150,22 +170,13 @@ public class Parse_18_Swenk_Stelididae_1914 {
         
         List<RankRelation> rank_relations = new ArrayList<RankRelation>();
         System.out.println(name);
-        if(name.startsWith("Anthidium")) {
-            rank_relations.add(new RankRelation("Family", "Subfamily"));
-            rank_relations.add(new RankRelation("Subfamily", "Genus"));
-            rank_relations.add(new RankRelation("Genus", "Subgenus"));
-            rank_relations.add(new RankRelation("Genus", "Species"));
-            rank_relations.add(new RankRelation("Species", "Subspecies"));
-            rank_relations.add(new RankRelation("Genus", "Variety"));
-        } else {
-            rank_relations.add(new RankRelation("Family", "Subfamily"));
-            rank_relations.add(new RankRelation("Subfamily", "Genus"));
-            rank_relations.add(new RankRelation("Genus", "Subgenus"));
-            rank_relations.add(new RankRelation("Subgenus", "Species"));
-            rank_relations.add(new RankRelation("Species", "Subspecies"));
-            rank_relations.add(new RankRelation("Subgenus", "Variety"));
-        }
-        
+        rank_relations.add(new RankRelation("Family", "Subfamily"));
+        rank_relations.add(new RankRelation("Subfamily", "Genus"));
+        rank_relations.add(new RankRelation("Genus", "Subgenus"));
+        rank_relations.add(new RankRelation("Subgenus", "Species"));
+        rank_relations.add(new RankRelation("Species", "Subspecies"));
+        rank_relations.add(new RankRelation("Subgenus", "Variety"));
+
         String firstPart = null;
         boolean hasSecondPart = false;
         if(name.indexOf(" ssp. ") >= 0 || name.indexOf(" var. ") >= 0) {
@@ -281,9 +292,14 @@ public class Parse_18_Swenk_Stelididae_1914 {
             } else if (rankRemoved.endsWith(" var.")) {
                 rank = "Variety";
             } else if (rankRemoved.split("\\s").length == 3) {
-                rank = "Species";
+                char startCh = rankRemoved.split("\\s")[2].charAt(0);
+                if(startCh >= 'A' && startCh <= 'Z') {
+                    rank = "Subgenus";
+                } else {
+                    rank = "Species";
+                }
             } else if (rankRemoved.split("\\s").length == 2) {
-                rank = "Genus";
+                rank = "Subgenus";
             }
         }
         
@@ -307,16 +323,6 @@ public class Parse_18_Swenk_Stelididae_1914 {
             switch(paragraph.getType()) {
                 case PARAGRAPH_TITLE:
                 {
-                    taxonomy = TaxonXMLCommon.createNewTaxonomy();
-                    // set metadata
-                    TaxonXMLCommon.addNewMeta(taxonomy, this.processor_name, document.getFilename());
-                    taxonomy.setTaxonName("STELIDIDAE");
-                    
-                    HierarchyEntry hierarchy_entry = getHierarchyEntry("STELIDIDAE", "Family");
-                    TaxonXMLCommon.addNewIdentification(taxonomy, hierarchy, hierarchy_entry, paragraph.getContent());
-                    
-                    // add to list
-                    taxonomies.add(taxonomy);
                     break;
                 }
                 case PARAGRAPH_TAXONNAME:
@@ -395,6 +401,12 @@ public class Parse_18_Swenk_Stelididae_1914 {
                 case PARAGRAPH_MATERIAL_BODY:
                 {
                     TaxonXMLCommon.addNewMaterial(taxonomy, prevTitle, paragraph.getContent());
+                    break;
+                }
+                case PARAGRAPH_MATERIAL_WITH_BODY:
+                {
+                    String[] split = TaxonXMLCommon.splitTitleBody(paragraph.getContent());
+                    TaxonXMLCommon.addNewMaterial(taxonomy, split[0], split[1]);
                     break;
                 }
                 case PARAGRAPH_ARTICULATION:
@@ -535,7 +547,7 @@ public class Parse_18_Swenk_Stelididae_1914 {
     }
     
     public static void main(String[] args) throws Exception {
-        Parse_18_Swenk_Stelididae_1914 obj = new Parse_18_Swenk_Stelididae_1914("Illyoung Choi");
-        obj.start(15);
+        Parse_OCR_2_Broemeling1998 obj = new Parse_OCR_2_Broemeling1998("Illyoung Choi");
+        obj.start(16);
     }
 }

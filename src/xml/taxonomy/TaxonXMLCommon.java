@@ -365,28 +365,19 @@ public class TaxonXMLCommon {
         return null;
     }
     
-    public static String removeFirstRank(String name) {
+    public static String removeAllRank(String name) {
         String[] name_parts = name.split("\\s");
-        boolean hasRank = false;
-        if(name_parts.length > 1) {
-            if(Rank.checkRank(name_parts[0])) {
-                hasRank = true;
-            }
-            
-            if(hasRank) {
-                String newName = "";
-                for(int i=1;i<name_parts.length;i++) {
-                    if(!newName.equals("")) {
-                        newName += " ";
-                    }
-                    newName += name_parts[i];
+        String newName = "";
+        for(String name_part : name_parts) {
+            if(Rank.checkRank(name_part)) {
+                // is rank
+            } else {
+                if (!newName.equals("")) {
+                    newName += " ";
                 }
-                return newName;
+                newName += name_part;
             }
-            return name;
-            
-        } else {
-            return name;
         }
+        return newName;
     }
 }

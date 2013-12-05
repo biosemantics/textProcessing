@@ -521,6 +521,7 @@ public class NCEParaGui extends javax.swing.JFrame {
         tblRegExs = new javax.swing.JTable();
         btnApplyRegExUnknown = new javax.swing.JButton();
         btnInherit = new javax.swing.JButton();
+        chkSyncPage = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -691,6 +692,9 @@ public class NCEParaGui extends javax.swing.JFrame {
             }
         });
 
+        chkSyncPage.setSelected(true);
+        chkSyncPage.setText("Sync. page");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -704,6 +708,8 @@ public class NCEParaGui extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnShowUnknown)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(chkSyncPage)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnDisplay50)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnDisplay66))
@@ -741,7 +747,8 @@ public class NCEParaGui extends javax.swing.JFrame {
                     .addComponent(btnShowAll)
                     .addComponent(btnShowUnknown)
                     .addComponent(btnDisplay66)
-                    .addComponent(btnDisplay50))
+                    .addComponent(btnDisplay50)
+                    .addComponent(chkSyncPage))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -789,7 +796,9 @@ public class NCEParaGui extends javax.swing.JFrame {
                 this.txtParagraph.setText(paragraph_edit.getContent());
                 this.cboParagraphType.setSelectedItem(paragraph_edit.getTypeString());
                 this.editingParagraphID = paragraphID;
-                this.djvuView.movePage(paragraph_edit.getPageNumber());
+                if(this.chkSyncPage.isSelected()) {
+                    this.djvuView.movePage(paragraph_edit.getPageNumber());
+                }
             }
         } else {
             this.txtParagraph.setText("");
@@ -977,6 +986,7 @@ public class NCEParaGui extends javax.swing.JFrame {
     private javax.swing.JButton btnShowUnknown;
     private javax.swing.JButton btnUpdate;
     private javax.swing.JComboBox cboParagraphType;
+    private javax.swing.JCheckBox chkSyncPage;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;

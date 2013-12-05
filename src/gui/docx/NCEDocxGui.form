@@ -50,6 +50,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="lblDjvu" min="-2" max="-2" attributes="0"/>
                           </Group>
+                          <Component id="chkSyncPage" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -86,11 +87,14 @@
                       </Group>
                   </Group>
               </Group>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="btnSpecialMale" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btnSpecialFemale" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btnSpecialMercury" alignment="3" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="btnSpecialMale" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnSpecialFemale" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnSpecialMercury" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Component id="chkSyncPage" alignment="1" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jScrollPane1" pref="149" max="32767" attributes="0"/>
@@ -223,6 +227,12 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnReprocessPageActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="chkSyncPage">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="Sync. page"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

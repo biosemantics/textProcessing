@@ -78,7 +78,9 @@ public class NCEDocxGui extends javax.swing.JFrame {
     
     private void movePage(int page) {
         this.currentPage = page;
-        this.djvuView.movePage(page);
+        if(this.chkSyncPage.isSelected()) {
+            this.djvuView.movePage(page);
+        }
         
         int pageEnd = 0;
         if(this.parsedPages != null && this.parsedPages.size() > 0) {
@@ -451,6 +453,7 @@ public class NCEDocxGui extends javax.swing.JFrame {
         btnPrevPage = new javax.swing.JButton();
         btnSpecialMercury = new javax.swing.JButton();
         btnReprocessPage = new javax.swing.JButton();
+        chkSyncPage = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -542,6 +545,9 @@ public class NCEDocxGui extends javax.swing.JFrame {
             }
         });
 
+        chkSyncPage.setSelected(true);
+        chkSyncPage.setText("Sync. page");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -569,7 +575,8 @@ public class NCEDocxGui extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(btnLoadDjvu)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lblDjvu)))
+                                .addComponent(lblDjvu))
+                            .addComponent(chkSyncPage))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnStart, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -596,10 +603,12 @@ public class NCEDocxGui extends javax.swing.JFrame {
                             .addComponent(btnLoadDocx)
                             .addComponent(lblDocx))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnSpecialMale)
-                    .addComponent(btnSpecialFemale)
-                    .addComponent(btnSpecialMercury))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnSpecialMale)
+                        .addComponent(btnSpecialFemale)
+                        .addComponent(btnSpecialMercury))
+                    .addComponent(chkSyncPage, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -774,6 +783,7 @@ public class NCEDocxGui extends javax.swing.JFrame {
     private javax.swing.JButton btnSpecialMale;
     private javax.swing.JButton btnSpecialMercury;
     private javax.swing.JButton btnStart;
+    private javax.swing.JCheckBox chkSyncPage;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblDjvu;
     private javax.swing.JLabel lblDocx;
