@@ -221,6 +221,13 @@ public class TaxonXMLCommon {
         taxonomy.getTreatment().getDescriptionOrTypeOrSynonym().add(discuss);
     }
     
+    public static void addNewDiscussion(Taxonomy taxonomy, String title, String content, boolean keepCase) {
+        Discussion discuss = TreatmentFactory.createDiscussion();
+        discuss.setType(convertSubtitle(title, keepCase));
+        discuss.setValue(content);
+        taxonomy.getTreatment().getDescriptionOrTypeOrSynonym().add(discuss);
+    }
+    
     public static void addNewDiscussion(Taxonomy taxonomy, String content) {
         Discussion discuss = TreatmentFactory.createDiscussion();
         discuss.setValue(content);
@@ -237,6 +244,23 @@ public class TaxonXMLCommon {
         desc.setType(convertSubtitle(title));
         desc.setValue(content);
         taxonomy.getTreatment().getDescriptionOrTypeOrSynonym().add(desc);
+    }
+    
+    private static String convertSubtitle(String type, boolean keepCase) {
+        if(type == null) {
+            return null;
+        }
+        
+        String newTitle = null;
+        if(keepCase) {
+            newTitle = type.trim();
+        } else {
+            newTitle = type.toLowerCase().trim();
+        }
+        if(newTitle.endsWith(".")) {
+            newTitle = newTitle.substring(0, newTitle.length()-1);
+        }
+        return newTitle;
     }
     
     private static String convertSubtitle(String type) {
@@ -339,12 +363,18 @@ public class TaxonXMLCommon {
     
     public static String[] splitKeyStatement(String content) {
         String[] split1 = content.split("\\.{3,}");
+        if(split1.length != 2) {
+            split1 = content.split("…{3,}");
+            if(split1.length != 2) {
+                System.err.println("content - " + content);
+            }
+        }
         String first = StringUtil.removeTrailingDot(split1[0]);
         String second = StringUtil.removeStartingDot(split1[1]);
         
         String[] split = new String[3];
         
-        Pattern p1 = Pattern.compile("^([-–]|\\d+)(\\.)?\\s(.+)$");
+        Pattern p1 = Pattern.compile("^([-–]|\\d+|\\w+)(\\.)?\\s(.+)$");
         Matcher mt1 = p1.matcher(first);
         if(mt1.find()) {
             split[0] = mt1.group(1).trim();

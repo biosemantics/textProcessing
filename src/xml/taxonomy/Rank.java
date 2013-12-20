@@ -44,8 +44,8 @@ public class Rank {
             rankPredefined.add("Section");
             rankPredefined.add("Subsection");
             rankPredefined.add("Series");
-            rankPredefined.add("Species");
             rankPredefined.add("Species_group");
+            rankPredefined.add("Species");
             rankPredefined.add("Subspecies");
             rankPredefined.add("Variety");
         }
@@ -162,6 +162,7 @@ public class Rank {
             }
         }
         
+        System.err.println("cannot find rank info : " + rank);
         throw new IOException("cannot find rank info : " + rank);
     }
     
