@@ -349,10 +349,23 @@ public class TaxonXMLCommon {
         KeyStatement statement = KeyFactory.createKeyStatement();
         statement.setStatementId(id);
         statement.setStatement(statementString);
+        
+        boolean isNextStatement = true;
+        
         try {
             int nextStatementId = Integer.parseInt(dest.substring(0, 1));
-            statement.setNextStatementId(dest);
+            if(dest.length() >= 2 && dest.charAt(1) == '-') {
+                isNextStatement = false;
+            } else {
+                isNextStatement = true;
+            }
         } catch(Exception ex) {
+            isNextStatement = false;
+        }
+        
+        if(isNextStatement) {
+            statement.setNextStatementId(dest);
+        } else {
             Determination determination = KeyFactory.createDetermination();
             determination.setValue(dest);
             statement.setDetermination(determination);
@@ -362,7 +375,7 @@ public class TaxonXMLCommon {
     }
     
     public static String[] splitKeyStatement(String content) {
-        String[] split1 = content.split("\\.{3,}");
+        String[] split1 = content.split("(\\.){3,}");
         if(split1.length != 2) {
             split1 = content.split("…{3,}");
             if(split1.length != 2) {
